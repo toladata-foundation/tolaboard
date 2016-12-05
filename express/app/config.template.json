@@ -1,0 +1,16 @@
+{
+  "instance": "development",
+  "host":"localhost",
+  "port":"2021",
+  "aud":"<google client info here>",
+  "clientSecret":"*************",
+  "cikrit":"*************",
+  "discoveryDocUrl":"https://www.googleapis.com/oauth2/v3/certs",
+  "openIdConfig":"",
+  "tablesAPIUrl": "https://tola-tables.mercycorps.org/api/silo/",
+  "tablesAPIToken": "Token *****************",
+  "mongoUri": "//localhost",
+  "mongoUser": "*******",
+  "mongoPassword": "**************",
+  "originWhiteList": ["http://localhost:4200", "http://localhost:2021"]
+}
