@@ -1,0 +1,11 @@
+ember/node_modules/
+ember/bower_components/
+ember/dist/
+
+express/app/config.json
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*

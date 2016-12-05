@@ -1,0 +1,22 @@
+{
+  "name": "tolaboard-api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "ejs": "~2.4.1",
+    "express": "~4.13.4",
+    "jsonwebtoken": "^7.1.9",
+    "jws-jwk": "^0.1.4",
+    "mongoose": "^4.6.3",
+    "morgan": "~1.7.0",
+    "node-rest-client": "^2.0.1",
+    "request": "^2.78.0",
+    "serve-favicon": "~2.3.0"
+  }
+}
