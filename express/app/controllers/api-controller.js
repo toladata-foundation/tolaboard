@@ -24,7 +24,13 @@ var apiTolaTables = {
     	"Authorization": config.TolaTablesAPIToken
     	 };
 
-mongoose.connect('mongodb://localhost/tolaboard');
+// localhost dev db
+// mongoose.connect('mongodb://localhost/tolaboard');
+
+// external mLab
+// mongodb://<dbuser>:<dbpassword>@ds015584.mlab.com:15584/tolaboard 
+var conStr = 'mongodb://' + config.mongoUser + ':' + config.mongoPassword + config.mongoUri; 
+mongoose.connect(conStr);
 var db = mongoose.connection;
 
 // var apiDoc = require('./api-documentation')
