@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var mongoose = require('mongoose');
+// var mongoose = require('mongoose');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -16,23 +16,22 @@ var apiController = require('./controllers/api-controller');
 var app = express();
 app.set('env', config.instance);
 
-var mongoDBURI = 'mongodb://localhost/tolaboard';
+/*var mongoDBURI = 'mongodb://localhost/tolaboard';
 var mongoDBOptions = {
   db: { native_parser: true },
   server: { poolSize: 5 },
   replset: { rs_name: 'myReplicaSetName' },
   user: config.mongodbUser,
   pass: config.mongodbPW
-}
+}*/
 // mongoose.connect(mongoDBURI, mongoDBOptions);
 
-try {
-  // mongoose.connect('mongodb://localhost:27017/tolaboard');
+/*try {  
   db = mongoose.createConnection('mongodb://localhost/tolaboard');
   } 
   catch(err) {
     console.log('DB connect error... ' + err)
-  }
+  }*/
 
 
 // view engine setup
