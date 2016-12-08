@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import ENV from '../config/environment';
 
 export default Ember.Service.extend({
 
@@ -13,10 +14,11 @@ export default Ember.Service.extend({
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
-	        url: 'http://localhost:2021/api/data/' + sourceId
+	        url: ENV.API.url + '/api/data/' + sourceId
 	      }).then((data)=>{	        
 	      	// data is our raw response from Tables
 	      	var result = JSON.parse(data).data;
+	      	result.forEach(function(d) { d.row_count = 1});
 	      	var groupName = dataModel[0].assigned,
 	      	    sumName = dataModel[1].assigned;
 	      	// use dataModel with d3.nest to return aggregated data
@@ -43,7 +45,7 @@ export default Ember.Service.extend({
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
-	        url: 'http://localhost:2021/api/data/' + sourceId
+	        url: ENV.API.url + '/api/data/' + sourceId
 	      }).then((data)=>{	        
 	      	// data is our raw response from Tables
 	      	var result = JSON.parse(data).data;

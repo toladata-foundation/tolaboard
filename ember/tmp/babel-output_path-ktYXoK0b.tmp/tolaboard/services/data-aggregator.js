@@ -1,4 +1,4 @@
-define('tolaboard/services/data-aggregator', ['exports', 'ember'], function (exports, _ember) {
+define('tolaboard/services/data-aggregator', ['exports', 'ember', 'tolaboard/config/environment'], function (exports, _ember, _tolaboardConfigEnvironment) {
 	exports['default'] = _ember['default'].Service.extend({
 
 		store: _ember['default'].inject.service(),
@@ -12,10 +12,13 @@ define('tolaboard/services/data-aggregator', ['exports', 'ember'], function (exp
 			return new _ember['default'].RSVP.Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "GET",
-					url: 'http://localhost:2021/api/data/' + sourceId
+					url: _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + sourceId
 				}).then(function (data) {
 					// data is our raw response from Tables
 					var result = JSON.parse(data).data;
+					result.forEach(function (d) {
+						d.row_count = 1;
+					});
 					var groupName = dataModel[0].assigned,
 					    sumName = dataModel[1].assigned;
 					// use dataModel with d3.nest to return aggregated data
@@ -43,7 +46,7 @@ define('tolaboard/services/data-aggregator', ['exports', 'ember'], function (exp
 			return new _ember['default'].RSVP.Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "GET",
-					url: 'http://localhost:2021/api/data/' + sourceId
+					url: _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + sourceId
 				}).then(function (data) {
 					// data is our raw response from Tables
 					var result = JSON.parse(data).data;

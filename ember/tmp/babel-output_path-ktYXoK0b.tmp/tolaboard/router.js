@@ -26,5 +26,9 @@ define('tolaboard/router', ['exports', 'ember', 'tolaboard/config/environment'],
     this.route('login');
   });
 
+  Router.reopen({
+    location: 'hash'
+  });
+
   exports['default'] = Router;
 });

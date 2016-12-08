@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import ENV from '../config/environment';
 
 export default Ember.Service.extend({
 
@@ -12,7 +13,7 @@ export default Ember.Service.extend({
 	    return new Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "POST",
-	        url: '//localhost:2021/auth',
+	        url: ENV.API.url + '/auth',
 	        headers: { 
 	        	"Content-Type": "application/json",
 	        	"Authorization": googleToken
@@ -49,7 +50,7 @@ export default Ember.Service.extend({
 	    return new Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "POST",
-	        url: '//localhost:2021/auth/session',
+	        url: ENV.API.url + '/auth/session',
 	        /*headers: { 
 	        	"Content-Type": "application/json",
 	        	"Authorization": googleToken
@@ -106,7 +107,7 @@ export default Ember.Service.extend({
 		return new Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "POST",
-	        url: '//localhost:2021/auth/session'
+	        url: ENV.API.url + '/auth/session'
 	        /* NOTE: header with token handled by ajax-prefilter.js initializer */
 	        
 	      }).then((data)=>{

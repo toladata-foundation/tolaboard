@@ -19,7 +19,7 @@ module.exports = function(environment) {
     },
 
     API: {
-      url: 'http://localhost:2021'
+      url: 'http://188.166.7.21:3000'
     }
   };
 

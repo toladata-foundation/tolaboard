@@ -65,8 +65,14 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 				this.set('showDataSourcePreview', true);
 				var self = this;
 				_ember['default'].$.getJSON(url, function (data) {
-					self.set('scopeData', JSON.parse(data).data);
+					var finalData = JSON.parse(data).data;
+					finalData.forEach(function (d) {
+						d.row_count = 1;
+					});
+					self.set('scopeData', finalData);
 					self.set('showVizSelection', true);
+
+					console.log('scopeData', self.get('scopeData'));
 				});
 			},
 

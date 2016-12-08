@@ -1,1 +1,1 @@
-{"modulePrefix":"tolaboard","environment":"development","baseURL":"/","locationType":"auto","EmberENV":{"FEATURES":{}},"APP":{"name":"tolaboard","version":"0.0.0+"},"API":{"url":"http://localhost:2021"},"something":"test","exportApplicationGlobal":true}
+{"modulePrefix":"tolaboard","environment":"development","baseURL":"/","locationType":"auto","EmberENV":{"FEATURES":{}},"APP":{"name":"tolaboard","version":"0.0.0+7fcedd72"},"API":{"url":"http://188.166.7.21:3000"},"something":"test","exportApplicationGlobal":true}

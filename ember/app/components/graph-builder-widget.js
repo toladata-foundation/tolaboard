@@ -74,8 +74,13 @@ export default Ember.Component.extend({
 			this.set('showDataSourcePreview',true);
 			var self = this;
 			Ember.$.getJSON(url, function(data) {
-				self.set('scopeData', JSON.parse(data).data);
-				self.set('showVizSelection',true);				
+				var finalData = JSON.parse(data).data;
+				finalData.forEach(function(d) { d.row_count=1 });
+				self.set('scopeData', finalData);
+				self.set('showVizSelection',true);	
+
+				console.log('scopeData',self.get('scopeData'))
+
 			});			
 
 		},

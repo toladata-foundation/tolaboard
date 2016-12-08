@@ -1,4 +1,4 @@
-define('tolaboard/services/session', ['exports', 'ember'], function (exports, _ember) {
+define('tolaboard/services/session', ['exports', 'ember', 'tolaboard/config/environment'], function (exports, _ember, _tolaboardConfigEnvironment) {
 	exports['default'] = _ember['default'].Service.extend({
 
 		routing: _ember['default'].inject.service('-routing'),
@@ -13,7 +13,7 @@ define('tolaboard/services/session', ['exports', 'ember'], function (exports, _e
 			return new Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "POST",
-					url: '//localhost:2021/auth',
+					url: _tolaboardConfigEnvironment['default'].API.url + '/auth',
 					headers: {
 						"Content-Type": "application/json",
 						"Authorization": googleToken
@@ -47,7 +47,7 @@ define('tolaboard/services/session', ['exports', 'ember'], function (exports, _e
 			return new Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "POST",
-					url: '//localhost:2021/auth/session'
+					url: _tolaboardConfigEnvironment['default'].API.url + '/auth/session'
 				}). /*headers: { 
         	"Content-Type": "application/json",
         	"Authorization": googleToken
@@ -99,7 +99,7 @@ define('tolaboard/services/session', ['exports', 'ember'], function (exports, _e
 			return new Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "POST",
-					url: '//localhost:2021/auth/session'
+					url: _tolaboardConfigEnvironment['default'].API.url + '/auth/session'
 					/* NOTE: header with token handled by ajax-prefilter.js initializer */
 
 				}).then(function (data) {

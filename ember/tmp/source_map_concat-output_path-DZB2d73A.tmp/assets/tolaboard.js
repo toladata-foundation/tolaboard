@@ -242,8 +242,14 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 				this.set('showDataSourcePreview', true);
 				var self = this;
 				_ember['default'].$.getJSON(url, function (data) {
-					self.set('scopeData', JSON.parse(data).data);
+					var finalData = JSON.parse(data).data;
+					finalData.forEach(function (d) {
+						d.row_count = 1;
+					});
+					self.set('scopeData', finalData);
 					self.set('showVizSelection', true);
+
+					console.log('scopeData', self.get('scopeData'));
 				});
 			},
 
@@ -2224,6 +2230,10 @@ define('tolaboard/router', ['exports', 'ember', 'tolaboard/config/environment'],
     this.route('login');
   });
 
+  Router.reopen({
+    location: 'hash'
+  });
+
   exports['default'] = Router;
 });
 define('tolaboard/routes/dashboard-view', ['exports', 'ember'], function (exports, _ember) {
@@ -2463,7 +2473,7 @@ define('tolaboard/services/color-palette', ['exports', 'ember'], function (expor
 		classicPalette: d3.scale.category20().range()
 	});
 });
-define('tolaboard/services/data-aggregator', ['exports', 'ember'], function (exports, _ember) {
+define('tolaboard/services/data-aggregator', ['exports', 'ember', 'tolaboard/config/environment'], function (exports, _ember, _tolaboardConfigEnvironment) {
 	exports['default'] = _ember['default'].Service.extend({
 
 		store: _ember['default'].inject.service(),
@@ -2477,10 +2487,13 @@ define('tolaboard/services/data-aggregator', ['exports', 'ember'], function (exp
 			return new _ember['default'].RSVP.Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "GET",
-					url: 'http://localhost:2021/api/data/' + sourceId
+					url: _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + sourceId
 				}).then(function (data) {
 					// data is our raw response from Tables
 					var result = JSON.parse(data).data;
+					result.forEach(function (d) {
+						d.row_count = 1;
+					});
 					var groupName = dataModel[0].assigned,
 					    sumName = dataModel[1].assigned;
 					// use dataModel with d3.nest to return aggregated data
@@ -2508,7 +2521,7 @@ define('tolaboard/services/data-aggregator', ['exports', 'ember'], function (exp
 			return new _ember['default'].RSVP.Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "GET",
-					url: 'http://localhost:2021/api/data/' + sourceId
+					url: _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + sourceId
 				}).then(function (data) {
 					// data is our raw response from Tables
 					var result = JSON.parse(data).data;
@@ -2558,7 +2571,7 @@ define('tolaboard/services/head-tags', ['exports', 'ember-cli-meta-tags/services
     }
   });
 });
-define('tolaboard/services/session', ['exports', 'ember'], function (exports, _ember) {
+define('tolaboard/services/session', ['exports', 'ember', 'tolaboard/config/environment'], function (exports, _ember, _tolaboardConfigEnvironment) {
 	exports['default'] = _ember['default'].Service.extend({
 
 		routing: _ember['default'].inject.service('-routing'),
@@ -2573,7 +2586,7 @@ define('tolaboard/services/session', ['exports', 'ember'], function (exports, _e
 			return new Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "POST",
-					url: '//localhost:2021/auth',
+					url: _tolaboardConfigEnvironment['default'].API.url + '/auth',
 					headers: {
 						"Content-Type": "application/json",
 						"Authorization": googleToken
@@ -2607,7 +2620,7 @@ define('tolaboard/services/session', ['exports', 'ember'], function (exports, _e
 			return new Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "POST",
-					url: '//localhost:2021/auth/session'
+					url: _tolaboardConfigEnvironment['default'].API.url + '/auth/session'
 				}). /*headers: { 
         	"Content-Type": "application/json",
         	"Authorization": googleToken
@@ -2659,7 +2672,7 @@ define('tolaboard/services/session', ['exports', 'ember'], function (exports, _e
 			return new Promise(function (resolve, reject) {
 				_ember['default'].$.ajax({
 					method: "POST",
-					url: '//localhost:2021/auth/session'
+					url: _tolaboardConfigEnvironment['default'].API.url + '/auth/session'
 					/* NOTE: header with token handled by ajax-prefilter.js initializer */
 
 				}).then(function (data) {
@@ -6825,7 +6838,7 @@ catch(err) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("tolaboard/app")["default"].create({"name":"tolaboard","version":"0.0.0+"});
+  require("tolaboard/app")["default"].create({"name":"tolaboard","version":"0.0.0+7fcedd72"});
 }
 
 /* jshint ignore:end */

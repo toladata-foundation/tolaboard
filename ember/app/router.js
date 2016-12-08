@@ -28,4 +28,8 @@ Router.map(function() {
   this.route('login');
 });
 
+Router.reopen({
+  location: 'hash'
+});
+
 export default Router;
