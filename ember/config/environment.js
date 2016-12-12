@@ -18,8 +18,11 @@ module.exports = function(environment) {
       // when it is created
     },
 
+    // http://188.166.7.21:3000 is the test server API
+    // http://localhost:2021 ==> local dev server
     API: {
-      url: 'http://188.166.7.21:3000'
+      url: 'http://localhost:2021',
+      previewSize: 20 // num of records to show in preview
     }
   };
 

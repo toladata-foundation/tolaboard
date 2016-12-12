@@ -6,7 +6,7 @@ export default Ember.Route.extend({
 	session: Ember.inject.service(),
 	beforeModel: function() {
 		
-		if(this.get('session').isLoggedIn === "false") {
+		if(this.get('session').isLoggedIn === false) {
 			this.transitionTo('login');
 		}
 
@@ -32,7 +32,7 @@ export default Ember.Route.extend({
 
 		// data sources and graph options are same for all routes
 		modelObj.set('datasources',this.store.findAll('datasource'));
-		// modelObj.set('graphOptions',this.store.findAll('graph-option'));
+		// smodelObj.set('graphOptions',this.store.findAll('graph-option'));
 		modelObj.set('boards', this.store.findAll('board'));
 
 		/* if this is the new route, create blank board */

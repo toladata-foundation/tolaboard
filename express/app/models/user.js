@@ -58,6 +58,10 @@ module.exports.findByUserId = function(userId,callback) {
 	var query = { userId: userId };
 	User.findOne(query, callback);
 }
+module.exports.findByGoogleId = function(googleId,callback) {
+	var query = { googleId: googleId };
+	User.findOne(query, callback);
+}
 // create new user (POST)
 module.exports.createUser = function(user, callback) {
 	User.create(user, callback);

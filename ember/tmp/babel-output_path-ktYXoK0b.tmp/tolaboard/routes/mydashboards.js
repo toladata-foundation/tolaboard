@@ -2,12 +2,11 @@ define('tolaboard/routes/mydashboards', ['exports', 'ember'], function (exports,
 	exports['default'] = _ember['default'].Route.extend({
 
 		session: _ember['default'].inject.service(),
-		store: _ember['default'].inject.service()
-
+		beforeModel: function beforeModel() {
+			var session = this.get('session');
+			if (session.isLoggedIn === false) {
+				this.transitionTo('login');
+			}
+		}
 	});
 });
-/*afterModel: function() {	
-	this.set('ownerBoards', this.get('store').query('board', {policy: 'owner'}));
-	this.set('sharedBoards', this.get('store').query('board', {policy: 'view'}));
-	this.set('updateBoards', this.get('store').query('board', {policy: 'update'}));
-}*/

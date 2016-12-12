@@ -60,6 +60,26 @@ export default Ember.Service.extend({
 
 	},
 
+	selectPreview(sourceId, rowCount) {
+		// use sourceId to retrieve data, but limit to rowCount
+		return new Ember.RSVP.Promise((resolve, reject)=>{
+	      Ember.$.ajax({
+	        method: "GET",
+	        url: ENV.API.url + '/api/data/' + sourceId
+	      }).then((data)=>{	        
+	      	// data is our raw response from Tables
+	      	var result = JSON.parse(data).data.slice(0,20);
+	      	/* if filters array has any elements, use key/val pairs to remove
+	      	record from results */
+
+	        resolve(result)
+	      }, ()=>{
+	        reject('data aggregator selectPreview promise failed')
+	      })
+	    })
+
+	},
+
 	oneDimensionGroupKeys: function(data, filterArr, groupField) {
 		return d3.set(data.map(function(d) { 
 			return d[groupField]; 

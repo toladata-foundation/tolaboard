@@ -6,6 +6,9 @@
    graph component which each viz type has a definition for in the components/graph 
    folder.
 
+   Note: This component needs to handle cases where the widget is newly created and empty (like designer),
+   AND, in cases where the widget is pre-defined by a stored Tolaboard (dashboard-view)
+
    Component flow:
    tolaboard-designer (parent to this component)
    		render-tolaboard-item (this component)
@@ -54,28 +57,29 @@ export default Ember.Component.extend({
     
 
 	didRender() {
-		console.log('render tb item didRender invoked')
-		/* new tb item needs to have widget updated for where gridster just placed this */
-		var newWidget = Ember.$('.gridster ul')
-							 .gridster().data('gridster')
-							 .serialize()[this.get('index')];
+		// console.log(this)
+		// console.log('render tb item didRender invoked', this);
+		/* new tb item needs to have widget updated for where gridster just placed this, but we don't
+		want to update tbItemConfig if that's where the widget just came from... only new items */
 
-		newWidget = Ember.Object.create(newWidget);		
-		this.get('tbItemConfig').set('widget',newWidget)
+		/* Need to keep Ember widget and tbItemConfig widget data to sync */
+		this.get('actions').syncWidgetData(this);
+		/*var gridsterWidget = Ember.$('.gridster ul').gridster().data('gridster').serialize()[this.get('index')];
+
+		this.get('tbItemConfig').widget.row = gridsterWidget.row;
+		this.get('tbItemConfig').widget.col = gridsterWidget.col;
+		this.get('tbItemConfig').widget.size_x = gridsterWidget.size_x;
+		this.get('tbItemConfig').widget.size_y = gridsterWidget.size_y;*/
+
+		/*console.log('tbItem WIDGET==>',this.get('tbItemConfig').widget);
+		console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[this.get('index')])*/
 	},
 
 
 	didInsertElement() {
-		console.log('render component this', this.get('index'));
-		console.log('tbItemConfig in render',this.get('tbItemConfig'))
-		// console.log('render item index:',this.get('index'));
 
+		try {
 		
-		
-		
-		
-
-	
 		/* Same issue here as with tolaboard-item component. Using the higher level API
 		   doesn't work for ember because it appends the li to the ".gridster ul" selector.
 		   Need to append to ember view piece by piece like in tb-item
@@ -87,6 +91,7 @@ export default Ember.Component.extend({
 		// normally don't need in ES6, but we do for gridster and Ember integration
 		var thisIndex = this.get('index');
 		console.log('thisIndex===>',thisIndex)
+
 		var thisItem = this;
 
 		var grid = Ember.$('.gridster ul');
@@ -101,37 +106,45 @@ export default Ember.Component.extend({
 		           our Ember app's tbItemConfig which is our data representation 
 		           of a TolaBoard component. Below handles widget property */
 		        resize: { enabled: true,
-		        		  stop(e,ui,$widget) {
-		        		  	console.log('thisIndex==>',thisIndex)
-		        		  	console.log('e==>',e)
+		        		  stop(e,ui,$widget) {	
+		        		  	console.log('$widget==>',$widget.data())
+		        		  	// thisItem.get('actions').syncWidgetData(thisItem);
+		        		  	// console.log('thisItem', thisItem)
+		        		  	/*console.log('e==>',e)
 		        		  	console.log('ui==>',ui)
 		        		  	console.log('$widget==>',$widget)
+		        		  	console.log('thisItem', thisItem)*/
 		        		  	// need to update tbItemConfig.widget using gridster api and index
-		        		  	var updatedWidget = Ember.$('.gridster ul')
+		        		  	// var widgetIndex = $widget.data().index;
+		        		  	/*var updatedWidget = Ember.$('.gridster ul')
 		        		  	                    .gridster().data('gridster')
-		        		  	                    .serialize()[thisIndex];
+		        		  	                    .serialize()[widgetIndex];
+		        		  	var updatedWidget = $widget.data();
 		        		  	updatedWidget = Ember.Object.create(updatedWidget);
 		        		  	
-		        		  	thisItem.get('tbItemConfig').set('widget',updatedWidget)
-		        		  	console.log('gridster change on widget ',thisIndex);
-		        		  	console.log('new grid', Ember.$('.gridster ul')
-		        		  	                    .gridster().data('gridster')
-		        		  	                    .serialize())
+		        		  	thisItem.get('tbItemConfig').set('widget',updatedWidget)*/
+		        		  	
 		        		  }},
 		        draggable: { 		        		  
-		        		  stop(e,ui,$widget) {
-		        		  	console.log('thisIndex',thisIndex)
+		        		  stop(e,ui) {
+		        		  	console.log('$widget==>',Ember.$(e.target).data())
+		        		  	// thisItem.get('actions').syncWidgetData(thisItem);
+		        		  	// console.log('thisItem', thisItem)
+		        		  	// makes no sense... $widget not passed into draggable stop, only on resize
+		        		  	// e.target with jQuery duplicates, though
+		        		  	/*console.log('e==>',e)
+		        		  	console.log('ui==>',ui)
+		        		  	console.log('$widget==>',Ember.$(e.target))*/
 		        		  	// need to update tbItemConfig.widget using gridster api and index
-		        		  	var updatedWidget = Ember.$('.gridster ul')
+		        		  	// var widgetIndex = Ember.$(e.target).data().index;
+		        		  	/*var updatedWidget = Ember.$('.gridster ul')
 		        		  	                    .gridster().data('gridster')
-		        		  	                    .serialize()[thisIndex];
+		        		  	                    .serialize()[widgetIndex];*/
+		        		  	/*var updatedWidget = Ember.$(e.target).data();
 		        		  	updatedWidget = Ember.Object.create(updatedWidget);
 		        		  	
-		        		  	thisItem.get('tbItemConfig').set('widget',updatedWidget)
-		        		  	console.log('gridster change on widget ',thisIndex);
-		        		  	console.log('new grid', Ember.$('.gridster ul')
-		        		  	                    .gridster().data('gridster')
-		        		  	                    .serialize())
+		        		  	thisItem.get('tbItemConfig').set('widget',updatedWidget)*/
+		        		  	
 		        		  }}
 		});
 				
@@ -161,6 +174,8 @@ export default Ember.Component.extend({
 		// .empty_cells(col, row, size_x, size_y);
 		// grid.empty_cells(1, 1, 2, 2);
 		var widget = this.get('tbItemConfig').widget;
+		/*console.log('tbItem WIDGET==>',widget);
+		console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[thisIndex])*/
 
 		// add attrs that will activate css so grid is positioned and sized
 		Ember.$(thisView).attr({
@@ -174,7 +189,7 @@ export default Ember.Component.extend({
 		// console.log('grid ', grid);
 		
 		grid.$widgets = grid.$widgets.add(thisView);
-		console.log('grid widgets',grid.$widgets);
+		// console.log('grid widgets',grid.$widgets);
 
 		// register
 		grid.register_widget($(thisView));
@@ -193,7 +208,13 @@ export default Ember.Component.extend({
         	the component graph for this particular renders using 100% window width
         	instead of the width of the widget. */
         // this.set('scopeGraph', this.get('tbItemConfig').graph.component);
-		
+	
+    	} // end try
+
+    	catch(err) {
+    		console.log('didInsert error ',err)
+    	}
+ 
 	},
 
 	/* willDestroyElement called by the ember run-time when the component is about to
@@ -268,6 +289,19 @@ export default Ember.Component.extend({
 			this.destroyElement();		
 			
 
+		},
+
+		syncWidgetData(item) {
+
+			var gridsterWidget = Ember.$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')];
+
+			item.get('tbItemConfig').widget.row = gridsterWidget.row;
+			item.get('tbItemConfig').widget.col = gridsterWidget.col;
+			item.get('tbItemConfig').widget.size_x = gridsterWidget.size_x;
+			item.get('tbItemConfig').widget.size_y = gridsterWidget.size_y;
+
+			console.log('tbItem WIDGET==>',item.get('tbItemConfig').widget);
+			console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')])
 		}
 	}
 });

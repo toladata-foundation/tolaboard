@@ -27,7 +27,7 @@ export default Ember.Component.extend({
 	didInsertElement() {	
 		console.log('tb-designer object',this);	
 
-		
+
 
 
 		// see if model contains valid tolaboard
@@ -102,14 +102,30 @@ export default Ember.Component.extend({
 			/* if the dynamic segment for the route is 'new', then
 			   we have an emplty dashboard, with no items. Need to have items
 			   be an empty array in this case*/
-			var obj = Ember.Object.create({
+			/*var obj = Ember.Object.create({
 					"widget": Ember.Object.create({"col":1,"row":1,"size_x":2,"size_y":2}),
 					"graph":  Ember.Object.create({})
+				});*/
+
+				var obj = {
+					"widget": {"col":1,"row":1,"size_x":2,"size_y":2},
+					"graph":  {}
 				});
 			
 
 			// push new dashboard item into model.items
 			this.get('model').get('currBoard').get('items').pushObject(obj);
+
+			// since we pushed an element to the UI, we need to update underlying
+			// tbConfigItem object
+			var newIndxex = this.get('model').currBoard.items.length-1;
+			/*
+			var newWidget = Ember.$('.gridster ul')
+							 .gridster().data('gridster')
+							 .serialize()[newIndex];
+
+			newWidget = Ember.Object.create(newWidget);		*/
+			// this.get('model').get('currBoard').get('items')[newIndex].set('widget',newWidget);
 
 			// console.log('curItems', curItems);
 			// curItems.pushObject(obj);

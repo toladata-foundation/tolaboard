@@ -2,6 +2,7 @@
 var mongoose = require('mongoose');
 var User = require('../models/user');
 var express = require('express');
+var config = require('../config');
 
 var app = express();
 
@@ -9,12 +10,6 @@ var testUser = {"userId": "twall",
 					"email": "twall@mercycorps.org",
 					"fName": "Tom",
 					"lName": "Wall",
-					"createDate": "10/10/2016"
-				};
-var testUser2 = {"userId": "mwall",
-					"email": "mwall@mercycorps.org",
-					"fName": "Megan",
-					"lName": "Gerhardt",
 					"createDate": "10/10/2016"
 				};
 var callback = function(err, data) {
@@ -25,20 +20,11 @@ var callback = function(err, data) {
 		process.exit()
 	}
 
-mongoose.connect('mongodb://localhost/tolaboard');
+var conStr = 'mongodb://' + config.mongoUser + ':' + config.mongoPassword + config.mongoUri; 
+mongoose.connect(conStr);
 var db = mongoose.connection;
 
 // var cTest = userModel.createUser(testUser2, callback);
 
-User.find({email: 'twall@mercycorps.org'}, function(err, data) {
-		if(err) {
-			throw err;
-		}
-		if(data.length>0)
-		{
-			// found
-		} else {
-			
-		}
-		process.exit()
-	});
+// User.findByGoogleId('102796170459547869801',callback);
+User.findByUserId('twall', callback)

@@ -60,6 +60,25 @@ define('tolaboard/services/data-aggregator', ['exports', 'ember', 'tolaboard/con
 			});
 		},
 
+		selectPreview: function selectPreview(sourceId, rowCount) {
+			// use sourceId to retrieve data, but limit to rowCount
+			return new _ember['default'].RSVP.Promise(function (resolve, reject) {
+				_ember['default'].$.ajax({
+					method: "GET",
+					url: _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + sourceId
+				}).then(function (data) {
+					// data is our raw response from Tables
+					var result = JSON.parse(data).data.slice(0, 20);
+					/* if filters array has any elements, use key/val pairs to remove
+     record from results */
+
+					resolve(result);
+				}, function () {
+					reject('data aggregator selectPreview promise failed');
+				});
+			});
+		},
+
 		oneDimensionGroupKeys: function oneDimensionGroupKeys(data, filterArr, groupField) {
 			return d3.set(data.map(function (d) {
 				return d[groupField];

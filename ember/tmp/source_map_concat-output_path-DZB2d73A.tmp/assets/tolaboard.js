@@ -175,10 +175,11 @@ define('tolaboard/components/geojson-layer', ['exports', 'ember-leaflet/componen
     }
   });
 });
-define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], function (exports, _ember) {
+define('tolaboard/components/graph-builder-widget', ['exports', 'ember', 'tolaboard/config/environment'], function (exports, _ember, _tolaboardConfigEnvironment) {
 	exports['default'] = _ember['default'].Component.extend({
 
 		store: _ember['default'].inject.service(),
+		dataAgg: _ember['default'].inject.service('data-aggregator'),
 
 		showDataSourcePreview: false,
 		showVizSelection: false,
@@ -209,7 +210,7 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 		// wanted to log these hooks running to understand Ember better
 		// Ember calls these methods
 		didInsertElement: function didInsertElement() {
-			console.log('gbw this ', this);
+			// console.log('gbw this ',this);
 			// create empty object to use as placeholder for tbItemConfig
 
 			// this.set('graphOptionsCopy', Ember.Object.create(this.get('graphOptions')));
@@ -234,23 +235,23 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 			/* Ideally, you make use of Ember stores, adapters and serializers here,
       but data is very dynamic, so no model exists... using AJAX via .getJSON() */
 			getData: function getData(dataSourceId) {
-				this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);
+				try {
+					this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);
 
-				// this is working... updating scopeData property in callback
-				var url = 'http://localhost:2021/api/data/' + dataSourceId;
-				this.set('dataSourceUrl', url);
-				this.set('showDataSourcePreview', true);
-				var self = this;
-				_ember['default'].$.getJSON(url, function (data) {
-					var finalData = JSON.parse(data).data;
-					finalData.forEach(function (d) {
-						d.row_count = 1;
+					// this is working... updating scopeData property in callback
+					var url = _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + dataSourceId;
+					this.set('dataSourceUrl', url);
+					this.set('showDataSourcePreview', true);
+					var self = this;
+
+					var tablesPreview = this.get('dataAgg').selectPreview(dataSourceId, _tolaboardConfigEnvironment['default'].API.previewSize);
+					tablesPreview.then(function (result) {
+						self.set('previewData', result);
+						self.set('showVizSelection', true);
 					});
-					self.set('scopeData', finalData);
-					self.set('showVizSelection', true);
-
-					console.log('scopeData', self.get('scopeData'));
-				});
+				} catch (err) {
+					console.log('Data retrieval error: ', err);
+				}
 			},
 
 			/* Handles updating the data bound to the dropdown area. When a graph
@@ -274,41 +275,36 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 
 			tryGraphRender: function tryGraphRender(selectedField) {
 
-				// define/update tbItemConfig.graph.dataModel
-				// this.get('tbItemConfig').graph.set('dataModel', this.get('scopeDataModel'));
-				// this.get('tbItemConfigTemp').get('graph').set('dataModel', this.get('scopeDataModel'));
+				try {
 
-				// destroy any previously generated graphs
-				this.set('renderGraph', false);
+					// destroy any previously generated graphs
+					this.set('renderGraph', false);
 
-				// kind of hacky, but gets the data model field name
-				var dataModelFieldName = event.target.name;
+					// kind of hacky, but gets the data model field name
+					var dataModelFieldName = event.target.name;
 
-				// first figure out if there's an existing graph, if so, remove it
-				if (this.get('renderGraph')) {}
-				// possibly remove this				
+					// update the data model with assignments
+					_ember['default'].set(this.get('tbItemConfigTemp').get('graph').get('dataModel').findBy('name', dataModelFieldName), 'assigned', selectedField);
 
-				// update the data model with assignments
-				_ember['default'].set(this.get('tbItemConfigTemp').get('graph').get('dataModel').findBy('name', dataModelFieldName), 'assigned', selectedField);
+					var requiredFields = this.get('tbItemConfigTemp').graph.dataModel.filter(function (item) {
+						return item.required === true;
+					}).map(function (d) {
+						return d.assigned.length;
+					});
 
-				var requiredFields = this.get('tbItemConfigTemp').graph.dataModel.filter(function (item) {
-					return item.required === true;
-				}).map(function (d) {
-					return d.assigned.length;
-				});
-
-				if (requiredFields.indexOf(0) === -1) {
-					console.log('renderGraph now being set to true');
-					// this.set('renderGraph',true);
-					var self = this;
-					setTimeout(function () {
-						self.set('renderGraph', true);
-						self.set('showDataFilters', true);
-					}, 250);
-					this.set('disableSave', false);
-					// this.set('scopeComponent','graphs/chartjs-bar');	
-					// this.set('scopeComponent', this.get('graphOptions')[this.scopeGraphID].component);
-					// this.actions.showGraphDataModel(this.get('graphOptions')[this.scopeGraphID]);
+					if (requiredFields.indexOf(0) === -1) {
+						console.log('renderGraph now being set to true');
+						// this.set('renderGraph',true);
+						var self = this;
+						setTimeout(function () {
+							self.set('renderGraph', true);
+							self.set('showDataFilters', true);
+						}, 250);
+						this.set('disableSave', false);
+					}
+				} //end try
+				catch (err) {
+					console.log('Graph render attempt failed with error: ', err);
 				}
 			},
 
@@ -875,8 +871,71 @@ define('tolaboard/components/graphs/test-graph', ['exports', 'ember'], function 
 		didInsertElement: function didInsertElement() {
 
 			console.log('TEST GRAPH containing tbItemConfig ===> ', this);
-
 			var config = this.get('tbItemConfig').graph.config;
+
+			/* chart.js pie graph config template */
+			var newConfig = {
+				type: "pie",
+				data: {
+					labels: [], // ==> needs defined
+					datasets: [{
+						data: [18, 19, 20], // ==> need defined
+						backgroundColor: "teal"
+					}]
+				},
+				options: {}
+			};
+
+			var queryObj = { url: this.get('dataSourceUrl'),
+				groupName: this.get('scopeDataModel')[0].assigned,
+				sumName: this.get('scopeDataModel')[1].assigned };
+
+			$.getJSON(queryObj.url, function (data) {
+				data = JSON.parse(data);
+
+				var nest = d3.nest().key(function (d) {
+					return d[queryObj.groupName];
+				}).rollup(function (rows) {
+					return d3.sum(rows, function (d) {
+						return d[queryObj.sumName];
+					});
+				}).entries(data.data);
+
+				// return nest;
+				console.log('data from getJSON', data);
+				console.log('nest', nest);
+
+				var labelArr = nest.map(function (d) {
+					return d.key;
+				});
+				var dataArr = nest.map(function (d) {
+					return d.value;
+				});
+
+				var barConfig = _ember['default'].Object.create({
+					type: "bar",
+					data: _ember['default'].Object.create({
+						labels: labelArr,
+						datasets: [_ember['default'].Object.create({
+							data: dataArr,
+							backgroundColor: "#00afaa"
+						})]
+					}),
+					options: {}
+				});
+
+				console.log('barConfig', barConfig);
+
+				// var graph = new Chart(this.get('element'), fooConfig);
+
+				var ctx = self.$('canvas');
+
+				ctx.resize(function () {
+					'resize detected';
+				});
+
+				var testChart = new Chart(ctx, barConfig);
+			});
 			/* so rendering inside the widget seemed to just involve grabbing the 
       element, and using jquery to then get the canvas object 
    	   We used the lower level gridster api to allow ember to place the UI
@@ -889,18 +948,34 @@ define('tolaboard/components/graphs/test-graph', ['exports', 'ember'], function 
       of the ember view and gridster li element. 
    	   So... to make a graph render inside a widget, we need to update the
       data underlying the dynamic component call to the graph*/
-			var ctx = this.$('canvas');
 
-			ctx.resize(function () {
-				'resize detected';
-			});
-
-			var testChart = new Chart(ctx, config);
-			console.log('TEST CHART', testChart);
+			/*var ctx = this.$('canvas');
+   
+   ctx.resize(function() {
+   	'resize detected';
+   });
+   	var testChart = new Chart(ctx, config);
+   console.log('TEST CHART',testChart)*/
 		}
 
 	});
 });
+/* Every graph component is responsible for defining its own 
+   tbItemConfig.graph.config property using the tbItemConfig value passed in
+	
+	"config": {
+			"type": "pie",
+			"data": {
+				"labels": ["Prague", "Budapest", "Berlin"],
+				"datasets": [{
+					"data": [18,19,20],
+					"backgroundColor": "teal"
+				}]
+			},
+			"options": {}
+		}
+	}
+*/
 define('tolaboard/components/head-content', ['exports', 'ember', 'tolaboard/templates/head'], function (exports, _ember, _tolaboardTemplatesHead) {
   exports['default'] = _ember['default'].Component.extend({
     tagName: '',
@@ -1039,126 +1114,156 @@ define('tolaboard/components/render-tolaboard-item', ['exports', 'ember'], funct
 		}),
 
 		didRender: function didRender() {
-			console.log('render tb item didRender invoked');
-			/* new tb item needs to have widget updated for where gridster just placed this */
-			var newWidget = _ember['default'].$('.gridster ul').gridster().data('gridster').serialize()[this.get('index')];
+			// console.log(this)
+			// console.log('render tb item didRender invoked', this);
+			/* new tb item needs to have widget updated for where gridster just placed this, but we don't
+   want to update tbItemConfig if that's where the widget just came from... only new items */
 
-			newWidget = _ember['default'].Object.create(newWidget);
-			this.get('tbItemConfig').set('widget', newWidget);
+			/* Need to keep Ember widget and tbItemConfig widget data to sync */
+			this.get('actions').syncWidgetData(this);
+			/*var gridsterWidget = Ember.$('.gridster ul').gridster().data('gridster').serialize()[this.get('index')];
+   	this.get('tbItemConfig').widget.row = gridsterWidget.row;
+   this.get('tbItemConfig').widget.col = gridsterWidget.col;
+   this.get('tbItemConfig').widget.size_x = gridsterWidget.size_x;
+   this.get('tbItemConfig').widget.size_y = gridsterWidget.size_y;*/
+
+			/*console.log('tbItem WIDGET==>',this.get('tbItemConfig').widget);
+   console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[this.get('index')])*/
 		},
 
 		didInsertElement: function didInsertElement() {
-			console.log('render component this', this.get('index'));
-			console.log('tbItemConfig in render', this.get('tbItemConfig'));
-			// console.log('render item index:',this.get('index'));
 
-			/* Same issue here as with tolaboard-item component. Using the higher level API
-      doesn't work for ember because it appends the li to the ".gridster ul" selector.
-      Need to append to ember view piece by piece like in tb-item
-   		   */
-			// console.log('render component this',this);
-			var el = _ember['default'].$(this.get('element'));
+			try {
 
-			// normally don't need in ES6, but we do for gridster and Ember integration
-			var thisIndex = this.get('index');
-			console.log('thisIndex===>', thisIndex);
-			var thisItem = this;
+				/* Same issue here as with tolaboard-item component. Using the higher level API
+       doesn't work for ember because it appends the li to the ".gridster ul" selector.
+       Need to append to ember view piece by piece like in tb-item
+    		   */
+				// console.log('render component this',this);
+				var el = _ember['default'].$(this.get('element'));
 
-			var grid = _ember['default'].$('.gridster ul');
+				// normally don't need in ES6, but we do for gridster and Ember integration
+				var thisIndex = this.get('index');
+				console.log('thisIndex===>', thisIndex);
 
-			// var assignIndex = Ember.$(grid.data('gridster').$widgets[thisIndex]).data('index',thisIndex);
+				var thisItem = this;
 
-			/* Defines default gridster widget size*/
-			grid.gridster({
-				widget_margins: [5, 5],
-				widget_base_dimensions: [140, 140],
-				/* on resize or drag events, need to sync gridster data object with 
-       our Ember app's tbItemConfig which is our data representation 
-       of a TolaBoard component. Below handles widget property */
-				resize: { enabled: true,
-					stop: function stop(e, ui, $widget) {
-						console.log('thisIndex==>', thisIndex);
-						console.log('e==>', e);
-						console.log('ui==>', ui);
-						console.log('$widget==>', $widget);
-						// need to update tbItemConfig.widget using gridster api and index
-						var updatedWidget = _ember['default'].$('.gridster ul').gridster().data('gridster').serialize()[thisIndex];
-						updatedWidget = _ember['default'].Object.create(updatedWidget);
+				var grid = _ember['default'].$('.gridster ul');
 
-						thisItem.get('tbItemConfig').set('widget', updatedWidget);
-						console.log('gridster change on widget ', thisIndex);
-						console.log('new grid', _ember['default'].$('.gridster ul').gridster().data('gridster').serialize());
-					} },
-				draggable: {
-					stop: function stop(e, ui, $widget) {
-						console.log('thisIndex', thisIndex);
-						// need to update tbItemConfig.widget using gridster api and index
-						var updatedWidget = _ember['default'].$('.gridster ul').gridster().data('gridster').serialize()[thisIndex];
-						updatedWidget = _ember['default'].Object.create(updatedWidget);
+				// var assignIndex = Ember.$(grid.data('gridster').$widgets[thisIndex]).data('index',thisIndex);
 
-						thisItem.get('tbItemConfig').set('widget', updatedWidget);
-						console.log('gridster change on widget ', thisIndex);
-						console.log('new grid', _ember['default'].$('.gridster ul').gridster().data('gridster').serialize());
-					} }
-			});
+				/* Defines default gridster widget size*/
+				grid.gridster({
+					widget_margins: [5, 5],
+					widget_base_dimensions: [140, 140],
+					/* on resize or drag events, need to sync gridster data object with 
+        our Ember app's tbItemConfig which is our data representation 
+        of a TolaBoard component. Below handles widget property */
+					resize: { enabled: true,
+						stop: function stop(e, ui, $widget) {
+							console.log('$widget==>', $widget.data());
+							// thisItem.get('actions').syncWidgetData(thisItem);
+							// console.log('thisItem', thisItem)
+							/*console.log('e==>',e)
+       console.log('ui==>',ui)
+       console.log('$widget==>',$widget)
+       console.log('thisItem', thisItem)*/
+							// need to update tbItemConfig.widget using gridster api and index
+							// var widgetIndex = $widget.data().index;
+							/*var updatedWidget = Ember.$('.gridster ul')
+                           .gridster().data('gridster')
+                           .serialize()[widgetIndex];
+       var updatedWidget = $widget.data();
+       updatedWidget = Ember.Object.create(updatedWidget);
+       
+       thisItem.get('tbItemConfig').set('widget',updatedWidget)*/
+						} },
+					draggable: {
+						stop: function stop(e, ui) {
+							console.log('$widget==>', _ember['default'].$(e.target).data());
+							// thisItem.get('actions').syncWidgetData(thisItem);
+							// console.log('thisItem', thisItem)
+							// makes no sense... $widget not passed into draggable stop, only on resize
+							// e.target with jQuery duplicates, though
+							/*console.log('e==>',e)
+       console.log('ui==>',ui)
+       console.log('$widget==>',Ember.$(e.target))*/
+							// need to update tbItemConfig.widget using gridster api and index
+							// var widgetIndex = Ember.$(e.target).data().index;
+							/*var updatedWidget = Ember.$('.gridster ul')
+                           .gridster().data('gridster')
+                           .serialize()[widgetIndex];*/
+							/*var updatedWidget = Ember.$(e.target).data();
+       updatedWidget = Ember.Object.create(updatedWidget);
+       
+       thisItem.get('tbItemConfig').set('widget',updatedWidget)*/
+						} }
+				});
 
-			// API object for dynamic
-			grid = grid.gridster().data('gridster');
+				// API object for dynamic
+				grid = grid.gridster().data('gridster');
 
-			// if itemMutable is false...
-			if (!this.get('itemMutable')) {
+				// if itemMutable is false...
+				if (!this.get('itemMutable')) {
 
-				// disable grid dragging, resizing
-				grid.disable();
-				grid.disable_resize();
-				_ember['default'].$('.gridster ul').gridster({ resize: { enabled: false } });
-				_ember['default'].$('.gridster li').css('cursor', 'pointer');
+					// disable grid dragging, resizing
+					grid.disable();
+					grid.disable_resize();
+					_ember['default'].$('.gridster ul').gridster({ resize: { enabled: false } });
+					_ember['default'].$('.gridster li').css('cursor', 'pointer');
+				}
+
+				// get the .hbs template for this instance of the component, set it to thisView
+				var thisView = this.get('element').childNodes[0];
+				/* above line doesn't work because no li was added during the view
+       we could assume an li needs to be added, then follow through as before
+       i mean, if edit mode is used, we need that same view with the edit/delete buttons*/
+				// var thisView = this.get('element');
+
+				/* NEW APPROACH USING LOW-LEVEL GRIDSTER API'S */
+
+				// .empty_cells(col, row, size_x, size_y);
+				// grid.empty_cells(1, 1, 2, 2);
+				var widget = this.get('tbItemConfig').widget;
+				/*console.log('tbItem WIDGET==>',widget);
+    console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[thisIndex])*/
+
+				// add attrs that will activate css so grid is positioned and sized
+				_ember['default'].$(thisView).attr({
+					'data-col': widget['col'],
+					'data-row': widget['row'],
+					'data-sizex': widget['size_x'],
+					'data-sizey': widget['size_y']
+				}).addClass('gs-w');
+
+				// add to $widgets object
+				// console.log('grid ', grid);
+
+				grid.$widgets = grid.$widgets.add(thisView);
+				// console.log('grid widgets',grid.$widgets);
+
+				// register
+				grid.register_widget($(thisView));
+
+				// remaining bits
+				grid.add_faux_rows(2);
+				grid.set_dom_grid_width();
+				grid.set_dom_grid_height();
+				grid.drag_api.set_limits(grid.cols * grid.min_widget_width);
+
+				// now define scopeGraph
+				/* This is not advised, and throws a warning in the error console. Ember wants
+    	you to use a computed property within the component level object. However, 
+    	this doesn't seem to work well since we need the component's view to be 
+    	rendered entirely before assign a value to the scopeGraph. Otherwise, 
+    	the component graph for this particular renders using 100% window width
+    	instead of the width of the widget. */
+				// this.set('scopeGraph', this.get('tbItemConfig').graph.component);
+			} // end try
+
+			catch (err) {
+				console.log('didInsert error ', err);
 			}
-
-			// get the .hbs template for this instance of the component, set it to thisView
-			var thisView = this.get('element').childNodes[0];
-			/* above line doesn't work because no li was added during the view
-      we could assume an li needs to be added, then follow through as before
-      i mean, if edit mode is used, we need that same view with the edit/delete buttons*/
-			// var thisView = this.get('element');
-
-			/* NEW APPROACH USING LOW-LEVEL GRIDSTER API'S */
-
-			// .empty_cells(col, row, size_x, size_y);
-			// grid.empty_cells(1, 1, 2, 2);
-			var widget = this.get('tbItemConfig').widget;
-
-			// add attrs that will activate css so grid is positioned and sized
-			_ember['default'].$(thisView).attr({
-				'data-col': widget['col'],
-				'data-row': widget['row'],
-				'data-sizex': widget['size_x'],
-				'data-sizey': widget['size_y']
-			}).addClass('gs-w');
-
-			// add to $widgets object
-			// console.log('grid ', grid);
-
-			grid.$widgets = grid.$widgets.add(thisView);
-			console.log('grid widgets', grid.$widgets);
-
-			// register
-			grid.register_widget($(thisView));
-
-			// remaining bits
-			grid.add_faux_rows(2);
-			grid.set_dom_grid_width();
-			grid.set_dom_grid_height();
-			grid.drag_api.set_limits(grid.cols * grid.min_widget_width);
-
-			// now define scopeGraph
-			/* This is not advised, and throws a warning in the error console. Ember wants
-   	you to use a computed property within the component level object. However, 
-   	this doesn't seem to work well since we need the component's view to be 
-   	rendered entirely before assign a value to the scopeGraph. Otherwise, 
-   	the component graph for this particular renders using 100% window width
-   	instead of the width of the widget. */
-			// this.set('scopeGraph', this.get('tbItemConfig').graph.component);
 		},
 
 		/* willDestroyElement called by the ember run-time when the component is about to
@@ -1228,6 +1333,19 @@ define('tolaboard/components/render-tolaboard-item', ['exports', 'ember'], funct
 				/* deleteWidget - as with runGraphBuilderWidget, only needed in edit mode when
        the trashcan button is available. This action destroys the component */
 				this.destroyElement();
+			},
+
+			syncWidgetData: function syncWidgetData(item) {
+
+				var gridsterWidget = _ember['default'].$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')];
+
+				item.get('tbItemConfig').widget.row = gridsterWidget.row;
+				item.get('tbItemConfig').widget.col = gridsterWidget.col;
+				item.get('tbItemConfig').widget.size_x = gridsterWidget.size_x;
+				item.get('tbItemConfig').widget.size_y = gridsterWidget.size_y;
+
+				console.log('tbItem WIDGET==>', item.get('tbItemConfig').widget);
+				console.log(_ember['default'].$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')]);
 			}
 		}
 	});
@@ -1239,6 +1357,9 @@ define('tolaboard/components/render-tolaboard-item', ['exports', 'ember'], funct
    visualization living inside of that widget. The graph is rendered via a child 
    graph component which each viz type has a definition for in the components/graph 
    folder.
+
+   Note: This component needs to handle cases where the widget is newly created and empty (like designer),
+   AND, in cases where the widget is pre-defined by a stored Tolaboard (dashboard-view)
 
    Component flow:
    tolaboard-designer (parent to this component)
@@ -1372,6 +1493,16 @@ define('tolaboard/components/tolaboard-designer', ['exports', 'ember'], function
 
 				// push new dashboard item into model.items
 				this.get('model').get('currBoard').get('items').pushObject(obj);
+
+				// since we pushed an element to the UI, we need to update underlying
+				// tbConfigItem object
+				var newIndxex = this.get('model').currBoard.items.length - 1;
+				/*
+    var newWidget = Ember.$('.gridster ul')
+    				 .gridster().data('gridster')
+    				 .serialize()[newIndex];
+    	newWidget = Ember.Object.create(newWidget);		*/
+				// this.get('model').get('currBoard').get('items')[newIndex].set('widget',newWidget);
 
 				// console.log('curItems', curItems);
 				// curItems.pushObject(obj);
@@ -1679,56 +1810,30 @@ define('tolaboard/components/wms-tile-layer', ['exports', 'ember-leaflet/compone
 define('tolaboard/controllers/application', ['exports', 'ember'], function (exports, _ember) {
 	exports['default'] = _ember['default'].Controller.extend({
 
+		/* "session" in ember isn't some pre-defined piece of functionality. It's just
+     another Ember service. It doesn't persist across app reloads.*/
 		session: _ember['default'].inject.service(),
 		store: _ember['default'].inject.service(),
 
 		/* tolaboards for menu dropdowns */
 
-		/*validateToken(){
-      return new Promise((resolve, reject)=>{
-        Ember.$.ajax({
-          method: "POST",
-          url: '//localhost:2021/session',
-          
-        }).then((data)=>{
-          console.log('data from token validator', data)
-          resolve()
-        }, ()=>{
-          reject('promise rejection')
-        })
-      })
-    },*/
+		/* First off, need to check to see if we have an appToken in our cookies
+     and use it to try and get a session from the 
+  */
 
 		init: function init() {
 			var _this = this;
 
 			this._super.apply(this, arguments);
 
-			window.googleSignOut = function () {
-				var auth2 = gapi.auth2.getAuthInstance();
-				auth2.signOut().then(function () {
-					console.log('User signed out.');
-				});
-			};
-
-			gapi.load('auth2', function () {
-				gapi.auth2.init();
-			});
-			/* token auth */
-			console.log('application.js init invoked');
 			var appToken = Cookies.get('appToken');
 
-			var store = this.get('store');
-			console.log('store...', store);
-			/*this.set('ownerBoards', store.query('board', {policy: 'owner'}));
-   this.set('sharedBoards', store.query('board', {policy: 'view'}));
-   this.set('updateBoards', store.query('board', {policy: 'update'}));*/
-
-			// this.set('editBoards')
-			/* Will not be true when first loading, but will be */
-			if (appToken) {
-
+			if (typeof appToken === 'undefined') {
+				this.transitionToRoute('login');
+			} else {
+				// token exists, attempt to verify with server
 				var result = this.get('session').initializeFromCookie();
+				var store = this.get('store');
 				this.set('ownerBoards', store.query('board', { policy: 'owner' }));
 				this.set('sharedBoards', store.query('board', { policy: 'view' }));
 				this.set('updateBoards', store.query('board', { policy: 'update' }));
@@ -1738,22 +1843,65 @@ define('tolaboard/controllers/application', ['exports', 'ember'], function (expo
 					Cookies.remove('appToken');
 					/*this.set('session','currUser',null)
      this.set('session','isLoggedIn',false)*/
+					console.log('redirect to login');
 					_this.transitionToRoute('login');
 				});
-			} else {
-				/* No token/auth, perform some cleanup, redirect to login*/
-				// console.log('session from application.js', this.get('session'))
-				// cleanup to be sure
-				// console.log('app controller',this)
-				/*this.get('session','currentUser',null)
-    this.set('session','isLoggedIn',false)*/
-				// redirct to where user can authenticate
-				this.transitionToRoute('login');
 			}
+
+			window.googleSignOut = function () {
+				var auth2 = gapi.auth2.getAuthInstance();
+				auth2.signOut().then(function () {
+					console.log('User signed out.');
+				});
+			};
+
+			/*gapi.load('auth2', function() {
+     gapi.auth2.init();
+   });*/
+
+			/* token auth */
+			console.log('application.js init invoked');
+			// var appToken = Cookies.get('appToken');
+
+			// var store = this.get('store');
+			// console.log('store...',store);
+			/*this.set('ownerBoards', store.query('board', {policy: 'owner'}));
+   this.set('sharedBoards', store.query('board', {policy: 'view'}));
+   this.set('updateBoards', store.query('board', {policy: 'update'}));*/
+
+			// this.set('editBoards')
+			/* Will not be true when first loading, but will be */
+			/*if(appToken) {	
+   		var result = this.get('session').initializeFromCookie();
+   	this.set('ownerBoards', store.query('board', {policy: 'owner'}));
+   	this.set('sharedBoards', store.query('board', {policy: 'view'}));
+   	this.set('updateBoards', store.query('board', {policy: 'update'}));
+   	result.then((data)=>{
+   		// this.transitionToRoute('mydashboards')
+   	}, ()=>{
+   		Cookies.remove('appToken')				
+   		this.transitionToRoute('login')
+   	})
+   	
+   		
+   	} else { 			
+   	// console.log('session from application.js', this.get('session'))
+   	// cleanup to be sure
+   	// console.log('app controller',this)
+   	// this.get('session','currentUser',null)
+   	// this.set('session','isLoggedIn',false)
+   	// redirct to where user can authenticate
+   	this.transitionToRoute('login')
+   	}*/
 		}
 	});
 });
-/* applicaiton.js controller is for application level processes needed when the app loads */
+/* applicaiton.js controller is for application level processes needed when the app loads 
+
+   This code runs whenever the application is loaded via linking to the app, or
+   refreshing the browser. Use this area for code that needs to run once, regardless
+   of the entry point/route into the app.
+*/
 define('tolaboard/controllers/dashboards', ['exports', 'ember'], function (exports, _ember) {
 	exports['default'] = _ember['default'].Controller.extend({
 		showDesigner: false,
@@ -1911,7 +2059,7 @@ define('tolaboard/initializers/ajax-prefilter', ['exports'], function (exports) 
 
       var token = Cookies.get('appToken');
 
-      if (token) {
+      if (typeof token !== 'undefined') {
         jqXHR.setRequestHeader('xhrFields', { withCredentials: true });
         jqXHR.setRequestHeader('Authorization', token);
       } else {
@@ -2230,6 +2378,11 @@ define('tolaboard/router', ['exports', 'ember', 'tolaboard/config/environment'],
     this.route('login');
   });
 
+  /* Forces a hash in the URL for routing. You need this if you want routing from the 
+  server to direct traffic to "pages" or anchors other than index. Otherwise, you get 
+  404's due to the route/file not existing on the server. You can also accomplish this 
+  by having server traffic direct to index.html/#/route-name for all "other" routes. 
+  The app needs to bootstrap, and that only happens through root. */
   Router.reopen({
     location: 'hash'
   });
@@ -2239,8 +2392,14 @@ define('tolaboard/router', ['exports', 'ember', 'tolaboard/config/environment'],
 define('tolaboard/routes/dashboard-view', ['exports', 'ember'], function (exports, _ember) {
 	exports['default'] = _ember['default'].Route.extend({
 
+		session: _ember['default'].inject.service(),
+		beforeModel: function beforeModel() {
+			var session = this.get('session');
+			if (session.isLoggedIn === false) {
+				this.transitionTo('login');
+			}
+		},
 		model: function model(params) {
-
 			return this.store.findRecord('board', params.board_id);
 		}
 	});
@@ -2251,7 +2410,7 @@ define('tolaboard/routes/dashboards', ['exports', 'ember'], function (exports, _
 		session: _ember['default'].inject.service(),
 		beforeModel: function beforeModel() {
 
-			if (this.get('session').isLoggedIn === "false") {
+			if (this.get('session').isLoggedIn === false) {
 				this.transitionTo('login');
 			}
 		},
@@ -2274,7 +2433,7 @@ define('tolaboard/routes/dashboards', ['exports', 'ember'], function (exports, _
 
 			// data sources and graph options are same for all routes
 			modelObj.set('datasources', this.store.findAll('datasource'));
-			// modelObj.set('graphOptions',this.store.findAll('graph-option'));
+			// smodelObj.set('graphOptions',this.store.findAll('graph-option'));
 			modelObj.set('boards', this.store.findAll('board'));
 
 			/* if this is the new route, create blank board */
@@ -2361,22 +2520,29 @@ define('tolaboard/routes/dashboards', ['exports', 'ember'], function (exports, _
 define('tolaboard/routes/datasources', ['exports', 'ember'], function (exports, _ember) {
 	exports['default'] = _ember['default'].Route.extend({
 
-		/*session: Ember.inject.service(),
-  beforeModel: function() {
-  	console.log('beforeModel in application.js')
-  	if(this.get('session').isLoggedIn === "false") {
-  		this.transitionTo('login');
-  	}
-  }*/
-
+		session: _ember['default'].inject.service(),
+		beforeModel: function beforeModel() {
+			var session = this.get('session');
+			if (session.isLoggedIn === false) {
+				this.transitionTo('login');
+			}
+		},
 		model: function model() {
-
 			return this.store.findAll('datasource');
 		}
 	});
 });
 define('tolaboard/routes/graph-options', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Route.extend({});
+	exports['default'] = _ember['default'].Route.extend({
+
+		session: _ember['default'].inject.service(),
+		beforeModel: function beforeModel() {
+			var session = this.get('session');
+			if (session.isLoggedIn === false) {
+				this.transitionTo('login');
+			}
+		}
+	});
 });
 define('tolaboard/routes/login', ['exports', 'ember', 'ember-inject-script'], function (exports, _ember, _emberInjectScript) {
 	exports['default'] = _ember['default'].Route.extend({
@@ -2430,17 +2596,25 @@ define('tolaboard/routes/mydashboards', ['exports', 'ember'], function (exports,
 	exports['default'] = _ember['default'].Route.extend({
 
 		session: _ember['default'].inject.service(),
-		store: _ember['default'].inject.service()
-
+		beforeModel: function beforeModel() {
+			var session = this.get('session');
+			if (session.isLoggedIn === false) {
+				this.transitionTo('login');
+			}
+		}
 	});
 });
-/*afterModel: function() {	
-	this.set('ownerBoards', this.get('store').query('board', {policy: 'owner'}));
-	this.set('sharedBoards', this.get('store').query('board', {policy: 'view'}));
-	this.set('updateBoards', this.get('store').query('board', {policy: 'update'}));
-}*/
 define('tolaboard/routes/sharedboards', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Route.extend({});
+	exports['default'] = _ember['default'].Route.extend({
+
+		session: _ember['default'].inject.service(),
+		beforeModel: function beforeModel() {
+			var session = this.get('session');
+			if (session.isLoggedIn === false) {
+				this.transitionTo('login');
+			}
+		}
+	});
 });
 define("tolaboard/serializers/board", ["exports", "ember-data"], function (exports, _emberData) {
 	exports["default"] = _emberData["default"].RESTSerializer.extend({
@@ -2531,6 +2705,25 @@ define('tolaboard/services/data-aggregator', ['exports', 'ember', 'tolaboard/con
 					resolve(result);
 				}, function () {
 					reject('data aggregator selectWhere promise failed');
+				});
+			});
+		},
+
+		selectPreview: function selectPreview(sourceId, rowCount) {
+			// use sourceId to retrieve data, but limit to rowCount
+			return new _ember['default'].RSVP.Promise(function (resolve, reject) {
+				_ember['default'].$.ajax({
+					method: "GET",
+					url: _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + sourceId
+				}).then(function (data) {
+					// data is our raw response from Tables
+					var result = JSON.parse(data).data.slice(0, 20);
+					/* if filters array has any elements, use key/val pairs to remove
+     record from results */
+
+					resolve(result);
+				}, function () {
+					reject('data aggregator selectPreview promise failed');
 				});
 			});
 		},
@@ -3433,7 +3626,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           morphs[1] = dom.createMorphAt(dom.childAt(fragment, [3]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "partial", [["get", "templates/partials/spinner", ["loc", [null, [27, 13], [27, 39]]]]], [], ["loc", [null, [27, 3], [27, 41]]]], ["inline", "json-2-table", [], ["displayData", ["subexpr", "@mut", [["get", "scopeData", ["loc", [null, [29, 31], [29, 40]]]]], [], []], "showVizSelection", ["subexpr", "@mut", [["get", "showVizSelection", ["loc", [null, [29, 58], [29, 74]]]]], [], []]], ["loc", [null, [29, 4], [29, 76]]]]],
+        statements: [["inline", "partial", [["get", "templates/partials/spinner", ["loc", [null, [27, 13], [27, 39]]]]], [], ["loc", [null, [27, 3], [27, 41]]]], ["inline", "json-2-table", [], ["displayData", ["subexpr", "@mut", [["get", "previewData", ["loc", [null, [29, 31], [29, 42]]]]], [], []], "showVizSelection", ["subexpr", "@mut", [["get", "showVizSelection", ["loc", [null, [29, 60], [29, 76]]]]], [], []]], ["loc", [null, [29, 4], [29, 78]]]]],
         locals: [],
         templates: []
       };
@@ -3704,7 +3897,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
             morphs[3] = dom.createMorphAt(element10, 3, 3);
             return morphs;
           },
-          statements: [["content", "fieldInput.label", ["loc", [null, [67, 10], [67, 30]]]], ["attribute", "name", ["get", "fieldInput.name", ["loc", [null, [68, 22], [68, 37]]]]], ["attribute", "onchange", ["subexpr", "action", ["tryGraphRender"], ["value", "target.value"], ["loc", [null, [68, 49], [68, 98]]]]], ["block", "each-in", [["get", "scopeData.0", ["loc", [null, [70, 19], [70, 32]]]]], [], 0, null, ["loc", [null, [70, 8], [72, 20]]]]],
+          statements: [["content", "fieldInput.label", ["loc", [null, [67, 10], [67, 30]]]], ["attribute", "name", ["get", "fieldInput.name", ["loc", [null, [68, 22], [68, 37]]]]], ["attribute", "onchange", ["subexpr", "action", ["tryGraphRender"], ["value", "target.value"], ["loc", [null, [68, 49], [68, 98]]]]], ["block", "each-in", [["get", "previewData.0", ["loc", [null, [70, 19], [70, 34]]]]], [], 0, null, ["loc", [null, [70, 8], [72, 20]]]]],
           locals: ["fieldInput"],
           templates: [child0]
         };
@@ -3776,7 +3969,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
               "column": 3
             },
             "end": {
-              "line": 90,
+              "line": 89,
               "column": 3
             }
           },
@@ -3789,12 +3982,6 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
           var el1 = dom.createTextNode("			");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("h6");
-          var el2 = dom.createTextNode("renderGraph area");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n			");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("div");
           dom.setAttribute(el1, "class", "row");
@@ -3818,10 +4005,10 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
           var morphs = new Array(1);
-          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [3, 1]), 1, 1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 1]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "component", [["get", "scopeComponent", ["loc", [null, [87, 16], [87, 30]]]]], ["dataSourceUrl", ["subexpr", "@mut", [["get", "dataSourceUrl", ["loc", [null, [87, 45], [87, 58]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfigTemp", ["loc", [null, [87, 72], [87, 88]]]]], [], []]], ["loc", [null, [87, 4], [87, 90]]]]],
+        statements: [["inline", "component", [["get", "scopeComponent", ["loc", [null, [86, 16], [86, 30]]]]], ["dataSourceUrl", ["subexpr", "@mut", [["get", "dataSourceUrl", ["loc", [null, [86, 45], [86, 58]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfigTemp", ["loc", [null, [86, 72], [86, 88]]]]], [], []]], ["loc", [null, [86, 4], [86, 90]]]]],
         locals: [],
         templates: []
       };
@@ -4031,7 +4218,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 93,
+              "line": 92,
               "column": 3
             },
             "end": {
@@ -4074,6 +4261,13 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           var el5 = dom.createTextNode("Add Filter");
           dom.appendChild(el4, el5);
           dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n							");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("h6");
+          dom.setAttribute(el4, "style", "color: red; float:left;");
+          var el5 = dom.createTextNode(" Filters not actually applied, yet");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
           var el4 = dom.createTextNode("\n						");
           dom.appendChild(el3, el4);
           dom.appendChild(el2, el3);
@@ -4105,7 +4299,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           morphs[1] = dom.createMorphAt(dom.childAt(fragment, [3]), 1, 1);
           return morphs;
         },
-        statements: [["element", "action", ["addFilter"], [], ["loc", [null, [98, 61], [98, 83]]]], ["block", "each", [["get", "filters", ["loc", [null, [103, 12], [103, 19]]]]], [], 0, null, ["loc", [null, [103, 4], [126, 14]]]]],
+        statements: [["element", "action", ["addFilter"], [], ["loc", [null, [97, 61], [97, 83]]]], ["block", "each", [["get", "filters", ["loc", [null, [103, 12], [103, 19]]]]], [], 0, null, ["loc", [null, [103, 4], [126, 14]]]]],
         locals: [],
         templates: [child0]
       };
@@ -4342,7 +4536,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
         morphs[10] = dom.createElementMorph(element20);
         return morphs;
       },
-      statements: [["attribute", "id", ["concat", [["get", "dataTarget", ["loc", [null, [3, 30], [3, 40]]]]]]], ["attribute", "onchange", ["subexpr", "action", ["getData"], ["value", "target.value"], ["loc", [null, [17, 60], [17, 102]]]]], ["block", "each", [["get", "model.datasources", ["loc", [null, [19, 12], [19, 29]]]]], [], 0, null, ["loc", [null, [19, 4], [21, 13]]]], ["block", "if", [["get", "showDataSourcePreview", ["loc", [null, [26, 9], [26, 30]]]]], [], 1, null, ["loc", [null, [26, 3], [31, 10]]]], ["block", "if", [["get", "showVizSelection", ["loc", [null, [36, 9], [36, 25]]]]], [], 2, null, ["loc", [null, [36, 3], [56, 10]]]], ["block", "if", [["get", "showDataModel", ["loc", [null, [60, 9], [60, 22]]]]], [], 3, null, ["loc", [null, [60, 3], [80, 10]]]], ["block", "if", [["get", "renderGraph", ["loc", [null, [83, 9], [83, 20]]]]], [], 4, null, ["loc", [null, [83, 3], [90, 10]]]], ["block", "if", [["get", "showDataFilters", ["loc", [null, [93, 9], [93, 24]]]]], [], 5, null, ["loc", [null, [93, 3], [128, 10]]]], ["element", "action", ["closeGBW"], [], ["loc", [null, [135, 78], [135, 99]]]], ["attribute", "disabled", ["get", "disableSave", ["loc", [null, [136, 28], [136, 39]]]]], ["element", "action", ["saveBoardItem"], [], ["loc", [null, [136, 42], [136, 68]]]]],
+      statements: [["attribute", "id", ["concat", [["get", "dataTarget", ["loc", [null, [3, 30], [3, 40]]]]]]], ["attribute", "onchange", ["subexpr", "action", ["getData"], ["value", "target.value"], ["loc", [null, [17, 60], [17, 102]]]]], ["block", "each", [["get", "model.datasources", ["loc", [null, [19, 12], [19, 29]]]]], [], 0, null, ["loc", [null, [19, 4], [21, 13]]]], ["block", "if", [["get", "showDataSourcePreview", ["loc", [null, [26, 9], [26, 30]]]]], [], 1, null, ["loc", [null, [26, 3], [31, 10]]]], ["block", "if", [["get", "showVizSelection", ["loc", [null, [36, 9], [36, 25]]]]], [], 2, null, ["loc", [null, [36, 3], [56, 10]]]], ["block", "if", [["get", "showDataModel", ["loc", [null, [60, 9], [60, 22]]]]], [], 3, null, ["loc", [null, [60, 3], [80, 10]]]], ["block", "if", [["get", "renderGraph", ["loc", [null, [83, 9], [83, 20]]]]], [], 4, null, ["loc", [null, [83, 3], [89, 10]]]], ["block", "if", [["get", "showDataFilters", ["loc", [null, [92, 9], [92, 24]]]]], [], 5, null, ["loc", [null, [92, 3], [128, 10]]]], ["element", "action", ["closeGBW"], [], ["loc", [null, [135, 78], [135, 99]]]], ["attribute", "disabled", ["get", "disableSave", ["loc", [null, [136, 28], [136, 39]]]]], ["element", "action", ["saveBoardItem"], [], ["loc", [null, [136, 42], [136, 68]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4, child5]
     };
@@ -4966,13 +5160,14 @@ define("tolaboard/templates/components/render-tolaboard-item", ["exports"], func
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
         var element2 = dom.childAt(fragment, [0]);
-        var morphs = new Array(3);
-        morphs[0] = dom.createMorphAt(dom.childAt(element2, [1]), 1, 1);
-        morphs[1] = dom.createMorphAt(element2, 5, 5);
-        morphs[2] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        var morphs = new Array(4);
+        morphs[0] = dom.createAttrMorph(element2, 'data-index');
+        morphs[1] = dom.createMorphAt(dom.childAt(element2, [1]), 1, 1);
+        morphs[2] = dom.createMorphAt(element2, 5, 5);
+        morphs[3] = dom.createMorphAt(fragment, 2, 2, contextualElement);
         return morphs;
       },
-      statements: [["block", "if", [["get", "itemMutable", ["loc", [null, [3, 8], [3, 19]]]]], [], 0, null, ["loc", [null, [3, 2], [7, 9]]]], ["block", "if", [["get", "toggleRender", ["loc", [null, [10, 7], [10, 19]]]]], [], 1, null, ["loc", [null, [10, 1], [14, 8]]]], ["inline", "graph-builder-widget", [], ["model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [19, 13], [19, 18]]]]], [], []], "index", ["subexpr", "@mut", [["get", "index", ["loc", [null, [20, 13], [20, 18]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfig", ["loc", [null, [21, 20], [21, 32]]]]], [], []], "updateSaveBoardItem", "updateSaveBoardItem"], ["loc", [null, [18, 0], [22, 50]]]]],
+      statements: [["attribute", "data-index", ["concat", [["get", "index", ["loc", [null, [1, 18], [1, 23]]]]]]], ["block", "if", [["get", "itemMutable", ["loc", [null, [3, 8], [3, 19]]]]], [], 0, null, ["loc", [null, [3, 2], [7, 9]]]], ["block", "if", [["get", "toggleRender", ["loc", [null, [10, 7], [10, 19]]]]], [], 1, null, ["loc", [null, [10, 1], [14, 8]]]], ["inline", "graph-builder-widget", [], ["model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [19, 13], [19, 18]]]]], [], []], "index", ["subexpr", "@mut", [["get", "index", ["loc", [null, [20, 13], [20, 18]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfig", ["loc", [null, [21, 20], [21, 32]]]]], [], []], "updateSaveBoardItem", "updateSaveBoardItem"], ["loc", [null, [18, 0], [22, 50]]]]],
       locals: [],
       templates: [child0, child1]
     };
@@ -5765,14 +5960,14 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
               "column": 6
             },
             "end": {
-              "line": 19,
+              "line": 20,
               "column": 6
             }
           },
           "moduleName": "tolaboard/templates/dashboard-view.hbs"
         },
         isEmpty: false,
-        arity: 1,
+        arity: 2,
         cachedFragment: null,
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
@@ -5781,7 +5976,7 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("	\n");
+          var el1 = dom.createTextNode("	\n							\n");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -5790,8 +5985,8 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "render-tolaboard-item", [], ["itemMutable", false, "tbItemConfig", ["subexpr", "@mut", [["get", "tbItem", ["loc", [null, [18, 62], [18, 68]]]]], [], []]], ["loc", [null, [18, 7], [18, 70]]]]],
-        locals: ["tbItem"],
+        statements: [["inline", "render-tolaboard-item", [], ["index", ["subexpr", "@mut", [["get", "index", ["loc", [null, [18, 37], [18, 42]]]]], [], []], "itemMutable", false, "tbItemConfig", ["subexpr", "@mut", [["get", "tbItem", ["loc", [null, [18, 74], [18, 80]]]]], [], []], "model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [18, 87], [18, 92]]]]], [], []]], ["loc", [null, [18, 7], [18, 94]]]]],
+        locals: ["tbItem", "index"],
         templates: []
       };
     })();
@@ -5808,7 +6003,7 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 25,
+            "line": 26,
             "column": 10
           }
         },
@@ -5882,7 +6077,7 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
         morphs[1] = dom.createMorphAt(dom.childAt(element0, [5, 1]), 1, 1);
         return morphs;
       },
-      statements: [["content", "model.title", ["loc", [null, [14, 8], [14, 23]]]], ["block", "each", [["get", "model.items", ["loc", [null, [17, 14], [17, 25]]]]], [], 0, null, ["loc", [null, [17, 6], [19, 15]]]]],
+      statements: [["content", "model.title", ["loc", [null, [14, 8], [14, 23]]]], ["block", "each", [["get", "model.items", ["loc", [null, [17, 14], [17, 25]]]]], [], 0, null, ["loc", [null, [17, 6], [20, 15]]]]],
       locals: [],
       templates: [child0]
     };
@@ -6838,7 +7033,7 @@ catch(err) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("tolaboard/app")["default"].create({"name":"tolaboard","version":"0.0.0+7fcedd72"});
+  require("tolaboard/app")["default"].create({"name":"tolaboard","version":"0.0.0+f78bcefe"});
 }
 
 /* jshint ignore:end */

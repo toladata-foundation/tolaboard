@@ -28,6 +28,11 @@ Router.map(function() {
   this.route('login');
 });
 
+/* Forces a hash in the URL for routing. You need this if you want routing from the 
+server to direct traffic to "pages" or anchors other than index. Otherwise, you get 
+404's due to the route/file not existing on the server. You can also accomplish this 
+by having server traffic direct to index.html/#/route-name for all "other" routes. 
+The app needs to bootstrap, and that only happens through root. */
 Router.reopen({
   location: 'hash'
 });

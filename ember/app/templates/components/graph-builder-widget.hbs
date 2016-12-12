@@ -26,7 +26,7 @@
 			{{#if showDataSourcePreview}}
 			{{partial templates/partials/spinner}}
 			<div class="row data-preview animated fadeIn" style="width: 80%; height:150px;overflow:auto; border: 1px solid #ccc;">	
-				{{json-2-table displayData=scopeData showVizSelection=showVizSelection}}
+				{{json-2-table displayData=previewData showVizSelection=showVizSelection}}
 			</div>
 			{{/if}}
 
@@ -67,7 +67,7 @@
 						<h5>{{fieldInput.label}}:</h5>
 							<select name={{fieldInput.name}} onchange={{action 'tryGraphRender' value="target.value" }} class="form-control">
 									<option value=""></option>
-								{{#each-in scopeData.[0] as |colName index|}}
+								{{#each-in previewData.[0] as |colName index|}}
 									<option value={{colName}}>{{colName}}</option>
 								{{/each-in}}
 							</select>
@@ -80,8 +80,7 @@
 			{{/if}}
 
 			<!-- Moment of truth... graph time!! -->
-			{{#if renderGraph}}
-			<h6>renderGraph area</h6>
+			{{#if renderGraph}}			
 			<div class="row">
 				<div class="col-md-8 gbw-graph">
 				{{component scopeComponent dataSourceUrl=dataSourceUrl tbItemConfig=tbItemConfigTemp}}
@@ -96,6 +95,7 @@
 				  		<div style="margin-top: 20px;">
 							<h4 style="float:left;">Add Filters (Optional)</h4>
 							<button style="margin-top:0;" class="btn btn-default" {{action 'addFilter'}}>Add Filter</button>
+							<h6 style="color: red; float:left;"> Filters not actually applied, yet</h6>
 						</div>
 					</div>
 				</div>				

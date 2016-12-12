@@ -7,7 +7,7 @@ define('tolaboard/initializers/ajax-prefilter', ['exports'], function (exports) 
 
       var token = Cookies.get('appToken');
 
-      if (token) {
+      if (typeof token !== 'undefined') {
         jqXHR.setRequestHeader('xhrFields', { withCredentials: true });
         jqXHR.setRequestHeader('Authorization', token);
       } else {

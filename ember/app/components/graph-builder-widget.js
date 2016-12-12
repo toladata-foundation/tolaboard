@@ -4,10 +4,12 @@ Needs to open clean with newly added widgets, and open pre-populated when
 a graph already exists in the rendered tb item that called it.
 */
 import Ember from 'ember';
+import ENV from '../config/environment';
 
 export default Ember.Component.extend({
 	
 	store: Ember.inject.service(),
+	dataAgg: Ember.inject.service('data-aggregator'),
 
 	showDataSourcePreview: false,
 	showVizSelection: false,
@@ -40,7 +42,7 @@ export default Ember.Component.extend({
 	// wanted to log these hooks running to understand Ember better
 	// Ember calls these methods
 	didInsertElement() {		
-		console.log('gbw this ',this);
+		// console.log('gbw this ',this);
 		// create empty object to use as placeholder for tbItemConfig
 
 		// this.set('graphOptionsCopy', Ember.Object.create(this.get('graphOptions')));
@@ -66,22 +68,25 @@ export default Ember.Component.extend({
 		/* Ideally, you make use of Ember stores, adapters and serializers here,
 		   but data is very dynamic, so no model exists... using AJAX via .getJSON() */
 		getData(dataSourceId) {
-			this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);			
+			try {
+				this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);			
 
-			// this is working... updating scopeData property in callback
-			var url = 'http://localhost:2021/api/data/' + dataSourceId;
-			this.set('dataSourceUrl', url);
-			this.set('showDataSourcePreview',true);
-			var self = this;
-			Ember.$.getJSON(url, function(data) {
-				var finalData = JSON.parse(data).data;
-				finalData.forEach(function(d) { d.row_count=1 });
-				self.set('scopeData', finalData);
-				self.set('showVizSelection',true);	
+				// this is working... updating scopeData property in callback
+				var url = ENV.API.url + '/api/data/' + dataSourceId;
+				this.set('dataSourceUrl', url);
+				this.set('showDataSourcePreview',true);
+				var self = this;
+				
+				var tablesPreview = this.get('dataAgg').selectPreview(dataSourceId, ENV.API.previewSize);		
+				tablesPreview.then(function(result) {
+					self.set('previewData', result);
+					self.set('showVizSelection',true);	
 
-				console.log('scopeData',self.get('scopeData'))
-
-			});			
+				});
+			}
+			catch(err) {
+				console.log('Data retrieval error: ',err);
+			}
 
 		},
 
@@ -109,21 +114,14 @@ export default Ember.Component.extend({
 
 		tryGraphRender(selectedField) {
 
-			// define/update tbItemConfig.graph.dataModel
-			// this.get('tbItemConfig').graph.set('dataModel', this.get('scopeDataModel'));
-			// this.get('tbItemConfigTemp').get('graph').set('dataModel', this.get('scopeDataModel'));
+			try	{
 
 			// destroy any previously generated graphs
 			this.set('renderGraph', false);
 
 			// kind of hacky, but gets the data model field name
 			var dataModelFieldName = event.target.name;
-
-			// first figure out if there's an existing graph, if so, remove it
-			if(this.get('renderGraph')) {
-				// possibly remove this				
-			}
-
+			
 			// update the data model with assignments
 			Ember.set(this.get('tbItemConfigTemp').get('graph').get('dataModel')
 				 .findBy('name',dataModelFieldName), 'assigned',selectedField);
@@ -143,12 +141,12 @@ export default Ember.Component.extend({
 					self.set('showDataFilters',true);
 				}, 250);
 				this.set('disableSave', false);
-				// this.set('scopeComponent','graphs/chartjs-bar');	
-				// this.set('scopeComponent', this.get('graphOptions')[this.scopeGraphID].component);
-				// this.actions.showGraphDataModel(this.get('graphOptions')[this.scopeGraphID]);
 			}
 
-			
+			} //end try
+			catch(err) {
+				console.log('Graph render attempt failed with error: ', err);
+			}
 
 		},
 

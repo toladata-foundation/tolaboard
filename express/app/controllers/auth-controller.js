@@ -39,18 +39,43 @@ router.post('/', function(req, res) {
             console.log(body)           
 
             // temporary until we connect to users model and verify
-            if(body.hd === 'mercycorps.org' || body.email.split('@')[1] === 'gmail.com') {
+            /* lookup user in db, and if they're legit, let'm in */
+            if(body.hd === 'mercycorps.org') {
 
               body.userId = body.email.split('@')[0];
 
-              var appToken = jwt.sign({
-                data: body
-              }, config.cikrit, { expiresIn: '30d' });
+              // verify userId
+              User.findByUserId(body.userId, function(err, userData) {
+                // some error when trying to obtain user
+                if(err) {
+                  res.statusCode = 403;
+                  res.json({error: err});
+                }
+                // no errors, grant user session
+                console.log('find user result..', userData === null)
+                if(userData !== null) {
+                  var appToken = jwt.sign({
+                  data: body
+                  }, config.cikrit, { expiresIn: '30d' });
+
+                  body.appToken = appToken;
+                  res.statusCode = 200;
+                  res.json(body);
+                }
+                else {
+                  res.statusCode = 403;             
+                  res.json({"error": "Not a valid"});
+                }
+                
+
+                
 
 
-              body.appToken = appToken;
-              res.statusCode = 200;
-              res.json(body);
+
+
+              });
+
+              
                     
             } else {
               // valid google account, but not MC

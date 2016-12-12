@@ -1,7 +1,8 @@
-define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], function (exports, _ember) {
+define('tolaboard/components/graph-builder-widget', ['exports', 'ember', 'tolaboard/config/environment'], function (exports, _ember, _tolaboardConfigEnvironment) {
 	exports['default'] = _ember['default'].Component.extend({
 
 		store: _ember['default'].inject.service(),
+		dataAgg: _ember['default'].inject.service('data-aggregator'),
 
 		showDataSourcePreview: false,
 		showVizSelection: false,
@@ -32,7 +33,7 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 		// wanted to log these hooks running to understand Ember better
 		// Ember calls these methods
 		didInsertElement: function didInsertElement() {
-			console.log('gbw this ', this);
+			// console.log('gbw this ',this);
 			// create empty object to use as placeholder for tbItemConfig
 
 			// this.set('graphOptionsCopy', Ember.Object.create(this.get('graphOptions')));
@@ -57,23 +58,23 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 			/* Ideally, you make use of Ember stores, adapters and serializers here,
       but data is very dynamic, so no model exists... using AJAX via .getJSON() */
 			getData: function getData(dataSourceId) {
-				this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);
+				try {
+					this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);
 
-				// this is working... updating scopeData property in callback
-				var url = 'http://localhost:2021/api/data/' + dataSourceId;
-				this.set('dataSourceUrl', url);
-				this.set('showDataSourcePreview', true);
-				var self = this;
-				_ember['default'].$.getJSON(url, function (data) {
-					var finalData = JSON.parse(data).data;
-					finalData.forEach(function (d) {
-						d.row_count = 1;
+					// this is working... updating scopeData property in callback
+					var url = _tolaboardConfigEnvironment['default'].API.url + '/api/data/' + dataSourceId;
+					this.set('dataSourceUrl', url);
+					this.set('showDataSourcePreview', true);
+					var self = this;
+
+					var tablesPreview = this.get('dataAgg').selectPreview(dataSourceId, _tolaboardConfigEnvironment['default'].API.previewSize);
+					tablesPreview.then(function (result) {
+						self.set('previewData', result);
+						self.set('showVizSelection', true);
 					});
-					self.set('scopeData', finalData);
-					self.set('showVizSelection', true);
-
-					console.log('scopeData', self.get('scopeData'));
-				});
+				} catch (err) {
+					console.log('Data retrieval error: ', err);
+				}
 			},
 
 			/* Handles updating the data bound to the dropdown area. When a graph
@@ -97,41 +98,36 @@ define('tolaboard/components/graph-builder-widget', ['exports', 'ember'], functi
 
 			tryGraphRender: function tryGraphRender(selectedField) {
 
-				// define/update tbItemConfig.graph.dataModel
-				// this.get('tbItemConfig').graph.set('dataModel', this.get('scopeDataModel'));
-				// this.get('tbItemConfigTemp').get('graph').set('dataModel', this.get('scopeDataModel'));
+				try {
 
-				// destroy any previously generated graphs
-				this.set('renderGraph', false);
+					// destroy any previously generated graphs
+					this.set('renderGraph', false);
 
-				// kind of hacky, but gets the data model field name
-				var dataModelFieldName = event.target.name;
+					// kind of hacky, but gets the data model field name
+					var dataModelFieldName = event.target.name;
 
-				// first figure out if there's an existing graph, if so, remove it
-				if (this.get('renderGraph')) {}
-				// possibly remove this				
+					// update the data model with assignments
+					_ember['default'].set(this.get('tbItemConfigTemp').get('graph').get('dataModel').findBy('name', dataModelFieldName), 'assigned', selectedField);
 
-				// update the data model with assignments
-				_ember['default'].set(this.get('tbItemConfigTemp').get('graph').get('dataModel').findBy('name', dataModelFieldName), 'assigned', selectedField);
+					var requiredFields = this.get('tbItemConfigTemp').graph.dataModel.filter(function (item) {
+						return item.required === true;
+					}).map(function (d) {
+						return d.assigned.length;
+					});
 
-				var requiredFields = this.get('tbItemConfigTemp').graph.dataModel.filter(function (item) {
-					return item.required === true;
-				}).map(function (d) {
-					return d.assigned.length;
-				});
-
-				if (requiredFields.indexOf(0) === -1) {
-					console.log('renderGraph now being set to true');
-					// this.set('renderGraph',true);
-					var self = this;
-					setTimeout(function () {
-						self.set('renderGraph', true);
-						self.set('showDataFilters', true);
-					}, 250);
-					this.set('disableSave', false);
-					// this.set('scopeComponent','graphs/chartjs-bar');	
-					// this.set('scopeComponent', this.get('graphOptions')[this.scopeGraphID].component);
-					// this.actions.showGraphDataModel(this.get('graphOptions')[this.scopeGraphID]);
+					if (requiredFields.indexOf(0) === -1) {
+						console.log('renderGraph now being set to true');
+						// this.set('renderGraph',true);
+						var self = this;
+						setTimeout(function () {
+							self.set('renderGraph', true);
+							self.set('showDataFilters', true);
+						}, 250);
+						this.set('disableSave', false);
+					}
+				} //end try
+				catch (err) {
+					console.log('Graph render attempt failed with error: ', err);
 				}
 			},
 

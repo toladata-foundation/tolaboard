@@ -96,7 +96,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           morphs[1] = dom.createMorphAt(dom.childAt(fragment, [3]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "partial", [["get", "templates/partials/spinner", ["loc", [null, [27, 13], [27, 39]]]]], [], ["loc", [null, [27, 3], [27, 41]]]], ["inline", "json-2-table", [], ["displayData", ["subexpr", "@mut", [["get", "scopeData", ["loc", [null, [29, 31], [29, 40]]]]], [], []], "showVizSelection", ["subexpr", "@mut", [["get", "showVizSelection", ["loc", [null, [29, 58], [29, 74]]]]], [], []]], ["loc", [null, [29, 4], [29, 76]]]]],
+        statements: [["inline", "partial", [["get", "templates/partials/spinner", ["loc", [null, [27, 13], [27, 39]]]]], [], ["loc", [null, [27, 3], [27, 41]]]], ["inline", "json-2-table", [], ["displayData", ["subexpr", "@mut", [["get", "previewData", ["loc", [null, [29, 31], [29, 42]]]]], [], []], "showVizSelection", ["subexpr", "@mut", [["get", "showVizSelection", ["loc", [null, [29, 60], [29, 76]]]]], [], []]], ["loc", [null, [29, 4], [29, 78]]]]],
         locals: [],
         templates: []
       };
@@ -367,7 +367,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
             morphs[3] = dom.createMorphAt(element10, 3, 3);
             return morphs;
           },
-          statements: [["content", "fieldInput.label", ["loc", [null, [67, 10], [67, 30]]]], ["attribute", "name", ["get", "fieldInput.name", ["loc", [null, [68, 22], [68, 37]]]]], ["attribute", "onchange", ["subexpr", "action", ["tryGraphRender"], ["value", "target.value"], ["loc", [null, [68, 49], [68, 98]]]]], ["block", "each-in", [["get", "scopeData.0", ["loc", [null, [70, 19], [70, 32]]]]], [], 0, null, ["loc", [null, [70, 8], [72, 20]]]]],
+          statements: [["content", "fieldInput.label", ["loc", [null, [67, 10], [67, 30]]]], ["attribute", "name", ["get", "fieldInput.name", ["loc", [null, [68, 22], [68, 37]]]]], ["attribute", "onchange", ["subexpr", "action", ["tryGraphRender"], ["value", "target.value"], ["loc", [null, [68, 49], [68, 98]]]]], ["block", "each-in", [["get", "previewData.0", ["loc", [null, [70, 19], [70, 34]]]]], [], 0, null, ["loc", [null, [70, 8], [72, 20]]]]],
           locals: ["fieldInput"],
           templates: [child0]
         };
@@ -439,7 +439,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
               "column": 3
             },
             "end": {
-              "line": 90,
+              "line": 89,
               "column": 3
             }
           },
@@ -452,12 +452,6 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
           var el1 = dom.createTextNode("			");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("h6");
-          var el2 = dom.createTextNode("renderGraph area");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n			");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("div");
           dom.setAttribute(el1, "class", "row");
@@ -481,10 +475,10 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
           var morphs = new Array(1);
-          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [3, 1]), 1, 1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1, 1]), 1, 1);
           return morphs;
         },
-        statements: [["inline", "component", [["get", "scopeComponent", ["loc", [null, [87, 16], [87, 30]]]]], ["dataSourceUrl", ["subexpr", "@mut", [["get", "dataSourceUrl", ["loc", [null, [87, 45], [87, 58]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfigTemp", ["loc", [null, [87, 72], [87, 88]]]]], [], []]], ["loc", [null, [87, 4], [87, 90]]]]],
+        statements: [["inline", "component", [["get", "scopeComponent", ["loc", [null, [86, 16], [86, 30]]]]], ["dataSourceUrl", ["subexpr", "@mut", [["get", "dataSourceUrl", ["loc", [null, [86, 45], [86, 58]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfigTemp", ["loc", [null, [86, 72], [86, 88]]]]], [], []]], ["loc", [null, [86, 4], [86, 90]]]]],
         locals: [],
         templates: []
       };
@@ -694,7 +688,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           "loc": {
             "source": null,
             "start": {
-              "line": 93,
+              "line": 92,
               "column": 3
             },
             "end": {
@@ -737,6 +731,13 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           var el5 = dom.createTextNode("Add Filter");
           dom.appendChild(el4, el5);
           dom.appendChild(el3, el4);
+          var el4 = dom.createTextNode("\n							");
+          dom.appendChild(el3, el4);
+          var el4 = dom.createElement("h6");
+          dom.setAttribute(el4, "style", "color: red; float:left;");
+          var el5 = dom.createTextNode(" Filters not actually applied, yet");
+          dom.appendChild(el4, el5);
+          dom.appendChild(el3, el4);
           var el4 = dom.createTextNode("\n						");
           dom.appendChild(el3, el4);
           dom.appendChild(el2, el3);
@@ -768,7 +769,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
           morphs[1] = dom.createMorphAt(dom.childAt(fragment, [3]), 1, 1);
           return morphs;
         },
-        statements: [["element", "action", ["addFilter"], [], ["loc", [null, [98, 61], [98, 83]]]], ["block", "each", [["get", "filters", ["loc", [null, [103, 12], [103, 19]]]]], [], 0, null, ["loc", [null, [103, 4], [126, 14]]]]],
+        statements: [["element", "action", ["addFilter"], [], ["loc", [null, [97, 61], [97, 83]]]], ["block", "each", [["get", "filters", ["loc", [null, [103, 12], [103, 19]]]]], [], 0, null, ["loc", [null, [103, 4], [126, 14]]]]],
         locals: [],
         templates: [child0]
       };
@@ -1005,7 +1006,7 @@ define("tolaboard/templates/components/graph-builder-widget", ["exports"], funct
         morphs[10] = dom.createElementMorph(element20);
         return morphs;
       },
-      statements: [["attribute", "id", ["concat", [["get", "dataTarget", ["loc", [null, [3, 30], [3, 40]]]]]]], ["attribute", "onchange", ["subexpr", "action", ["getData"], ["value", "target.value"], ["loc", [null, [17, 60], [17, 102]]]]], ["block", "each", [["get", "model.datasources", ["loc", [null, [19, 12], [19, 29]]]]], [], 0, null, ["loc", [null, [19, 4], [21, 13]]]], ["block", "if", [["get", "showDataSourcePreview", ["loc", [null, [26, 9], [26, 30]]]]], [], 1, null, ["loc", [null, [26, 3], [31, 10]]]], ["block", "if", [["get", "showVizSelection", ["loc", [null, [36, 9], [36, 25]]]]], [], 2, null, ["loc", [null, [36, 3], [56, 10]]]], ["block", "if", [["get", "showDataModel", ["loc", [null, [60, 9], [60, 22]]]]], [], 3, null, ["loc", [null, [60, 3], [80, 10]]]], ["block", "if", [["get", "renderGraph", ["loc", [null, [83, 9], [83, 20]]]]], [], 4, null, ["loc", [null, [83, 3], [90, 10]]]], ["block", "if", [["get", "showDataFilters", ["loc", [null, [93, 9], [93, 24]]]]], [], 5, null, ["loc", [null, [93, 3], [128, 10]]]], ["element", "action", ["closeGBW"], [], ["loc", [null, [135, 78], [135, 99]]]], ["attribute", "disabled", ["get", "disableSave", ["loc", [null, [136, 28], [136, 39]]]]], ["element", "action", ["saveBoardItem"], [], ["loc", [null, [136, 42], [136, 68]]]]],
+      statements: [["attribute", "id", ["concat", [["get", "dataTarget", ["loc", [null, [3, 30], [3, 40]]]]]]], ["attribute", "onchange", ["subexpr", "action", ["getData"], ["value", "target.value"], ["loc", [null, [17, 60], [17, 102]]]]], ["block", "each", [["get", "model.datasources", ["loc", [null, [19, 12], [19, 29]]]]], [], 0, null, ["loc", [null, [19, 4], [21, 13]]]], ["block", "if", [["get", "showDataSourcePreview", ["loc", [null, [26, 9], [26, 30]]]]], [], 1, null, ["loc", [null, [26, 3], [31, 10]]]], ["block", "if", [["get", "showVizSelection", ["loc", [null, [36, 9], [36, 25]]]]], [], 2, null, ["loc", [null, [36, 3], [56, 10]]]], ["block", "if", [["get", "showDataModel", ["loc", [null, [60, 9], [60, 22]]]]], [], 3, null, ["loc", [null, [60, 3], [80, 10]]]], ["block", "if", [["get", "renderGraph", ["loc", [null, [83, 9], [83, 20]]]]], [], 4, null, ["loc", [null, [83, 3], [89, 10]]]], ["block", "if", [["get", "showDataFilters", ["loc", [null, [92, 9], [92, 24]]]]], [], 5, null, ["loc", [null, [92, 3], [128, 10]]]], ["element", "action", ["closeGBW"], [], ["loc", [null, [135, 78], [135, 99]]]], ["attribute", "disabled", ["get", "disableSave", ["loc", [null, [136, 28], [136, 39]]]]], ["element", "action", ["saveBoardItem"], [], ["loc", [null, [136, 42], [136, 68]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4, child5]
     };

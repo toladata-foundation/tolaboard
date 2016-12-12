@@ -100,6 +100,16 @@ define('tolaboard/components/tolaboard-designer', ['exports', 'ember'], function
 				// push new dashboard item into model.items
 				this.get('model').get('currBoard').get('items').pushObject(obj);
 
+				// since we pushed an element to the UI, we need to update underlying
+				// tbConfigItem object
+				var newIndxex = this.get('model').currBoard.items.length - 1;
+				/*
+    var newWidget = Ember.$('.gridster ul')
+    				 .gridster().data('gridster')
+    				 .serialize()[newIndex];
+    	newWidget = Ember.Object.create(newWidget);		*/
+				// this.get('model').get('currBoard').get('items')[newIndex].set('widget',newWidget);
+
 				// console.log('curItems', curItems);
 				// curItems.pushObject(obj);
 			},

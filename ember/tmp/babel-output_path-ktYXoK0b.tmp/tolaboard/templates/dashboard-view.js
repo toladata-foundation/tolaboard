@@ -12,14 +12,14 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
               "column": 6
             },
             "end": {
-              "line": 19,
+              "line": 20,
               "column": 6
             }
           },
           "moduleName": "tolaboard/templates/dashboard-view.hbs"
         },
         isEmpty: false,
-        arity: 1,
+        arity: 2,
         cachedFragment: null,
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
@@ -28,7 +28,7 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("	\n");
+          var el1 = dom.createTextNode("	\n							\n");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -37,8 +37,8 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "render-tolaboard-item", [], ["itemMutable", false, "tbItemConfig", ["subexpr", "@mut", [["get", "tbItem", ["loc", [null, [18, 62], [18, 68]]]]], [], []]], ["loc", [null, [18, 7], [18, 70]]]]],
-        locals: ["tbItem"],
+        statements: [["inline", "render-tolaboard-item", [], ["index", ["subexpr", "@mut", [["get", "index", ["loc", [null, [18, 37], [18, 42]]]]], [], []], "itemMutable", false, "tbItemConfig", ["subexpr", "@mut", [["get", "tbItem", ["loc", [null, [18, 74], [18, 80]]]]], [], []], "model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [18, 87], [18, 92]]]]], [], []]], ["loc", [null, [18, 7], [18, 94]]]]],
+        locals: ["tbItem", "index"],
         templates: []
       };
     })();
@@ -55,7 +55,7 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 25,
+            "line": 26,
             "column": 10
           }
         },
@@ -129,7 +129,7 @@ define("tolaboard/templates/dashboard-view", ["exports"], function (exports) {
         morphs[1] = dom.createMorphAt(dom.childAt(element0, [5, 1]), 1, 1);
         return morphs;
       },
-      statements: [["content", "model.title", ["loc", [null, [14, 8], [14, 23]]]], ["block", "each", [["get", "model.items", ["loc", [null, [17, 14], [17, 25]]]]], [], 0, null, ["loc", [null, [17, 6], [19, 15]]]]],
+      statements: [["content", "model.title", ["loc", [null, [14, 8], [14, 23]]]], ["block", "each", [["get", "model.items", ["loc", [null, [17, 14], [17, 25]]]]], [], 0, null, ["loc", [null, [17, 6], [20, 15]]]]],
       locals: [],
       templates: [child0]
     };

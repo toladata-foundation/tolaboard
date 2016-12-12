@@ -1,9 +1,15 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-	
-	model: function(params) {
 
+	session: Ember.inject.service(),
+	beforeModel: function() {		
+		var session = this.get('session');
+		if(session.isLoggedIn === false) {
+			this.transitionTo('login');
+		}
+	},	
+	model: function(params) {		
 		return this.store.findRecord('board', params.board_id);
 	}
 });

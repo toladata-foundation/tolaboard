@@ -173,13 +173,14 @@ define("tolaboard/templates/components/render-tolaboard-item", ["exports"], func
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
         var element2 = dom.childAt(fragment, [0]);
-        var morphs = new Array(3);
-        morphs[0] = dom.createMorphAt(dom.childAt(element2, [1]), 1, 1);
-        morphs[1] = dom.createMorphAt(element2, 5, 5);
-        morphs[2] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        var morphs = new Array(4);
+        morphs[0] = dom.createAttrMorph(element2, 'data-index');
+        morphs[1] = dom.createMorphAt(dom.childAt(element2, [1]), 1, 1);
+        morphs[2] = dom.createMorphAt(element2, 5, 5);
+        morphs[3] = dom.createMorphAt(fragment, 2, 2, contextualElement);
         return morphs;
       },
-      statements: [["block", "if", [["get", "itemMutable", ["loc", [null, [3, 8], [3, 19]]]]], [], 0, null, ["loc", [null, [3, 2], [7, 9]]]], ["block", "if", [["get", "toggleRender", ["loc", [null, [10, 7], [10, 19]]]]], [], 1, null, ["loc", [null, [10, 1], [14, 8]]]], ["inline", "graph-builder-widget", [], ["model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [19, 13], [19, 18]]]]], [], []], "index", ["subexpr", "@mut", [["get", "index", ["loc", [null, [20, 13], [20, 18]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfig", ["loc", [null, [21, 20], [21, 32]]]]], [], []], "updateSaveBoardItem", "updateSaveBoardItem"], ["loc", [null, [18, 0], [22, 50]]]]],
+      statements: [["attribute", "data-index", ["concat", [["get", "index", ["loc", [null, [1, 18], [1, 23]]]]]]], ["block", "if", [["get", "itemMutable", ["loc", [null, [3, 8], [3, 19]]]]], [], 0, null, ["loc", [null, [3, 2], [7, 9]]]], ["block", "if", [["get", "toggleRender", ["loc", [null, [10, 7], [10, 19]]]]], [], 1, null, ["loc", [null, [10, 1], [14, 8]]]], ["inline", "graph-builder-widget", [], ["model", ["subexpr", "@mut", [["get", "model", ["loc", [null, [19, 13], [19, 18]]]]], [], []], "index", ["subexpr", "@mut", [["get", "index", ["loc", [null, [20, 13], [20, 18]]]]], [], []], "tbItemConfig", ["subexpr", "@mut", [["get", "tbItemConfig", ["loc", [null, [21, 20], [21, 32]]]]], [], []], "updateSaveBoardItem", "updateSaveBoardItem"], ["loc", [null, [18, 0], [22, 50]]]]],
       locals: [],
       templates: [child0, child1]
     };
