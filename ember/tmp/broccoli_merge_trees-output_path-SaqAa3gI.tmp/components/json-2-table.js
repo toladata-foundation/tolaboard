@@ -1,1 +1,0 @@
-/Users/tom/mercycorps/repos/tolaboard/ember/app/components/json-2-table.js

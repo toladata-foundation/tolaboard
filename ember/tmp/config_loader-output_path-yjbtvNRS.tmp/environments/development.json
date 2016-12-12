@@ -1,1 +1,0 @@
-{"modulePrefix":"tolaboard","environment":"development","baseURL":"/","locationType":"auto","EmberENV":{"FEATURES":{}},"APP":{"name":"tolaboard","version":"0.0.0+f78bcefe"},"API":{"url":"http://localhost:2021","previewSize":20},"something":"test","exportApplicationGlobal":true}

@@ -1,1 +1,0 @@
-/Users/tom/mercycorps/repos/tolaboard/ember/tmp/broccoli_merge_trees-input_base_path-WXPG78rw.tmp/15/initializers/export-application-global.js

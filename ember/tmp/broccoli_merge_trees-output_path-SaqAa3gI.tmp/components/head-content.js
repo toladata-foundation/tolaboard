@@ -1,1 +1,0 @@
-/Users/tom/mercycorps/repos/tolaboard/ember/node_modules/ember-cli-meta-tags/node_modules/ember-cli-head/app/components/head-content.js
