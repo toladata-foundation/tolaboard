@@ -20,22 +20,25 @@ export default Ember.Controller.extend({
 	*/
 
 
-	init: function() {
+	init: function() {		
 
 		this._super(...arguments);
 
-		var appToken = Cookies.get('appToken');		
+		console.log('application.js init invoked');
 
-		if(typeof(appToken) === 'undefined') {
+		var appToken = Cookies.get('appToken');
+
+		if(typeof(appToken) === 'undefined') {			
 			this.transitionToRoute('login');
 		} else {
-			// token exists, attempt to verify with server
+			// token exists, attempt to verify with server			
 			var result = this.get('session').initializeFromCookie();
 			var store = this.get('store');
 			this.set('ownerBoards', store.query('board', {policy: 'owner'}));
 			this.set('sharedBoards', store.query('board', {policy: 'view'}));
 			this.set('updateBoards', store.query('board', {policy: 'update'}));
 			result.then((data)=>{
+				console.log('data from app init',data)
 				// this.transitionToRoute('mydashboards')
 			}, ()=>{
 				Cookies.remove('appToken')
@@ -56,9 +59,9 @@ export default Ember.Controller.extend({
       	/*gapi.load('auth2', function() {
 	        gapi.auth2.init();
 	      });*/
-      	
+
 		/* token auth */
-		console.log('application.js init invoked')
+		
 		// var appToken = Cookies.get('appToken');
 
 		// var store = this.get('store');

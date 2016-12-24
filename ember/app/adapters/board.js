@@ -1,3 +1,6 @@
+/* Help with adapters... 
+https://www.emberscreencasts.com/posts/110-ember-data-20-essential-adapter-customizations
+*/
 import DS from 'ember-data';
 import ENV from '../config/environment';
 

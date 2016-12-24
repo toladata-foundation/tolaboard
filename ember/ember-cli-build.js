@@ -5,6 +5,26 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     // Add options here
+    emberFroala: {
+      fontAwesome: true,
+      theme: 'gray',
+      lang: 'en_us',
+      /*plugins: [
+        'block_styles',
+        'char_counter', 
+        'colors', 'entities',
+        'file_upload',
+        'font_family',
+        'font_size',
+        'fullscreen',
+        'inline_styles',
+        'lists',
+        'media_manager',
+        'tables',
+        'urls',
+        'video'
+      ]*/
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated
@@ -29,9 +49,8 @@ module.exports = function(defaults) {
   app.import('bower_components/js-cookie/src/js.cookie.js');
   app.import('bower_components/bootstrap/dist/js/bootstrap.min.js');
   app.import('bower_components/gridster/dist/jquery.gridster.min.js');
+  app.import('bower_components/froala-wysiwyg-editor/js/froala_editor.min.js');
   app.import('bower_components/Chart.js/dist/Chart.min.js');
-  // app.import('bower_components/tolagraph/tolagraph.js');
-  // temporary for data aggregation only right now
   app.import('bower_components/d3/d3.min.js');
 
   return app.toTree();

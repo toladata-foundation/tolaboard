@@ -7,7 +7,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>          
-          {{#link-to 'index' class="navbar-brand"}}          
+          {{#link-to 'mydashboards' class="navbar-brand"}}          
             <span class="tola-brand"><i class="fa fa-line-chart"></i> TolaBoard</span>
           {{/link-to}}
 
@@ -17,11 +17,7 @@
           <ul class="nav navbar-nav">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Dashboards <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <!-- <li><a href="/mydashboards">Weekly Snapshot</a></li>
-                <li><a href="/dashboards/1">Beneficiary Info</a></li>
-                <li><a href="/dashboards/2">Refugee Flow</a></li>
-                <li><a href="/dashboards/3">Program Analytics and Insights</a></li> -->
+              <ul class="dropdown-menu">                
                 {{#each ownerBoards as |board|}}
                   <li>{{#link-to 'dashboard-view' board}} {{board.title}} {{/link-to}}</li>
                 {{/each}}
@@ -29,37 +25,26 @@
                 
               </ul>
             </li>
-        <!-- <li><a href="/sharedboards">Shared Dashboards</a></li>
-              <li><a href="/designer">Designer</a></li>
-          <li><a href="/datasources">Data Sources</a></li>       -->
-            <li class="dropdown">
+        
+            <!-- Shared dashboards aren't in scope for this version, but here's
+                 a good starting point for how it would work. See application.js
+                 for control logic. You basically need to get all the boards where
+                 a user has an access policy to read, but not write to the board -->
+
+            <!-- <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Shared Dashboards <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <!-- <li><a href="/mydashboards">Weekly Snapshot</a></li>
-                <li><a href="/dashboards/1">Beneficiary Info</a></li>
-                <li><a href="/dashboards/2">Refugee Flow</a></li>
-                <li><a href="/dashboards/3">Program Analytics and Insights</a></li> -->
                 {{#each sharedBoards as |board|}}
                   <li>{{#link-to 'dashboard-view' board}} {{board.title}} {{/link-to}}</li>
-                {{/each}}
-                
-                
+                {{/each}}                
               </ul>
-            </li>
+            </li> -->
+            
             <li>{{#link-to 'dashboards' 'new'}}Designer{{/link-to}}</li>
             <li>{{#link-to 'datasources'}}Data Sources{{/link-to}}</li>            
           </ul>
-
-          <!-- <ul class="nav navbar navbar-right">
-            <li class="dropdown pull-right">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{session.currentUser.name}} <span class="caret"></span></a>
-              <ul class="nav navbar-nav dropdown-menu navbar-right">
-                <li>Log out</li>
-              </ul>
-            </li>
-          </ul> -->
           
-
+          <!-- LOGOUT DROPDOWN -->          
           <ul class="nav navbar-nav navbar-right user-cntrl-panel">
             <li><img class="img-responsive user" src="{{session.currentUser.picture}}"></li>
             <li class="dropdown">
@@ -77,14 +62,3 @@
 </nav>
 <div class="nav-spacer"></div>
 {{outlet}}
-<!-- <div id="footer"> -->
-            <!-- Sticky Footer -->
-            <!-- <div class="container">
-                <div class="col-md-6 text-left">
-                    <a href="http://www.toladata.com" class="text-muted"><b>Tola</b>Data: Built by</a> <a href="http://www.mercycorps.org" class="text-muted">MercyCorps</a>
-                </div>
-                <div class="col-md-6 text-right">
-                    <a href="http://tola.work/documentation" class="text-muted">Documentation</a> | <a href="http://tola.work/faq" class="text-muted">FAQ</a> | <a href="http://tola.work/helpdesk/tickets/submit/" class="text-muted">Feedback</a> | <a href="https://github.com/toladata/TolaActivity/blob/master/LICENSE" class="text-muted">License</a>
-                </div>
-            </div> -->
-<!-- </div> -->

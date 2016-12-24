@@ -24,7 +24,7 @@ export default Ember.Component.extend({
 
 	didInsertElement: function() {
 
-		console.log('CHARTJS PIE COMPONENT==>',this);
+		// console.log('CHARTJS PIE COMPONENT==>',this);
 
 		var sourceId = this.get('tbItemConfig').graph.source;
 		var dataModel = this.get('tbItemConfig').graph.dataModel;
@@ -69,9 +69,10 @@ export default Ember.Component.extend({
 						}
 			});*/
 
-			self.get('tbItemConfig').get('graph').set('config', pieConfig);
+			// self.get('tbItemConfig').get('graph').set('config', pieConfig);
+			Ember.set(self.get('tbItemConfig').graph, 'config', pieConfig);
 
-			console.log('barConfig', pieConfig);
+			// console.log('barConfig', pieConfig);
 			var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');
 						console.log('ctx', ctx)
 					
@@ -83,7 +84,7 @@ export default Ember.Component.extend({
 
 			// Chart.defaults.global.legend.display = true;
 			var pieChart = new Chart(ctx, pieConfig);
-			console.log('pieChart', pieChart)
+			// console.log('pieChart', pieChart)
 
 
 

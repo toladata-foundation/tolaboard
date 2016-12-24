@@ -17,7 +17,8 @@
 				<select id="data-source-select" name="ds-name" onchange={{action 'getData' value="target.value" }}  class="form-control">
 					<option></option>
 				{{#each model.datasources as |source|}}
-					<option value={{source.id}}>{{source.label}}</option>
+					<option value={{source.id}} 
+					        selected={{isEq source.id selectedSource}}>{{source.label}}</option>
 				{{/each}}
 				</select>					  
 			</div>
@@ -95,7 +96,6 @@
 				  		<div style="margin-top: 20px;">
 							<h4 style="float:left;">Add Filters (Optional)</h4>
 							<button style="margin-top:0;" class="btn btn-default" {{action 'addFilter'}}>Add Filter</button>
-							<h6 style="color: red; float:left;"> Filters not actually applied, yet</h6>
 						</div>
 					</div>
 				</div>				

@@ -11,18 +11,36 @@ export default Ember.Component.extend({
 	store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
 
-	showDataSourcePreview: false,
+
+	showDataSourcePreview: false,	
 	showVizSelection: false,
 	showDataModel: false,
 	renderGraph: false,
 	filters: [],
+	/*dataPreviewVisible: Ember.computed('previewData', ()=>{
+		if(this.hasOwnProperty('previewData')) {
+			this.get('previewData').length
+		}
+	}),*/
+	
+	/* kludgy, but I need the dropdown selected if a data source exists */
+	selectedSource: Ember.computed('tbItemConfig', function() {		
+		if(typeof(this.get('tbItemConfig').graph) !== "undefined") {
+			var retVal = this.get('tbItemConfig').graph.source;			
+		} else retVal = null;
+		console.log('sourceId',retVal)
 
+		return retVal;
+	}),
+	/*showPreviewData: Ember.computed('tbItemConfig', function() {
+		// data 
+	}),*/
 	/* data-target for modals... each item (index) has its own */
 	dataTarget: Ember.computed('index', function() {
     	return 'gbwModal' + this.get('index')
     }),
 
-	graphOptions: Ember.computed('store', function() {
+	graphOptions: Ember.computed('store', function() {		
 		return this.get('store').findAll('graph-option');
 	}),
     
@@ -41,15 +59,35 @@ export default Ember.Component.extend({
 
 	// wanted to log these hooks running to understand Ember better
 	// Ember calls these methods
+	/* Two scenarios for inserting graphBuilderWidget: 
+		1. persisted board (selected source, defined component/model, etc)
+		2. brand new - loads empty, and user is walked through creating graph
+	*/
 	didInsertElement() {		
-		// console.log('gbw this ',this);
-		// create empty object to use as placeholder for tbItemConfig
-
-		// this.set('graphOptionsCopy', Ember.Object.create(this.get('graphOptions')));
-
+		console.log('gbw this ',this);
+		/* regardless of scenario, instantiante temp config as Ember object 
+		   and make sure widget and graph are ember objects */
 		this.set('tbItemConfigTemp', Ember.Object.create());
 		this.get('tbItemConfigTemp').set('widget', Ember.Object.create());
-		this.get('tbItemConfigTemp').set('graph', Ember.Object.create());
+		this.get('tbItemConfigTemp').set('graph', Ember.Object.create());	
+
+		/* scenario 1 */		
+		/*if(typeof(this.get('tbItemConfig').graph) !== 'undefined') {
+			this.get('tbItemConfigTemp').set('widget', this.get('tbItemConfig').widget);
+			this.get('tbItemConfigTemp').set('graph', this.get('tbItemConfig').graph);
+			// attempt to fill in as much as possible
+			if(typeof(this.get('tbItemConfig').graph.source) !== 'undefined') {
+				this.send('getData', this.get('tbItemConfig').graph.source);
+				console.log('found tbItem with data source',this)
+			}
+		} else {
+			// make sure empty widget and graph are Ember objects 
+			this.get('tbItemConfigTemp').set('widget', Ember.Object.create());
+			this.get('tbItemConfigTemp').set('graph', Ember.Object.create());	
+		}*/
+		
+		this.get('tbItemConfigTemp').set('widget', Ember.Object.create());
+		// this.get('tbItemConfigTemp').set('graph', Ember.Object.create());
 		
 		/* if there's a defined tbItemConfig, use it to populate gbw */		
 		/*if(tbItemConfig) {
@@ -68,6 +106,7 @@ export default Ember.Component.extend({
 		/* Ideally, you make use of Ember stores, adapters and serializers here,
 		   but data is very dynamic, so no model exists... using AJAX via .getJSON() */
 		getData(dataSourceId) {
+			console.log('getData called on this', this);
 			try {
 				this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);			
 
@@ -77,7 +116,8 @@ export default Ember.Component.extend({
 				this.set('showDataSourcePreview',true);
 				var self = this;
 				
-				var tablesPreview = this.get('dataAgg').selectPreview(dataSourceId, ENV.API.previewSize);		
+				var tablesPreview = this.get('dataAgg').selectPreview(dataSourceId, ENV.API.previewSize);
+				// var tablesPreview = this.get('dataAgg').offlineTestData();
 				tablesPreview.then(function(result) {
 					self.set('previewData', result);
 					self.set('showVizSelection',true);	
@@ -99,16 +139,17 @@ export default Ember.Component.extend({
 		   This also takes the columns from the selected data set, and uses
 		   them to populate the dropdown boxes */
 		showGraphDataModel(graph) {	
-			// define/update tbItemConfig.graph.component
-			// this.get('tbItemConfig').graph.set('component', graph.get('component'));
-			this.get('tbItemConfigTemp').get('graph').set('component', graph.get('component'));
-			this.get('tbItemConfigTemp').get('graph').set('dataModel', graph.get('dataModel'));
+			try{
+				this.get('tbItemConfigTemp').get('graph').set('component', graph.get('component'));
+				this.get('tbItemConfigTemp').get('graph').set('dataModel', graph.get('dataModel'));
 
-			this.set('showDataModel',true);
+				this.set('showDataModel',true);
 			
 			// redundant, but facilate data binding
 			this.set('scopeDataModel', graph.get('dataModel'));
 			this.set('scopeComponent', graph.get('component'));			
+			} 
+			catch(err) { console.log(err)}
 			
 		},
 
@@ -213,8 +254,10 @@ export default Ember.Component.extend({
 		},
 		
 		saveBoardItem() {
+			console.log('tbItemConfig',this.get('tbItemConfig'))
+			console.log('tbItemConfig',this.get('tbItemConfigTemp'))
 			// save what's been configured so far in the temp object to the real one
-			this.set('tbItemConfig',this.get('tbItemConfigTemp'));
+			this.get('tbItemConfig').set('graph', this.get('tbItemConfigTemp').graph);
 			// this.sendAction('updateSaveBoardItem', this.get('tolaGraph'));
 			// this.sendAction('updateBoardItem');
 		}		

@@ -1,16 +1,15 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-
 	
-	session: Ember.inject.service(),
-	beforeModel: function() {
-		
+	/*session: Ember.inject.service(),
+	beforeModel: function() {		
 		if(this.get('session').isLoggedIn === false) {
+			console.log('sending to login');
 			this.transitionTo('login');
 		}
 
-	},
+	},*/
 	/*model: function(params) {
 		// super easy hack, just use ajax calls, load into one big model
 		var modelObj = {};
@@ -34,6 +33,8 @@ export default Ember.Route.extend({
 		modelObj.set('datasources',this.store.findAll('datasource'));
 		// smodelObj.set('graphOptions',this.store.findAll('graph-option'));
 		modelObj.set('boards', this.store.findAll('board'));
+
+		console.log('Ember store', this.store)
 
 		/* if this is the new route, create blank board */
 		if(params.board_id === 'new') {

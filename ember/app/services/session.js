@@ -19,7 +19,7 @@ export default Ember.Service.extend({
 	        	"Authorization": googleToken
 	        }        
 	      }).then((data)=>{
-	      	// console.log('google auth success!!')	      	
+	      	// console.log('google auth success!!$$$$$$$')	      	
 	        Cookies.set('appToken', data.appToken);
 	        Cookies.set('googleToken', data.googleToken);	
 
@@ -33,7 +33,7 @@ export default Ember.Service.extend({
 	        	Cookies.set('storeInitialized', true);
 	        	window.location.reload(true);
 	        }
-	        else {
+	        else {	        	
 	        	this.get("routing").transitionTo("index");
 	        }
 		    
@@ -104,6 +104,7 @@ export default Ember.Service.extend({
 
 	// called from anything that needs to create a session from our cookie token
 	initializeFromCookie: function() {
+		
 		return new Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "POST",

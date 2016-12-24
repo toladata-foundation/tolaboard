@@ -107,9 +107,9 @@ export default Ember.Component.extend({
 					"graph":  Ember.Object.create({})
 				});*/
 
-				var obj = {
+				var obj = Ember.Object.create({
 					"widget": {"col":1,"row":1,"size_x":2,"size_y":2},
-					"graph":  {}
+					"graph":  Ember.Object.create({})
 				});
 			
 
@@ -118,7 +118,7 @@ export default Ember.Component.extend({
 
 			// since we pushed an element to the UI, we need to update underlying
 			// tbConfigItem object
-			var newIndxex = this.get('model').currBoard.items.length-1;
+			var newIndxex = this.get('model').get('currBoard').get('items').length-1;
 			/*
 			var newWidget = Ember.$('.gridster ul')
 							 .gridster().data('gridster')
@@ -162,16 +162,16 @@ export default Ember.Component.extend({
 			// console.log('tb-designer.index',index);
 		},*/
 
-		updateSaveBoardItem(tolagraph) {
-			/*console.log('update li with tolagraph');
-			console.log(Ember.$('#' + this.get('activeItem') + ' li'));
-			console.log(tolagraph);*/
+		saveBoard() {
+			console.log('save or update TolaBoard');
 
-			// render the tolagraph in the active li
-			// update $tolagraphs object array
+			var currBoard = this.get('model').get('currBoard').get('items');
+			console.log(currBoard);
 
-			this.saveTolaBoard();
-		}
+			
+		},
+
+
 
 	}
 });

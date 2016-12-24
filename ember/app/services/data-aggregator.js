@@ -80,6 +80,7 @@ export default Ember.Service.extend({
 
 	},
 
+
 	oneDimensionGroupKeys: function(data, filterArr, groupField) {
 		return d3.set(data.map(function(d) { 
 			return d[groupField]; 

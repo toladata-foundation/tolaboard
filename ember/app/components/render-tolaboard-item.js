@@ -63,7 +63,9 @@ export default Ember.Component.extend({
 		want to update tbItemConfig if that's where the widget just came from... only new items */
 
 		/* Need to keep Ember widget and tbItemConfig widget data to sync */
+		
 		this.get('actions').syncWidgetData(this);
+		
 		/*var gridsterWidget = Ember.$('.gridster ul').gridster().data('gridster').serialize()[this.get('index')];
 
 		this.get('tbItemConfig').widget.row = gridsterWidget.row;

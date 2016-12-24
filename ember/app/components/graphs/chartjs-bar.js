@@ -24,7 +24,7 @@ export default Ember.Component.extend({
 
 	didInsertElement: function() {
 
-		console.log('CHARTJS BAR COMPONENT==>',this);
+		// console.log('CHARTJS BAR COMPONENT==>',this);
 
 		var sourceId = this.get('tbItemConfig').graph.source;
 		var dataModel = this.get('tbItemConfig').graph.dataModel;
@@ -49,9 +49,14 @@ export default Ember.Component.extend({
 						options: {}
 			});
 
-			self.get('tbItemConfig').get('graph').set('config', barConfig);
+			/* For some reason, tbItemConfig is not a full fledged Ember Object when
+			   coming from a persisted Tolaboard via the store, unlike when coming from designer.
+			   Thus, object setters and getters not available, so using generic Ember.set */
+			
+			// self.get('tbItemConfig').get('graph').set('config', barConfig);
+			Ember.set(self.get('tbItemConfig').graph, 'config', barConfig);
 
-			console.log('barConfig', barConfig);
+			// console.log('barConfig', barConfig);
 			var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');
 						console.log('ctx', ctx)
 					
@@ -61,7 +66,7 @@ export default Ember.Component.extend({
 
 
 			var barChart = new Chart(ctx, barConfig);
-			console.log('testChart', barChart)
+			// console.log('testChart', barChart)
 
 		})
 
