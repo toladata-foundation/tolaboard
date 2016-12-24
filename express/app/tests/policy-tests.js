@@ -55,11 +55,13 @@ Policy.add('twall', 'Board', '5807a0bf89f88139a8577495', 'view', callback)*/
 // console.log(accessModel.getPolicyListByUser)
 // var cTest = userModel.createUser(testUser2, callback);
 // userId, type, sourceId, callback
-Policy.verify('twall', 'Board', '5805585cbb72a6d65dd7c0ed', function(data) {
+/*Policy.verify('twall', 'Board', '5805585cbb72a6d65dd7c0ed', function(data) {
 	console.log(data)
-});
+});*/
 // console.log('valid user, valid policy: ', accessModel.verify('twall', testId, 'owner'));
 // console.log('valid user, invalid policy: ', accessModel.verify('mtest', testId, 'update'));
 // console.log('invalid user, invalid policy: ', accessModel.verify('fbar', testId, 'read'));
 
 // process.exit();
+
+Policy.deleteByBoardId('58573136731665a388aff9a4', callback);

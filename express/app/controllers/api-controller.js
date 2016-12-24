@@ -29,7 +29,8 @@ var apiTolaTables = {
 
 // external mLab
 // mongodb://<dbuser>:<dbpassword>@ds015584.mlab.com:15584/tolaboard 
-var conStr = 'mongodb://' + config.mongoUser + ':' + config.mongoPassword + config.mongoUri; 
+// var conStr = 'mongodb://' + config.mongoUser + ':' + config.mongoPassword + config.mongoUri; 
+var conStr = 'mongodb://localhost/tolaboard'
 mongoose.connect(conStr);
 var db = mongoose.connection;
 
@@ -86,6 +87,138 @@ router.get('/board/:_id', function(req, res) {
 		    			res.statusCode = 403
 		    			res.json({error: 'No valid access policy found'})
 		    		}
+		    	})
+		    }
+		  });
+	} // end first else
+});
+/* CREATE (POST) BOARD 
+ Just requires access policy "Create"
+*/
+router.post('/board', function(req, res) {
+	console.log('POST on /api/board');
+	console.log('request==>', req.body);
+	// verify token, verify user has access to this tolaboard
+	var appToken = req.headers.authorization;
+	// var tolaboardId = req.params._id;
+	var tolaboard = req.body.board;
+
+	if(typeof(tolaboard) === 'undefined')
+	{
+		res.send('No tolaboard found in POST body');
+		throw 'No tolaboard detected'
+	}
+
+	
+
+	if(!appToken) {
+		res.statusCode = 401;
+		res.json({error: 'No token specificed in header'});
+	}
+	else {
+		jwt.verify(appToken, config.cikrit, function(err, decoded) {
+		    if(err) {
+		      res.statusCode = 403;
+		      res.json({error: 'invalid token'});
+		      // valid token, now validate access
+		    } else {		    	
+		    	// use access policy .verify() to confirm user has create rights
+		    	Policy.verify(decoded.data.userId, 'Create', null, function(verifyErr, validPolicy) {
+		    		if(verifyErr) {
+		    			res.statusCode = 403; 
+		    			res.json(verifyErr);
+		    		}
+		    		// no verify error, allow new board to be added		    		
+		    		if(validPolicy == null ? false : true) {
+		    			// valid policy, go get it
+		    			console.log('valid token and verified, now create board')
+		    			res.statusCode = 200;
+		    			/*var boardJSON = {title: 'ZZZ Title', 
+		    							 items: [{widget: {row:2, col:1}, graph: {source: 12}}], 
+		    							 createUser: 'mwall'};*/
+						// boardJSON = JSON.stringify(boardJSON);	    			
+		    			Board.add(tolaBoard, 'owner', function(err, newBoardDoc) {
+		    				// some error when trying to create board
+							if(err) {
+								res.statusCode = 410;
+								res.json({error: err});
+							}
+							// no errors in creating board, now add policy
+							// res.statusCode = 200;							
+							// res.json({"board": data});
+							newId = newBoardDoc._id;
+							Policy.add(decoded.data.userId, 'Board', newId, 'owner', function(err, data) {
+								if(err) {
+									res.statusCode = 410;
+									res.json({error: err});
+								}
+								// no errors in adding policy
+								res.statusCode = 200;							
+								res.json({"board": newBoardDoc});
+							})
+						});
+		    			
+		    		} 
+		    		
+		    	})
+		    }
+		  });
+	} // end first else
+});
+
+/* Delete (DELETE) BOARD 
+ Just requires access owner policy of board
+*/
+router.delete('/board/:_id', function(req, res) {
+	console.log('DELETE on /api/board/:_id');	
+	// verify token, verify user has access to this tolaboard
+	var appToken = req.headers.authorization;
+	var tolaboardId = req.params._id;
+	
+	if(!appToken) {
+		res.statusCode = 401;
+		res.json({error: 'No token specificed in header'});
+	}
+	else {
+		jwt.verify(appToken, config.cikrit, function(err, decoded) {
+		    if(err) {
+		      res.statusCode = 403;
+		      res.json({error: 'invalid token'});
+		      // valid token, now validate access
+		    } else {		    	
+		    	// use access policy .verify() to confirm user has owner rights to this ID		    	
+		    	Policy.verify(decoded.data.userId, 'Board', tolaboardId, function(verifyErr, validPolicy) {
+		    		if(verifyErr) {
+		    			res.statusCode = 403; 
+		    			res.json(verifyErr);
+		    		}
+		    		// no verify error, allow board to be removed
+		    		if(validPolicy == null ? false : true) {
+		    			// valid policy, go get it
+		    			console.log('valid token and verified, now delete board')
+		    			res.statusCode = 200;
+		    			
+						// remove policy, then Board
+						Policy.deleteByBoardId(tolaboardId, function(err, delPolicy) {
+		    				// some error when trying to create board
+							if(err) {
+								res.statusCode = 410;
+								res.json({error: err});
+							}
+							// no errors in deleting policy, so delete board
+							Board.removeById(tolaboardId, function(err, delBoard) {
+								if(err) {
+									res.statusCode = 410;
+									res.json({error: err});
+								}
+								// no errors in adding policy
+								res.statusCode = 200;							
+								res.json({"board": delBoard});
+							})
+						});
+		    			
+		    		} 
+		    		
 		    	})
 		    }
 		  });
@@ -224,6 +357,7 @@ router.get('/data/:_id', function(req, res) {
 		  });
 	} // end first else
 });
+
 
 /* 
 	Return all the tables for a given user (per their token)

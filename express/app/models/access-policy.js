@@ -28,7 +28,7 @@ var policySchema = new mongoose.Schema({
 
 var Policy = module.exports = mongoose.model('Policy', policySchema);
 
-// function used to verify if user has a valid access policy to the board
+// verify if user has a valid access policy to the board
 module.exports.verify = function(userId, type, sourceId, callback) {
 	var pattern = {
 		userId: userId,
@@ -38,7 +38,7 @@ module.exports.verify = function(userId, type, sourceId, callback) {
 	Policy.findOne(pattern, callback);
 	
 }
-// Get all of a given user's access policies
+/* Get all of a given user's access policies */
 module.exports.getBoardPoliciesByUser = function(userId, policy, callback) {
 	var query = { 
 		userId: userId,
@@ -47,6 +47,7 @@ module.exports.getBoardPoliciesByUser = function(userId, policy, callback) {
 	};
 	Policy.find(query, callback);
 }
+/* Get all the access policies for data sources for a given user */
 module.exports.getSourcePoliciesByUser = function(userId, policy, callback) {
 	var query = { 
 		userId: userId,
@@ -55,7 +56,7 @@ module.exports.getSourcePoliciesByUser = function(userId, policy, callback) {
 	};
 	Policy.find(query, callback);
 }
-// add a new access policy (used when a new board is created, or shared)
+/* add a new access policy (used when a new board is created, or shared) */
 module.exports.add = function(userId, type, sourceId, policy, callback) {
 	var newPolicy = {
 		userId: userId, 
@@ -65,11 +66,10 @@ module.exports.add = function(userId, type, sourceId, policy, callback) {
 	};
 	Policy.create(newPolicy, callback)
 }
-// update access policy with object _id (PUT) Used if sharing permissions change
-/*module.exports.update = function(id, update, callback) {
-	Policy.updateById();
-}*/
-// delete access policy... used when a board is deleted by the owner
-/*module.exports.delete = function(id, callback) {
-
-}*/
+/* delete access policy... used when a board is deleted by the owner */
+module.exports.deleteByBoardId = function(boardId, callback) {
+	var query = {sourceId: boardId};
+	Policy.remove(query, callback);
+}
+/* Note: There's no update method here as I can't see why a policy would ever be updated
+   Just create, read, and deleted */
