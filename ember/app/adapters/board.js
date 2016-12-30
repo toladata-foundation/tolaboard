@@ -5,12 +5,7 @@ import DS from 'ember-data';
 import ENV from '../config/environment';
 
 export default DS.RESTAdapter.extend({
-	/*
-	host: "assets/data/tolaboards/collection-tolaboards.json?jsonp=?",	
-	*/
 	
-	
-	// host: 'http://localhost:2021',	
 	host: ENV.API.url,
 	namespace: 'api',
 	pathForType: function(modelName) {

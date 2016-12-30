@@ -23,6 +23,14 @@
 				</select>					  
 			</div>
 			<!-- Uses json-2-table component to table-ize data -->
+
+			<!-- experimental dup -->
+			{{#if fooShowPreview}}			
+			<div class="row data-preview animated fadeIn" style="width: 80%; height:150px;overflow:auto; border: 1px solid #ccc;">	
+				{{json-2-table displayData=fooPreviewData showVizSelection=showVizSelection}}
+			</div>
+			{{/if}}
+			<!-- end experiment -->
 			
 			{{#if showDataSourcePreview}}
 			{{partial templates/partials/spinner}}
@@ -30,8 +38,6 @@
 				{{json-2-table displayData=previewData showVizSelection=showVizSelection}}
 			</div>
 			{{/if}}
-
-				
 			
 
 			{{#if showVizSelection}}

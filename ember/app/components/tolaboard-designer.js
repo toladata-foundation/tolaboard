@@ -1,6 +1,9 @@
+/* This component is the parent to render-tolaboard-item components for mutable graph/widgets 
+
+	It's main purpose is to control additions of new board items, and be the parent for the array
+	of these items. Each item (tbItemConfig) is used to generate a child render-tolaboard-item component
+*/
 import Ember from 'ember';
-
-
 
 var TBoard = Ember.Object.extend({
 	title: 'Some Generic Title',
@@ -15,13 +18,7 @@ export default Ember.Component.extend({
 	store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
 
-	/*currentDashboard: function() {
-		return this.get('model').testTB;
-	},*/
-	/* array of tolaboard-items (ie. gridster widgets) */
-	/*tolaboardItems: Ember.computed(function() {
-		return this.get('model').tolaboard.responseJSON.dashboard;
-	}),*/
+
 
 	/* fires when tolaboard-designer.hbs has loaded */
 	didInsertElement() {	

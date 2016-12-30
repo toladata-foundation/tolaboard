@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({	
+
+	/* needs fixed to show the board when it's defined by the persisted data */
 	showDesigner: false,	
 
 	actions: {

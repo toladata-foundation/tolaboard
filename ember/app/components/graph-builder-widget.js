@@ -1,5 +1,6 @@
-/* gbw component is the workhorse of Boards
+/* this component is the workhorse of creating a new board item
 Provides an intuitive UI for creating graphs
+
 Needs to open clean with newly added widgets, and open pre-populated when
 a graph already exists in the rendered tb item that called it.
 */
@@ -9,19 +10,13 @@ import ENV from '../config/environment';
 export default Ember.Component.extend({
 	
 	store: Ember.inject.service(),
-	dataAgg: Ember.inject.service('data-aggregator'),
+	dataAgg: Ember.inject.service('data-aggregator'),	
 
-
-	showDataSourcePreview: false,	
+	showDataSourcePreview: false,
 	showVizSelection: false,
 	showDataModel: false,
 	renderGraph: false,
 	filters: [],
-	/*dataPreviewVisible: Ember.computed('previewData', ()=>{
-		if(this.hasOwnProperty('previewData')) {
-			this.get('previewData').length
-		}
-	}),*/
 	
 	/* kludgy, but I need the dropdown selected if a data source exists */
 	selectedSource: Ember.computed('tbItemConfig', function() {		
@@ -56,8 +51,6 @@ export default Ember.Component.extend({
 	disableSave: false,
 	// tolaGraph: {name: 'tolaGraph from tolagraph.js!!!'},
 
-
-	// wanted to log these hooks running to understand Ember better
 	// Ember calls these methods
 	/* Two scenarios for inserting graphBuilderWidget: 
 		1. persisted board (selected source, defined component/model, etc)
@@ -224,25 +217,6 @@ export default Ember.Component.extend({
 			// set renderedItem's GBW showGraphBuilder property to false
 			this.sendAction('closeGBW');
 		},
-
-		/*clearGraphBuilder: function() {
-
-			Ember.$('#data-source-select option:eq(0)').prop('selected',true);
-			this.set('showDataSourcePreview', false);
-			this.set('showVizSelection', false);
-			this.set('showDataModel', false);
-			this.set('renderGraph', false);		
-			this.set('showDataFilters',false);
-			this.set('filters', []);
-			this.set('scopeData', []);
-			this.set('scopeGraphID', undefined);
-			this.set('scopeDataModel', undefined);
-			this.set('scopeComponent', undefined);
-			this.set('disableSave', true);
-
-
-			// this.destroyElement();
-		},*/
 
 		didDestroyElement() { 
 			// console.log('did destroy gbw');

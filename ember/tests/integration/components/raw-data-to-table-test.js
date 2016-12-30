@@ -1,7 +1,7 @@
 import { moduleForComponent, test } from 'ember-qunit';
 import hbs from 'htmlbars-inline-precompile';
 
-moduleForComponent('tolaboard-item', 'Integration | Component | tolaboard item', {
+moduleForComponent('raw-data-to-table', 'Integration | Component | raw data to table', {
   integration: true
 });
 
@@ -9,15 +9,15 @@ test('it renders', function(assert) {
   // Set any properties with this.set('myProperty', 'value');
   // Handle any actions with this.on('myAction', function(val) { ... });
 
-  this.render(hbs`{{tolaboard-item}}`);
+  this.render(hbs`{{raw-data-to-table}}`);
 
   assert.equal(this.$().text().trim(), '');
 
   // Template block usage:
   this.render(hbs`
-    {{#tolaboard-item}}
+    {{#raw-data-to-table}}
       template block text
-    {{/tolaboard-item}}
+    {{/raw-data-to-table}}
   `);
 
   assert.equal(this.$().text().trim(), 'template block text');

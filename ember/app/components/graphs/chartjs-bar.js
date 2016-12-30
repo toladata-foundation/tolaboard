@@ -24,8 +24,6 @@ export default Ember.Component.extend({
 
 	didInsertElement: function() {
 
-		// console.log('CHARTJS BAR COMPONENT==>',this);
-
 		var sourceId = this.get('tbItemConfig').graph.source;
 		var dataModel = this.get('tbItemConfig').graph.dataModel;
 
@@ -80,87 +78,8 @@ export default Ember.Component.extend({
 	},	// end didInsertElement
 
 		
-
-		// see dataModel defined
-		
-
-
-
-		// var finalData = this.get('dataAgg').groupBySum({})
-
-		
-
-		
-
-		/*tolaGraphConfig.metadata = {
-		    	labelList: this.get('dataAgg').oneDimensionGroupKeys(scopeData, [], scopeDataModel[0].field.assigned),
-		    	metricList: this.get('dataAgg').oneDimensionSumValues(scopeData, [], scopeDataModel[0].field.assigned, scopeDataModel[1].field.assigned)
-		    };*/
-
-		
-		
-
-		/*tolagraphConfig.metadata.metricList = tolagraphConfig.metadata.metricList
-		  									  .map(function(d) { return d.value; });*/
-		
-		// ok, use our master config and create the tolagraph
-		// var barGraph = Tolagraph.create(tolaGraphConfig);
-		/*barGraph.render = function() {
-			new Chart(this.element, tolaGraphConfig);
-		};*/
-
-
-		// data setup
-		/*var scopeData = this.get('scopeData'),
-		    scopeDataModel = this.get('scopeDataModel'),
-		    graphConfig = this.get('graphConfig');*/
-		
-
-		/*var labelList = this.get('dataAgg')
-		                .oneDimensionGroupKeys(scopeData, [], scopeDataModel[0].field.assigned);
-		
-		var metricList = this.get('dataAgg')
-		                 .oneDimensionSumValues(scopeData, [], 
-		                 						scopeDataModel[0].field.assigned, 
-		                 						scopeDataModel[1].field.assigned);
-
-		metricList = metricList.map(function(d) { return d.value; });*/
-		// console.log('bar this', this);
-
-		/*console.log('labelList ',labelList);
-		console.log('metricList', metricList);*/
-
-		// test to render a static bar graph
-
-		// var chartElem = Ember.$('#current-builder-widget-graph');
-
-		/*var config = {
-	    	type: 'bar',
-	    	data: {
-	        	labels: labelList,
-	        	datasets: [{	            	
-	            	data: metricList,
-	            	backgroundColor: '#00afaa'
-		        }]
-		    },
-		    options: {}
-		};*/
-
-		
-
-		// the data aggregation service is used to get the pieces needed to populte this
-		
-
-		
-	
-
 	willDestroyElement: function() {
 		console.log('willDestroyElement on bar chart component called');
 	},
-
-
-
-	
-	
 	
 });
