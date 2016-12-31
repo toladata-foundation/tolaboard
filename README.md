@@ -25,6 +25,10 @@ You will need the following things properly installed on your computer.
 * `npm install`
 * `bower install`
 
+You can develop locally by just running servers for Ember and Node. They both make use of npm, so after pulling down the code, go into their respective app folders, and run npm install. The package.json files contain all the dependencies, and so everything should get installed. For ember, you'll also need to run bower install. bower.json contains all the client side dependencies. Update the configuration files (see below) and then for node, run nodemon in the express app folder. Install nodemon if you don't have it. Updates to the files automatically restart the server. You can configure the port it runs on in the config. For ember, update it's config file with your node server location. You can test the backend API is working by hitting the route localhost:port/api... should see "Welcome to the TolaBoard API"
+
+For ember, run "ember server" from the ember directory (not inside ember/app). You should eventually see a message telling you the server is running.
+
 ## Configuration
 
 For Node/Express: In the app root... config.json. Note, the actual file is excluded via .gitignore. config.template.json needs updated and renamed for the app to work. 
