@@ -1,4 +1,4 @@
-/* applicaiton.js controller is for application level processes needed when the app loads 
+/* applicaiton.js controller is for application level processes needed when the app loads
 
    This code runs whenever the application is loaded via linking to the app, or
    refreshing the browser. Use this area for code that needs to run once, regardless
@@ -16,11 +16,11 @@ export default Ember.Controller.extend({
 	/* tolaboards for menu dropdowns */
 
 	/* First off, need to check to see if we have an appToken in our cookies
-	   and use it to try and get a session from the 
+	   and use it to try and get a session from the
 	*/
 
 
-	init: function() {		
+	init: function() {
 
 		this._super(...arguments);
 
@@ -28,26 +28,29 @@ export default Ember.Controller.extend({
 
 		var appToken = Cookies.get('appToken');
 
-		if(typeof(appToken) === 'undefined') {			
-			this.transitionToRoute('login');
+		if(typeof(appToken) === 'undefined') {
+			// this.transitionToRoute('login'); disable session login
+
 		} else {
-			// token exists, attempt to verify with server			
+			// token exists, attempt to verify with server
 
 			// returns Promise
-			var result = this.get('session').initializeFromCookie();
+			// var result = this.get('session').initializeFromCookie();
 			var store = this.get('store');
 			this.set('ownerBoards', store.query('board', {policy: 'owner'}));
 			this.set('sharedBoards', store.query('board', {policy: 'view'}));
 			this.set('updateBoards', store.query('board', {policy: 'update'}));
-			result.then((data)=>{				
-				// this.transitionToRoute('mydashboards')
-			}, ()=>{				
-				Cookies.remove('appToken')
-				/*this.set('session','currUser',null)
-				this.set('session','isLoggedIn',false)*/
-				console.log('redirect to login')
+
+			// result of Promise from initializeFromCookie
+
+			/* result.then((data)=>{
+				this.transitionToRoute('mydashboards')
+			}, ()=>{
+				Cookies.remove('appToken');
+				console.log('redirect to login');
 				this.transitionToRoute('login')
-			})
+			})*/
+
 		}
 
 		window.googleSignOut = function() {
@@ -57,6 +60,6 @@ export default Ember.Controller.extend({
 		    });
       	}
 
-      	
+
 	},
 });

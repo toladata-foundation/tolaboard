@@ -17,7 +17,7 @@ h1,h2,h3,h4,h5,h6 {
 .navbar-nav li:hover {
 	background-color: #eee;
 }
-.navbar-nav li a:hover {	
+.navbar-nav li a:hover {
 	color: #333 !important;
 }
 .btn-tola-accent {
@@ -27,7 +27,7 @@ h1,h2,h3,h4,h5,h6 {
 .btn-tola-accent:hover,
 .btn-tola-accent:active,
 .btn-tola-accent:focus {
-	background-color: #367d36;	
+	background-color: #367d36;
 	color: #fff;
 }
 .tola-brand {
@@ -81,7 +81,7 @@ h1,h2,h3,h4,h5,h6 {
 .data-external {
 	background-color: rgb(129,188,0);
 }
-.datasource-item {	
+.datasource-item {
 	padding: 5px;
 }
 .datasource-date {
@@ -123,7 +123,7 @@ h1,h2,h3,h4,h5,h6 {
 }*/
 .gridster ul {
 	/* forces grid to maintain width and avoid collapsing*/
-	width: 100% !important; 
+	width: 100% !important;
 }
 .gridster li {
 	list-style-type: none;
@@ -139,7 +139,7 @@ h1,h2,h3,h4,h5,h6 {
 	position: absolute;
 	right: 0px;
 	top: 0px;
-	cursor: pointer;	
+	cursor: pointer;
 }
 .widget-ui button {
 	border: 1px solid #888;
@@ -212,7 +212,7 @@ h1,h2,h3,h4,h5,h6 {
 	margin-right: 5px;
 }
 .viz-selection {
-	margin: 5px 0px;	
+	margin: 5px 0px;
 }
 .viz-selection hr {
 	margin-top: 1px;
@@ -237,6 +237,9 @@ a.thumbnail:focus {
 	cursor: pointer;
 	opacity: .80;
 }
+.selected-graph {
+	border: 1.5px solid #0000ff;
+}
 /*.viz-selection:hover {
 	cursor: pointer;
 }*/
@@ -252,14 +255,14 @@ a.thumbnail:focus {
 }*/
 .field-select {
 	overflow: auto;
-	width: 250px; 
+	width: 250px;
 	height: 200px;
 }
 .field-select li {
 	padding-left: 3px;
 }
 .field-select li:hover {
-	background-color: #ddd;	
+	background-color: #ddd;
 	cursor: default;
 }
 .gbw-graph {
@@ -333,5 +336,3 @@ a.thumbnail:focus {
  [data-sizex="4"] { width:590px; }
  [data-sizex="5"] { width:740px; }
  [data-sizex="6"] { width:890px; }
-
-

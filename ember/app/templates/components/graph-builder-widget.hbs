@@ -17,28 +17,22 @@
 				<select id="data-source-select" name="ds-name" onchange={{action 'getData' value="target.value" }}  class="form-control">
 					<option></option>
 				{{#each model.datasources as |source|}}
-					<option value={{source.id}} 
+					<option value={{source.id}}
 					        selected={{isEq source.id selectedSource}}>{{source.label}}</option>
 				{{/each}}
-				</select>					  
+				</select>
 			</div>
 			<!-- Uses json-2-table component to table-ize data -->
 
-			<!-- experimental dup -->
-			{{#if fooShowPreview}}			
-			<div class="row data-preview animated fadeIn" style="width: 80%; height:150px;overflow:auto; border: 1px solid #ccc;">	
-				{{json-2-table displayData=fooPreviewData showVizSelection=showVizSelection}}
-			</div>
-			{{/if}}
-			<!-- end experiment -->
-			
+
+
 			{{#if showDataSourcePreview}}
 			{{partial templates/partials/spinner}}
-			<div class="row data-preview animated fadeIn" style="width: 80%; height:150px;overflow:auto; border: 1px solid #ccc;">	
+			<div class="row data-preview animated fadeIn" style="width: 80%; height:150px;overflow:auto; border: 1px solid #ccc;">
 				{{json-2-table displayData=previewData showVizSelection=showVizSelection}}
 			</div>
 			{{/if}}
-			
+
 
 			{{#if showVizSelection}}
 
@@ -52,42 +46,42 @@
 			<div class="row graph-library animated fadeIn">
 				{{#each graphOptions as |graph|}}
 				<div class="col-sm-3 col-md-3 col-lg-2">
-				  <a class="thumbnail viz-selection">
+				  <a class="thumbnail viz-selection {{selectedGraph graph.component selectedGraph}}">
 					<img data-graph={{graph.id}} src="{{graph.img}}" class="img-responsive" {{action 'showGraphDataModel' graph on='click'}}>
 					<hr>
 					<h5><strong>{{graph.label}}</strong></h5>
 				  </a>
 				</div>
 				{{/each}}
-			</div>			
+			</div>
 			{{/if}}
-			
+
 
 			<!-- Show this area when a viz type is selected -->
 			{{#if showDataModel}}
 			<div class="row animated fadeIn">
 				<h4  style="margin-top: 20px;">Specify a data field for each required input</h4>
-				
-				
+
+
 				{{#each scopeDataModel as |fieldInput|}}
 					<div class="data-model-input">
 						<h5>{{fieldInput.label}}:</h5>
 							<select name={{fieldInput.name}} onchange={{action 'tryGraphRender' value="target.value" }} class="form-control">
 									<option value=""></option>
 								{{#each-in previewData.[0] as |colName index|}}
-									<option value={{colName}}>{{colName}}</option>
+									<option selected={{isEq colName 'community'}} value={{colName}}>{{colName}}</option>
 								{{/each-in}}
 							</select>
 					</div>
-				{{/each}}				
-				
-				
-				
+				{{/each}}
+
+
+
 			</div>
 			{{/if}}
 
 			<!-- Moment of truth... graph time!! -->
-			{{#if renderGraph}}			
+			{{#if renderGraph}}
 			<div class="row">
 				<div class="col-md-8 gbw-graph">
 				{{component scopeComponent dataSourceUrl=dataSourceUrl tbItemConfig=tbItemConfigTemp}}
@@ -104,7 +98,7 @@
 							<button style="margin-top:0;" class="btn btn-default" {{action 'addFilter'}}>Add Filter</button>
 						</div>
 					</div>
-				</div>				
+				</div>
 				<div class="data-filters">
 				{{#each filters as |filter|}}
 				<div class="row animated fadeIn">
@@ -118,7 +112,7 @@
 						<option>=</option>
 						<option>!=</option>
 						<option>&lt;</option>
-						<option>&gt;</option>							
+						<option>&gt;</option>
 						<option>&lt;=</option>
 						<option>&gt;=</option>
 						<option>in</option>
@@ -129,12 +123,12 @@
 					<button {{action 'deleteFilter' filter.id}} class="btn btn-default data-filters-delete"><i class="fa fa-times"></i></button>
 					  </div>
 					</div>
-					{{/each}}					
-				</div>	
+					{{/each}}
+				</div>
 			{{/if}}
-			<!-- end data filter section -->				
-			
-			
+			<!-- end data filter section -->
+
+
 	      </div>
 	  </div> <!-- model body container -->
 	      <div class="modal-footer">

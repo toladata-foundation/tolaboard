@@ -10,11 +10,11 @@ import Ember from 'ember';
    		   or designer components.
    		2. graph that is being built/updated via the graph builder widget
 
-   		
+
    Every graph component will receive an object called tbItemConfig. In case #1,
    this comes from the items array in our Board model. In case #2, it comes from
    the tbItemConfig widget AND the tbItemGraph object in the graph builder. The
-   latter serves as a dictionary of what will ultimately be saved into the 
+   latter serves as a dictionary of what will ultimately be saved into the
    tbItemConfig when saving the work done in the graph builder widget.
 */
 export default Ember.Component.extend({
@@ -29,8 +29,8 @@ export default Ember.Component.extend({
 		var dataModel = this.get('tbItemConfig').graph.dataModel;
 
 		// returns promise, on resolution returns d3.nest of aggregated data
-		var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);		
-		
+		var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);
+
 		var self = this;
 		tablesData.then(function(result) {
 			var labelArr = result.map(function(d) { return d.key});
@@ -57,20 +57,20 @@ export default Ember.Component.extend({
 
 			// console.log('barConfig', pieConfig);
 			var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');
-						console.log('ctx', ctx)
-					
+						// console.log('ctx', ctx)
+
 			ctx.resize(function() {
 				'resize detected';
 			});
 
 			// Chart.defaults.global.legend.display = true;
 			var pieChart = new Chart(ctx, pieConfig);
-			
+
 
 
 
 		})
-					
-		
+
+
 	},
 });
