@@ -10,5 +10,5 @@ export default Ember.Route.extend({
 	// 	if(session.isLoggedIn === false) {
 	// 		this.transitionTo('login');
 	// 	}
-	// },	
+	// },
 });

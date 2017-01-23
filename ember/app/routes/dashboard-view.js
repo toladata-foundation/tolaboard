@@ -10,6 +10,6 @@ export default Ember.Route.extend({
 	// 	}
 	// },
 	model: function(params) {
-		return this.store.findRecord('board-old', params.board_id);
+		return this.store.findRecord('board', params.board_id);
 	}
 });

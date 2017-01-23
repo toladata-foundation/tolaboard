@@ -38,9 +38,9 @@ export default Ember.Controller.extend({
 			// var result = this.get('session').initializeFromCookie();
 			var store = this.get('store');
 			console.log('store==>',store);
-			this.set('ownerBoards', store.query('board-old', {policy: 'owner'}));
-			this.set('sharedBoards', store.query('board-old', {policy: 'view'}));
-			this.set('updateBoards', store.query('board-old', {policy: 'update'}));
+			this.set('ownerBoards', store.query('board', {policy: 'owner'}));
+			this.set('sharedBoards', store.query('board', {policy: 'view'}));
+			this.set('updateBoards', store.query('board', {policy: 'update'}));
 
 			// result of Promise from initializeFromCookie
 

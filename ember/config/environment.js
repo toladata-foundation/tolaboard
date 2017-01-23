@@ -6,6 +6,11 @@ module.exports = function(environment) {
     environment: environment,
     baseURL: '/',
     locationType: 'auto',
+    // contentSecurityPolicyHeader: 'Content-Security-Policy',
+    contentSecurityPolicy: {
+      // Allow data (xhr/websocket) from tola-tables-dev and custom-api.local
+      'connect-src': ["'self'", "https://tola-tables-dev.mercycorps.org"]
+    },
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build

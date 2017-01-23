@@ -25,6 +25,6 @@ export default Ember.Route.extend({
 	},	*/
 
 	model() {
-		return this.store.findAll('board-old');
+		return this.store.findAll('board');
 	}
 });

@@ -5,7 +5,8 @@ export function initialize(application) {
     var token = Cookies.get('appToken');
 
     if(typeof(token) !== 'undefined'){
-      jqXHR.setRequestHeader('xhrFields', { withCredentials: true });
+      // jqXHR.setRequestHeader('xhrFields', { withCredentials: true });
+      jqXHR.setRequestHeader('content-type','application/json');
       jqXHR.setRequestHeader('Authorization', token);
     } else {
     	console.log('no token in ajax-prefilter')

@@ -32,7 +32,7 @@ export default Ember.Route.extend({
 		// data sources and graph options are same for all routes
 		modelObj.set('datasources',this.store.findAll('datasource'));
 		// smodelObj.set('graphOptions',this.store.findAll('graph-option'));
-		modelObj.set('boards', this.store.findAll('board-old'));
+		modelObj.set('boards', this.store.findAll('board'));
 
 		console.log('Ember store', this.store)
 
@@ -44,7 +44,7 @@ export default Ember.Route.extend({
 			// modelObj.set('boards',this.store.findRecord('board',params.board_id));
 		}
 		else {
-			modelObj.set('currBoard', this.store.findRecord('board-old',params.board_id));
+			modelObj.set('currBoard', this.store.findRecord('board',params.board_id));
 
 		}
 
