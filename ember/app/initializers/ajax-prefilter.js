@@ -3,6 +3,7 @@ export function initialize(application) {
   Ember.$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
 
     var token = Cookies.get('appToken');
+    // jqXHR.setRequestHeader('Origin','localhost:4200');
 
     if(typeof(token) !== 'undefined'){
       // jqXHR.setRequestHeader('xhrFields', { withCredentials: true });

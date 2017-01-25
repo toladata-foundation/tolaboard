@@ -26,7 +26,7 @@ export default Ember.Controller.extend({
 
 		console.log('application.js init invoked');
 
-		var appToken = Cookies.get('appToken');
+		var appToken = 123; // Cookies.get('appToken');
 
 		if(typeof(appToken) === 'undefined') {
 			// this.transitionToRoute('login'); disable session login
@@ -39,8 +39,8 @@ export default Ember.Controller.extend({
 			var store = this.get('store');
 			console.log('store==>',store);
 			this.set('ownerBoards', store.query('board', {policy: 'owner'}));
-			this.set('sharedBoards', store.query('board', {policy: 'view'}));
-			this.set('updateBoards', store.query('board', {policy: 'update'}));
+			// this.set('sharedBoards', store.query('board', {policy: 'view'}));
+			// this.set('updateBoards', store.query('board', {policy: 'update'}));
 
 			// result of Promise from initializeFromCookie
 

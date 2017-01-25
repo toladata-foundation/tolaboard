@@ -6,6 +6,7 @@ module.exports = function(environment) {
     environment: environment,
     baseURL: '/',
     locationType: 'auto',
+    // Doco on contentSecurity policy configs... https://github.com/rwjblue/ember-cli-content-security-policy
     // contentSecurityPolicyHeader: 'Content-Security-Policy',
     contentSecurityPolicy: {
       // Allow data (xhr/websocket) from tola-tables-dev and custom-api.local

@@ -2,17 +2,17 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
 
-	/*session: Ember.inject.service(),	
+	/*session: Ember.inject.service(),
 
-	beforeModel() {		
-		var appToken = Cookies.get('appToken');		
+	beforeModel() {
+		var appToken = Cookies.get('appToken');
 		var session = this.get('session');
 
-		if(typeof(appToken) === 'undefined') {			
+		if(typeof(appToken) === 'undefined') {
 			this.transitionTo('login');
 		} else {
-			// token exists, attempt to verify with server			
-			
+			// token exists, attempt to verify with server
+
 			var initCookieResult = this.get('session').initializeFromCookie();
 			initializeFromCookie.then(()=>{
 				if(session.isLoggedIn === false) {
@@ -20,11 +20,11 @@ export default Ember.Route.extend({
 				}
 			},
 			()=>{})
-			
+
 		}
 	},	*/
 
 	model() {
-		return this.store.findAll('datasource');
+		return this.store.findAll('user-silo');
 	}
 });

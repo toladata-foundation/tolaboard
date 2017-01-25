@@ -6,8 +6,8 @@ import ENV from '../config/environment';
 export default DS.JSONAPIAdapter.extend(/*DataAdapterMixin,*/ {
     host: ENV.API.url,
     namespace: 'api',
-    pathForType: function(type) {
-      return Ember.String.underscore(type);
-    }
+    // pathForType: function(type) {
+    //   return Ember.String.underscore(type) + 's/';
+    // }
     // authorizer: 'authorizer:drf-token-authorizer',
 });
