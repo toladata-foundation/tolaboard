@@ -6,10 +6,11 @@
     <div class="row">
         {{#each model as |board|}}
             <div class="col-md-4">
-                <a class="thumbnail data-internal" href="#">
-                    <div class="datasource-item">{{board.title}}</div>
-                    <p class="datasource-date">{{board.createDate}}</p>
-                </a>
+              {{#link-to 'dashboards.view' board.id class="navbar-brand"}}
+                <div class="datasource-item">{{board.title}}</div>
+                <p class="datasource-date">{{board.createDate}}</p>
+              {{/link-to}}
+
             </div>
         {{/each}}
     </div>
