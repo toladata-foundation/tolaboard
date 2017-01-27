@@ -6,10 +6,9 @@ const Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  this.route('mydashboards');
   this.route('datasources');
 
-  /* Ember can't do optional dynamic segments :( 
+  /* Ember can't do optional dynamic segments :(
   	First designer route goes to empty designer with options for
   	editing existing or building new.
   	Routes to editing an existing Tolaboard use the dynamic segment */
@@ -22,16 +21,23 @@ Router.map(function() {
 
 
   this.route('sharedboards');
-  this.route('dashboard-view', {path: '/dashboard-view/:board_id'});  
-  this.route('dashboards', {path: '/dashboards/:board_id'});
+  //this.route('dashboards', {path: '/dashboards/:board_id'});
+
+  this.route('dashboards', function() {
+    this.route('new');
+    this.route('view', {path: '/:board_id/view'});
+    this.route('edit', {path: '/:board_id/edit'});
+    this.route('delete', {path: '/:board_id/delete'});
+  });
+
   this.route('graph-options');
   this.route('login');
 });
 
-/* Forces a hash in the URL for routing. You need this if you want routing from the 
-server to direct traffic to "pages" or anchors other than index. Otherwise, you get 
-404's due to the route/file not existing on the server. You can also accomplish this 
-by having server traffic direct to index.html/#/route-name for all "other" routes. 
+/* Forces a hash in the URL for routing. You need this if you want routing from the
+server to direct traffic to "pages" or anchors other than index. Otherwise, you get
+404's due to the route/file not existing on the server. You can also accomplish this
+by having server traffic direct to index.html/#/route-name for all "other" routes.
 The app needs to bootstrap, and that only happens through root. */
 Router.reopen({
   location: 'hash'

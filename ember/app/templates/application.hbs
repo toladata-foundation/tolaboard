@@ -7,7 +7,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          {{#link-to 'mydashboards' class="navbar-brand"}}
+          {{#link-to 'index' class="navbar-brand"}}
             <span class="tola-brand"><i class="fa fa-line-chart"></i> TolaBoard</span>
           {{/link-to}}
 
@@ -15,6 +15,7 @@
 
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
+            <!--
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Dashboards <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -25,6 +26,8 @@
 
               </ul>
             </li>
+            <-->
+            <li>{{#link-to 'dashboards'}}My Dashboards{{/link-to}}</li>
 
             <!-- Shared dashboards aren't in scope for this version, but here's
                  a good starting point for how it would work. See application.js
@@ -40,7 +43,8 @@
               </ul>
             </li> -->
 
-            <li>{{#link-to 'dashboards' 'new'}}Designer{{/link-to}}</li>
+            <!--<li>{{#link-to 'dashboards' 'new'}}Designer{{/link-to}}</li>-->
+            <li>{{#link-to 'dashboards.new'}}Designer{{/link-to}}</li>
             <li>{{#link-to 'datasources'}}Data Sources{{/link-to}}</li>
           </ul>
 
@@ -57,7 +61,7 @@
           </ul>
 
         </div><!--/.nav-collapse -->
-        
+
       </div>
 </nav>
 <div class="nav-spacer"></div>
