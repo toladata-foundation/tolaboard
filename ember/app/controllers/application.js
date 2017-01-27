@@ -39,6 +39,7 @@ export default Ember.Controller.extend({
 			var store = this.get('store');
 			console.log('store==>',store);
 			this.set('ownerBoards', store.query('board', {policy: 'owner'}));
+			// this.set('ownerBoards', store.query('board', {policy: 'owner'}));
 			// this.set('sharedBoards', store.query('board', {policy: 'view'}));
 			// this.set('updateBoards', store.query('board', {policy: 'update'}));
 

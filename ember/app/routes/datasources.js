@@ -25,6 +25,6 @@ export default Ember.Route.extend({
 	},	*/
 
 	model() {
-		return this.store.findAll('user-silo');
+		return this.store.findAll('usersilo');
 	}
 });
