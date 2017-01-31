@@ -130,10 +130,10 @@ export default Ember.Component.extend({
 
 		// add attrs that will activate css so grid is positioned and sized
 		Ember.$(thisView).attr({
-                'data-col': widget['col'],
-                'data-row': widget['row'],
-                'data-sizex' : widget['size_x'],
-                'data-sizey' : widget['size_y']
+                'data-col': widget['widget_col'],
+                'data-row': widget['widget_row'],
+                'data-sizex' : widget['widget_size_x'],
+                'data-sizey' : widget['widget_size_y']
             }).addClass('gs-w');
 
 		// add to $widgets object
