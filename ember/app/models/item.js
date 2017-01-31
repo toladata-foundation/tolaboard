@@ -8,5 +8,5 @@ export default DS.Model.extend({
     widgetrow: DS.attr('number'),
     widgetsizex: DS.attr('number'),
     widgetsizey: DS.attr('number'),
-    // graph: DS.belongsTo('graph', {inverse: 'item', async: false}),
+    graph: DS.belongsTo('graph', {inverse: 'item', async: false})
 });
