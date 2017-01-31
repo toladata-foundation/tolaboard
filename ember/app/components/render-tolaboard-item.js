@@ -1,9 +1,9 @@
 /* This is probably the most crucial component in this application...
-   It handles all rendering of a given TolaBoard component and is used by the 
-   dashboard-view to display a TolaBoard, and the dashboards route to edit or 
-   create a tolaboard. It includes use of the gridster.js widget and data 
-   visualization living inside of that widget. The graph is rendered via a child 
-   graph component which each viz type has a definition for in the components/graph 
+   It handles all rendering of a given TolaBoard component and is used by the
+   dashboard-view to display a TolaBoard, and the dashboards route to edit or
+   create a tolaboard. It includes use of the gridster.js widget and data
+   visualization living inside of that widget. The graph is rendered via a child
+   graph component which each viz type has a definition for in the components/graph
    folder.
 
    Note: This component needs to handle cases where the widget is newly created and empty (like designer),
@@ -13,7 +13,7 @@
    tolaboard-designer (parent to this component)
    		render-tolaboard-item (this component)
    			graph component (child) ==> defined dynamically based on graph selection
-   			graph-builder-widget (child) ==> modal popup which allows for graph building 
+   			graph-builder-widget (child) ==> modal popup which allows for graph building
 
 	Data flow:
 		render-tolaboard-item
@@ -26,12 +26,12 @@
 					.component - via selecting a graph
 					.scopeDataModel - via dropdown select
 					.filters - via "add filter" option
-				
+
 			graph component (chartjs-bar for example)
 				tbItemConfig.graph
 					.config - after getting data, and varies by chart library
 
-*/			
+*/
 
 
 
@@ -44,26 +44,27 @@ export default Ember.Component.extend({
 	dataTarget: Ember.computed('index', function() {
     	return '#gbwModal' + this.get('index')
     }),
-    
+
 
 	didRender() {
-		
+
 		this.get('actions').syncWidgetData(this);
 		},
 
 
 	didInsertElement() {
+		console.log('didInsert render-tolaboard-item');
 
 		try {
-		
+
 		/* Same issue here as with tolaboard-item component. Using the higher level API
 		   doesn't work for ember because it appends the li to the ".gridster ul" selector.
 		   Need to append to ember view piece by piece like in tb-item
-	
+
 		   */
-		
+
 		var el = Ember.$(this.get('element'));
-		
+
 		// normally don't need in ES6, but we do for gridster and Ember integration
 		var thisIndex = this.get('index');
 		console.log('thisIndex===>',thisIndex)
@@ -73,43 +74,43 @@ export default Ember.Component.extend({
 		var grid = Ember.$('.gridster ul');
 
 		// var assignIndex = Ember.$(grid.data('gridster').$widgets[thisIndex]).data('index',thisIndex);
-		
+
 		/* Defines default gridster widget size*/
 		grid.gridster({
 		        widget_margins: [5, 5],
 		        widget_base_dimensions: [140, 140],
-		        /* on resize or drag events, need to sync gridster data object with 
-		           our Ember app's tbItemConfig which is our data representation 
+		        /* on resize or drag events, need to sync gridster data object with
+		           our Ember app's tbItemConfig which is our data representation
 		           of a TolaBoard component. Below handles widget property */
 		        resize: { enabled: true,
-		        		  stop(e,ui,$widget) {	
+		        		  stop(e,ui,$widget) {
 		        		  	console.log('$widget==>',$widget.data())
-		        		  	
+
 		        		  	/* I'm struggling with some aspects of gridster here. We need to update the tbItemConfig
-		        		  	   for this component to reflect changes in the grid... for example, resize and drag. 
+		        		  	   for this component to reflect changes in the grid... for example, resize and drag.
 		        		  	   These methods here are hooks for catching those events and working with them.
 		        		  	   See draggable below as well. */
-		        		  	
+
 		        		  }},
-		        draggable: { 		        		  
+		        draggable: {
 		        		  stop(e,ui) {
 		        		  	console.log('$widget==>',Ember.$(e.target).data())
-		        		  	
+
 		        		  }}
 		});
-				
+
 		// API object for dynamic
 		grid = grid.gridster().data('gridster');
 
 		// if itemMutable is false...
 		if(!this.get('itemMutable')) {
-			
+
 			// disable grid dragging, resizing
 			grid.disable();
 			grid.disable_resize();
 			Ember.$('.gridster ul').gridster({resize: {enabled: false}});
 			Ember.$('.gridster li').css('cursor','pointer');
-			
+
 		}
 
 		// get the .hbs template for this instance of the component, set it to thisView
@@ -118,7 +119,7 @@ export default Ember.Component.extend({
 		   we could assume an li needs to be added, then follow through as before
 		   i mean, if edit mode is used, we need that same view with the edit/delete buttons*/
 		// var thisView = this.get('element');
-		
+
 		/* NEW APPROACH USING LOW-LEVEL GRIDSTER API'S */
 
 		// .empty_cells(col, row, size_x, size_y);
@@ -137,7 +138,7 @@ export default Ember.Component.extend({
 
 		// add to $widgets object
 		// console.log('grid ', grid);
-		
+
 		grid.$widgets = grid.$widgets.add(thisView);
 		// console.log('grid widgets',grid.$widgets);
 
@@ -152,33 +153,33 @@ export default Ember.Component.extend({
 
         // now define scopeGraph
         /* This is not advised, and throws a warning in the error console. Ember wants
-        	you to use a computed property within the component level object. However, 
-        	this doesn't seem to work well since we need the component's view to be 
-        	rendered entirely before assign a value to the scopeGraph. Otherwise, 
+        	you to use a computed property within the component level object. However,
+        	this doesn't seem to work well since we need the component's view to be
+        	rendered entirely before assign a value to the scopeGraph. Otherwise,
         	the component graph for this particular renders using 100% window width
         	instead of the width of the widget. */
         // this.set('scopeGraph', this.get('tbItemConfig').graph.component);
-	
+
     	} // end try
 
     	catch(err) {
     		console.log('didInsert error ',err)
     	}
- 
+
 	},
 
 	/* willDestroyElement called by the ember run-time when the component is about to
-	   be destroyed. In this time, we need to clean up the gridster data model, and 
+	   be destroyed. In this time, we need to clean up the gridster data model, and
 	   remove the element from there. Otherwise, we'll have data but no corresponding
 	   DOM element, and the serialization will be off. */
-	willDestroyElement() { 
+	willDestroyElement() {
 
 		// get the element
 		var removeEl = this.get('element').childNodes;
-		/* USE THE API!  Don't remove with just jQuery 
+		/* USE THE API!  Don't remove with just jQuery
 			   It needs removed from data object too. If you have any
 			   questions if things are going right... check the following
-			   in the console: 
+			   in the console:
 			   $('.gridster ul').gridster().data('gridster').$widgets
 			   It's the data model for the grid widgets
 			   */
@@ -193,11 +194,11 @@ export default Ember.Component.extend({
 		this.sendAction('removeTBItem',this.get('index'));
 
 	},
-	
+
 	/* didDestroyElement destroys the underlying Ember object representing the component.
 	   This is the final step. If this isn't done, didRender keeps running on it.
 	    Might also create memory leaks, but not certain.*/
-	didDestroyElement() { 
+	didDestroyElement() {
 		// this.sendAction('removeItem', this.get('index'));
 		/* Once element is destroyed, destroy underlying object
 		   if this isn't done, didRender keeps running on it.
@@ -206,7 +207,7 @@ export default Ember.Component.extend({
 	},
 
 	actions: {
-		
+
 		activateGraphBuilder() {
 			/*console.log('tbItem:',this.get('tbItemConfig'));
 			console.log('widget',this.get('tbItemConfig').widget);
@@ -221,9 +222,9 @@ export default Ember.Component.extend({
 			// this.sendAction('setActiveWidget','fooWidget');
 		},
 
-		/* runGraphBuilderWidget action is called by the edit button, if applicable. 
+		/* runGraphBuilderWidget action is called by the edit button, if applicable.
 		   This is currently only the case for the designer component. */
-		runGraphBuilderWidget() { 
+		runGraphBuilderWidget() {
 			/* the modal will actually display the builder, but anything
 			   needed to run at this stage in tb-item goes here */
 			this.sendAction('setActiveItem', this.get('elementId'));
@@ -236,8 +237,8 @@ export default Ember.Component.extend({
 			console.log(this);
 			/* deleteWidget - as with runGraphBuilderWidget, only needed in edit mode when
 			   the trashcan button is available. This action destroys the component */
-			this.destroyElement();		
-			
+			this.destroyElement();
+
 
 		},
 

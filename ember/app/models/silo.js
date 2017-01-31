@@ -6,6 +6,7 @@ import DS from 'ember-data';
 var attr = DS.attr;
 
 export default Model.extend({
+	item: DS.belongsTo('item'),
 	recordsTotal: DS.attr('number'),
 	recordFiltered: DS.attr('number'),
 	draw: DS.attr('number'),

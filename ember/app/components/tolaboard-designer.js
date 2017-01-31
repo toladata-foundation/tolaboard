@@ -1,4 +1,4 @@
-/* This component is the parent to render-tolaboard-item components for mutable graph/widgets 
+/* This component is the parent to render-tolaboard-item components for mutable graph/widgets
 
 	It's main purpose is to control additions of new board items, and be the parent for the array
 	of these items. Each item (tbItemConfig) is used to generate a child render-tolaboard-item component
@@ -10,7 +10,7 @@ var TBoard = Ember.Object.extend({
 	items: []
 });
 
-export default Ember.Component.extend({	
+export default Ember.Component.extend({
 	showDesigner: false,
 	showGridLayout: false,
 	showGraphBuilder: false,
@@ -21,19 +21,19 @@ export default Ember.Component.extend({
 
 
 	/* fires when tolaboard-designer.hbs has loaded */
-	didInsertElement() {	
-		console.log('tb-designer object',this);	
-
-
-
+	didRender() {
+		console.log('didRender on tbd',this);
+	},
+	didInsertElement() {
+		console.log('tb-designer object',this);
 
 		// see if model contains valid tolaboard
 		// MODEL HASN'T RETURNED BEFORE VIEW RENDERED AND THIS METHOD RUN
-		// WE NEED MODEL TO BE AVAILABLE FIRST		
-		
+		// WE NEED MODEL TO BE AVAILABLE FIRST
+
 
 		// console.log('tolaboard via model',this.get('tolaboard'));
-		
+
 
 		/*var foo = TBoard.create();
 		console.log('new tboard',foo);*/
@@ -52,10 +52,10 @@ export default Ember.Component.extend({
 		// console.log('will destroy in layout called');
 	},
 
-	/* Next section (prior to actions) contains methods for persisting tolaboard 
+	/* Next section (prior to actions) contains methods for persisting tolaboard
 
 	   saveTolaBoard - called from action updateSaveTolaBoard
-	   getSerializedWidgets - get JSON serialization of gridster 
+	   getSerializedWidgets - get JSON serialization of gridster
 	   getSerializedGraphs - ditto but for tolagraphs
 	*/
 	saveTolaBoard() {
@@ -74,9 +74,9 @@ export default Ember.Component.extend({
 	getJSONString(obj) {
 		// return json-ized string of obj
 	},
-	
+
 	actions: {
-		createNewBoard() { 
+		createNewBoard() {
 			// check state to see if we're already in current or new board
 
 			// if nothing, create new board object, assign to model, ie currBoard
@@ -89,12 +89,12 @@ export default Ember.Component.extend({
 			// if new or existing exists, prompt, save, wipe out and call createNewBoard
 		},
 
-		addItem() {	
+		addItem() {
 			// wrap this in a try throw catch
 			// seems like an error occurs and prevents the full api from running
 			// we need this to be atomic
 			/* */
-			// console.log('tb designer this',this);	
+			// console.log('tb designer this',this);
 			// console.log(this.get('model'));
 			/* if the dynamic segment for the route is 'new', then
 			   we have an emplty dashboard, with no items. Need to have items
@@ -108,7 +108,7 @@ export default Ember.Component.extend({
 					"widget": {"col":1,"row":1,"size_x":2,"size_y":2},
 					"graph":  Ember.Object.create({})
 				});
-			
+
 
 			// push new dashboard item into model.items
 			this.get('model').get('currBoard').get('items').pushObject(obj);
@@ -126,29 +126,29 @@ export default Ember.Component.extend({
 
 			// console.log('curItems', curItems);
 			// curItems.pushObject(obj);
-			
+
 		},
-		removeItem(index) {			
+		removeItem(index) {
 			console.log('removeItem index',index);
 			var currItem = this.get('model').get('currBoard').get('items');
 			currItem.removeObject(currItem[index]);
-			// push item into tolaboardItems array			
-			// this.tolaboardItems.pushObject(newID);			
+			// push item into tolaboardItems array
+			// this.tolaboardItems.pushObject(newID);
 			// this.tolaboardItems.removeObject(index);
 			// console.log('removeItem called by tb-item via sendAction');
 		},
 		/* this action needs passed into any child component which needs to display the
 		   graph builder widget */
 		/*activateGraphBuilder: function() {
-			if(!this.showGraphBuilder) { 
-				this.set('showGraphBuilder',true);				
-			}	
-			
+			if(!this.showGraphBuilder) {
+				this.set('showGraphBuilder',true);
+			}
+
 		},*/
 
 		/*setActiveTBItemConfig: function(tbItemConfig) {
 			this.set('activeTBItemConfig', tbItemConfig);
-			
+
 		},*/
 		/*setActiveElement: function(element) {
 			this.set('activeElement',element);
@@ -165,7 +165,7 @@ export default Ember.Component.extend({
 			var currBoard = this.get('model').get('currBoard').get('items');
 			console.log(currBoard);
 
-			
+
 		},
 
 
