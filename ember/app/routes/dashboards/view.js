@@ -10,6 +10,7 @@ export default Ember.Route.extend({
     //  }
     // },
     model: function(params) {
+        this.store.findAll('item');
         return this.store.findRecord('board', params.board_id);
     },
     afterModel() {

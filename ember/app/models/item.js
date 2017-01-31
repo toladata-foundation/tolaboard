@@ -1,8 +1,8 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-    board: DS.belongsTo('board', {inverse: 'items', async: false}),
-    source: DS.belongsTo('silo', {inverse: 'items', async: false}),
+    board: DS.belongsTo('board', {async: false}),
+    source: DS.belongsTo('silo', {async: false}),
     title: DS.attr('string'),
     widgetcol: DS.attr('number'),
     widgetrow: DS.attr('number'),
