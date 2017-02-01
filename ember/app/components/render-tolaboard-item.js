@@ -53,7 +53,7 @@ export default Ember.Component.extend({
 
 
 	didInsertElement() {
-		console.log('didInsert render-tolaboard-item');
+		console.log('didInsert render-tolaboard-item',this);
 
 		try {
 
@@ -120,20 +120,12 @@ export default Ember.Component.extend({
 		   i mean, if edit mode is used, we need that same view with the edit/delete buttons*/
 		// var thisView = this.get('element');
 
-		/* NEW APPROACH USING LOW-LEVEL GRIDSTER API'S */
-
-		// .empty_cells(col, row, size_x, size_y);
-		// grid.empty_cells(1, 1, 2, 2);
-		var widget = this.get('tbItemConfig').widget;
-		/*console.log('tbItem WIDGET==>',widget);
-		console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[thisIndex])*/
-
 		// add attrs that will activate css so grid is positioned and sized
 		Ember.$(thisView).attr({
-                'data-col': widget['widget_col'],
-                'data-row': widget['widget_row'],
-                'data-sizex' : widget['widget_size_x'],
-                'data-sizey' : widget['widget_size_y']
+                'data-col': this.get('tbItemConfig').get('widgetcol'),
+                'data-row': this.get('tbItemConfig').get('widgetrow'),
+                'data-sizex' : this.get('tbItemConfig').get('widgetsizex'),
+                'data-sizey' : this.get('tbItemConfig').get('widgetsizey')
             }).addClass('gs-w');
 
 		// add to $widgets object
@@ -246,12 +238,12 @@ export default Ember.Component.extend({
 
 			var gridsterWidget = Ember.$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')];
 
-			item.get('tbItemConfig').widget.row = gridsterWidget.row;
-			item.get('tbItemConfig').widget.col = gridsterWidget.col;
-			item.get('tbItemConfig').widget.size_x = gridsterWidget.size_x;
-			item.get('tbItemConfig').widget.size_y = gridsterWidget.size_y;
+			item.get('tbItemConfig').set('widgetrow', gridsterWidget.widgetrow);
+			item.get('tbItemConfig').set('widgetcol', gridsterWidget.widgetcol);
+			item.get('tbItemConfig').set('widgetsizex', gridsterWidget.widgetsizex);
+			item.get('tbItemConfig').set('widgetsizey', gridsterWidget.widgetsizey);
 
-			console.log('tbItem WIDGET==>',item.get('tbItemConfig').widget);
+			console.log('tbItem WIDGET==>',item.get('tbItemConfig'));
 			console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')])
 		}
 	}

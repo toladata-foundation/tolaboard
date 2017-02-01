@@ -1,8 +1,9 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-    owner: DS.belongsTo('user', {async: false}),
+    // owner: DS.belongsTo('user', {async: false}),
+    label: DS.attr('string'),
     thumbnail: DS.attr('string'),
-    ember_component: DS.attr('string'),
-    item: DS.belongsTo('item', {async: true}),
+    embercomponent: DS.attr('string'),
+    // item: DS.belongsTo('item', {async: false}),
 });

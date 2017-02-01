@@ -10,11 +10,11 @@ import Ember from 'ember';
    		   or designer components.
    		2. graph that is being built/updated via the graph builder widget
 
-   		
+
    Every graph component will receive an object called tbItemConfig. In case #1,
    this comes from the items array in our Board model. In case #2, it comes from
    the tbItemConfig widget AND the tbItemGraph object in the graph builder. The
-   latter serves as a dictionary of what will ultimately be saved into the 
+   latter serves as a dictionary of what will ultimately be saved into the
    tbItemConfig when saving the work done in the graph builder widget.
 */
 export default Ember.Component.extend({
@@ -23,13 +23,14 @@ export default Ember.Component.extend({
 	dataAgg: Ember.inject.service('data-aggregator'),
 
 	didInsertElement: function() {
+		console.log('INSERT BAR GRAPH');
 
-		var sourceId = this.get('tbItemConfig').graph.source;
-		var dataModel = this.get('tbItemConfig').graph.dataModel;
+		var sourceId = this.get('tbItemConfig').item.source;
+		var graphInputs = this.get('tbItemConfig').graphinputs;
 
 		// returns promise, on resolution returns d3.nest of aggregated data
-		var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);		
-		
+		var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);
+
 		var self = this;
 		tablesData.then(function(result) {
 			var labelArr = result.map(function(d) { return d.key});
@@ -50,14 +51,14 @@ export default Ember.Component.extend({
 			/* For some reason, tbItemConfig is not a full fledged Ember Object when
 			   coming from a persisted Tolaboard via the store, unlike when coming from designer.
 			   Thus, object setters and getters not available, so using generic Ember.set */
-			
+
 			// self.get('tbItemConfig').get('graph').set('config', barConfig);
 			Ember.set(self.get('tbItemConfig').graph, 'config', barConfig);
 
 			// console.log('barConfig', barConfig);
 			var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');
 						console.log('ctx', ctx)
-					
+
 			ctx.resize(function() {
 				'resize detected';
 			});
@@ -68,18 +69,18 @@ export default Ember.Component.extend({
 
 		})
 
-		
 
-		
 
-					
-					
-		
+
+
+
+
+
 	},	// end didInsertElement
 
-		
+
 	willDestroyElement: function() {
 		console.log('willDestroyElement on bar chart component called');
 	},
-	
+
 });
