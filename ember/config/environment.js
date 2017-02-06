@@ -27,8 +27,10 @@ module.exports = function(environment) {
     // http://188.166.7.21:3000 is the test server API
     // http://localhost:2021 ==> local dev server
     API: {
-      url: 'https://tola-tables-dev.mercycorps.org',
-      previewSize: 20 // num of records to show in preview
+      // url: 'https://tola-tables-dev.mercycorps.org',
+      url: 'http://localhost:8000',
+      previewSize: 20, // num of records to show in preview
+      token: 'Token 3ea9cc476a022ce32cd00d08f44edeacad982489'
     }
   };
 

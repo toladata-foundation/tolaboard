@@ -23,13 +23,15 @@ export default Ember.Component.extend({
 	dataAgg: Ember.inject.service('data-aggregator'),
 
 	didInsertElement: function() {
-		console.log('INSERT BAR GRAPH');
+		console.log('INSERT BAR GRAPH',this);
 
-		var sourceId = this.get('tbItemConfig').item.source;
-		var graphInputs = this.get('tbItemConfig').graphinputs;
+		var siloId = this.get('tbItemConfig').get('source');
+		// var graphInputs = this.get('tbItemConfig').graphinputs;
+		console.log('siloId',siloId);
 
 		// returns promise, on resolution returns d3.nest of aggregated data
-		var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);
+		// var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);
+
 
 		var self = this;
 		tablesData.then(function(result) {

@@ -9,7 +9,8 @@
 	<!-- scopeGraph gets determined in tbItemConfig and defined once this Ember view is inserted -->
 	{{#if toggleRender}}
 	<div class="viz-target">
-		{{component tbItemConfig.graph.embercomponent tbItemConfig=tbItemConfig dataSources=dataSources}}
+		<p>{{tbItemConfig.silo.recordsTotal}}</p>
+
 	</div>
 	{{/if}}
 

@@ -3,13 +3,16 @@ import DS from 'ember-data';
 // import attr from 'ember-data/attr';
 // import { belongsTo, hasMany } from 'ember-data/relationships';
 
-var attr = DS.attr;
-
 export default Model.extend({
-	item: DS.belongsTo('item'),
-	recordsTotal: DS.attr('number'),
-	recordFiltered: DS.attr('number'),
-	draw: DS.attr('number'),
-	rawData: DS.attr()
+	// item: DS.belongsTo('item'),
+	recordcnt: DS.attr('number'),
+	recordfil: DS.attr('number'),
+	// draw: DS.attr('number'),
+	// silodata: DS.attr()
+	// owner: DS.belongsTo('user'),
+	// name: DS.attr('string'),
+	// reads: DS.attr(),
+	// description: DS.attr('string'),
+	// url: DS.attr('string') // url to retrieve data
 
 });
