@@ -4,16 +4,13 @@
 
 <div class="container">
 	<div class="row">
-		<h4>My Data</h4>
+		<h4>My Tola Tables</h4>
 	</div>
 	<div class="row">
-		{{#each model as |source|}}
+		{{#each model as |silo|}}
 			<div class="col-md-4">
-				<a class="thumbnail data-internal" href="#">
-					<div class="datasource-item">{{source.label}}</div>
-				    <p class="datasource-date">{{source.id}}</p>
-				</a>			
+				<h3>{{silo.name}}</h3>
 			</div>
-		{{/each}}		
-	</div> 	
+		{{/each}}
+	</div>
 </div>
