@@ -11,12 +11,14 @@
                 How could it be different... like self-contained? Perhaps a render-tolaboard component which calls render-tolaboard-item component? This just encapsulates the problem... just making note of it for now.
 
             -->
+
                 <h2>{{model.title}}</h2>
                 <div class="gridster">
                     <ul>
                         {{#each model.items as |tbItem index|}}
                             {{render-tolaboard-item index=index itemMutable=false tbItemConfig=tbItem model=model}}
                         {{/each}}
+
                     </ul>
                 </div>
             </div>

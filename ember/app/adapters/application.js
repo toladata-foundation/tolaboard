@@ -3,7 +3,7 @@ import DS from 'ember-data';
 import ENV from '../config/environment';
 
 
-export default DS.JSONAPIAdapter.extend(/*DataAdapterMixin,*/ {
+export default DS.JSONAPIAdapter.extend( {
     host: ENV.API.url,
     namespace: 'api',
     // pathForType: function(type) {
@@ -16,5 +16,7 @@ export default DS.JSONAPIAdapter.extend(/*DataAdapterMixin,*/ {
      * If your server supports passing ids as a query string, you can set
      * coalesceFindRequests to true to coalesce all find requests within a
      * single runloop. */
-    coalesceFindRequests: true,
+    coalesceFindRequests: true
+
+
 });
