@@ -77,7 +77,11 @@ export default Ember.Component.extend({
     }),
 
 	graphOptions: Ember.computed('store', function() {
-		return this.get('store').findAll('graph-option');
+		return this.get('store').findAll('graph');
+	}),
+
+	tablesSources: Ember.computed('store', function() {
+		return this.get('store').findAll('boardsilo');
 	}),
 
 	/* built-up over the course of using gbw component, then assigned to tbItemConfig on save */
@@ -147,7 +151,8 @@ export default Ember.Component.extend({
 				this.get('tbItemConfigTemp').get('graph').set('source', dataSourceId);
 
 				// this is working... updating scopeData property in callback
-				var url = ENV.API.url + '/api/data/' + dataSourceId;
+				// var url = ENV.API.url + '/api/silo/' + dataSourceId + '/data';
+				var url = `${ENV.API.url}/api/silo/${dataSourceId}/data`;
 				this.set('dataSourceUrl', url);
 				this.set('showDataSourcePreview',true);
 				var self = this;

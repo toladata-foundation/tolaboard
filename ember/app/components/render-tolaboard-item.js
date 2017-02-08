@@ -41,6 +41,7 @@ export default Ember.Component.extend({
 
 	showGraphBuilder: false,
 	toggleRender: true,
+	// describe this
 	dataTarget: Ember.computed('index', function() {
     	return '#gbwModal' + this.get('index')
     }),
@@ -63,6 +64,7 @@ export default Ember.Component.extend({
 
 		   */
 
+		// comment out?
 		var el = Ember.$(this.get('element'));
 
 		// normally don't need in ES6, but we do for gridster and Ember integration
@@ -100,6 +102,7 @@ export default Ember.Component.extend({
 		});
 
 		// API object for dynamic
+		// see if you can remove or rename
 		grid = grid.gridster().data('gridster');
 
 		// if itemMutable is false...
@@ -114,6 +117,7 @@ export default Ember.Component.extend({
 		}
 
 		// get the .hbs template for this instance of the component, set it to thisView
+		// what is the child here?
 		var thisView = this.get('element').childNodes[0];
 		/* above line doesn't work because no li was added during the view
 		   we could assume an li needs to be added, then follow through as before
@@ -140,8 +144,8 @@ export default Ember.Component.extend({
 		// remaining bits
 		grid.add_faux_rows(2);
 		grid.set_dom_grid_width();
-        grid.set_dom_grid_height();
-        grid.drag_api.set_limits(grid.cols * grid.min_widget_width);
+    grid.set_dom_grid_height();
+    grid.drag_api.set_limits(grid.cols * grid.min_widget_width);
 
         // now define scopeGraph
         /* This is not advised, and throws a warning in the error console. Ember wants

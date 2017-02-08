@@ -10,15 +10,26 @@ export default Ember.Service.extend({
 
 	// pass in data source ID and populate data model
 	// returns aggregated JS data object
+	TolaTablesHeader: Ember.computed('', function() {
+    	return {
+				"Accept": "application/json",
+				"Content-Type": "application/json",
+				"Authorization": ENV.API.token
+			};
+    }),
+
 	groupBySum(sourceId,dataModel){
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
-	        url: ENV.API.url + '/api/data/' + sourceId
-	      }).then((data)=>{	        
+	        url: ENV.API.url + '/api/silo/' + sourceId + '/data',
+					headers: this.get('TolaTablesHeader')
+	      }).then((results)=>{
+					console.log('raw results from ajax',results);
 	      	// data is our raw response from Tables
-	      	var result = JSON.parse(data).data;
-	      	result.forEach(function(d) { d.row_count = 1});
+	      	// var result = JSON.parse(results.data);
+					// console.log('results from parse',result);
+	      	results.data.forEach(function(d) { d.row_count = 1});
 	      	var groupName = dataModel[0].assigned,
 	      	    sumName = dataModel[1].assigned;
 	      	// use dataModel with d3.nest to return aggregated data
@@ -27,10 +38,10 @@ export default Ember.Service.extend({
 				           .rollup(function(rows) {
 				           		return d3.sum(rows, function(d) { return d[sumName];})
 				           })
-				           .entries(result);
+				           .entries(results.data);
 
 			// return nest;
-			/*console.log('data from getJSON', data)			
+			/*console.log('data from getJSON', data)
 			console.log('nest',nest)*/
 	        resolve(nest)
 	      }, ()=>{
@@ -45,8 +56,9 @@ export default Ember.Service.extend({
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
-	        url: ENV.API.url + '/api/data/' + sourceId
-	      }).then((data)=>{	        
+	        url: ENV.API.url + '/api/data/' + sourceId,
+					headers: this.get('TolaTablesHeader')
+	      }).then((data)=>{
 	      	// data is our raw response from Tables
 	      	var result = JSON.parse(data).data;
 	      	/* if filters array has any elements, use key/val pairs to remove
@@ -65,14 +77,15 @@ export default Ember.Service.extend({
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
-	        url: ENV.API.url + '/api/data/' + sourceId
-	      }).then((data)=>{	        
+	        url: ENV.API.url + '/api/silo/' + sourceId + '/data',
+					headers: this.get('TolaTablesHeader')
+	      }).then((results)=>{
 	      	// data is our raw response from Tables
-	      	var result = JSON.parse(data).data.slice(0,20);
+	      	// var result = JSON.parse(data).data.slice(0,20);
 	      	/* if filters array has any elements, use key/val pairs to remove
 	      	record from results */
 
-	        resolve(result)
+	        resolve(results.data)
 	      }, ()=>{
 	        reject('data aggregator selectPreview promise failed')
 	      })
@@ -82,8 +95,8 @@ export default Ember.Service.extend({
 
 
 	oneDimensionGroupKeys: function(data, filterArr, groupField) {
-		return d3.set(data.map(function(d) { 
-			return d[groupField]; 
+		return d3.set(data.map(function(d) {
+			return d[groupField];
 		})).values();
 	},
 

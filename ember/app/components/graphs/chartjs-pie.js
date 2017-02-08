@@ -23,13 +23,11 @@ export default Ember.Component.extend({
 	dataAgg: Ember.inject.service('data-aggregator'),
 
 	didInsertElement: function() {
+		console.log('INSERT PIE GRAPH',this);
 
-
-		var sourceId = this.get('tbItemConfig').graph.source;
-		var dataModel = this.get('tbItemConfig').graph.dataModel;
-
-		// returns promise, on resolution returns d3.nest of aggregated data
-		var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);
+		var siloId = this.get('tbItemConfig').get('source').get('id');
+		var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
+		var tablesData = this.get('dataAgg').groupBySum(siloId, dataModel);
 
 		var self = this;
 		tablesData.then(function(result) {

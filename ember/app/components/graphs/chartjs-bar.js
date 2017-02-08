@@ -25,13 +25,13 @@ export default Ember.Component.extend({
 	didInsertElement: function() {
 		console.log('INSERT BAR GRAPH',this);
 
-		var siloId = this.get('tbItemConfig').get('source');
+		var siloId = this.get('tbItemConfig').get('source').get('id');
 		// var graphInputs = this.get('tbItemConfig').graphinputs;
 		console.log('siloId',siloId);
 
 		// returns promise, on resolution returns d3.nest of aggregated data
-		// var tablesData = this.get('dataAgg').groupBySum(sourceId, dataModel);
-
+		var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
+		var tablesData = this.get('dataAgg').groupBySum(siloId, dataModel);
 
 		var self = this;
 		tablesData.then(function(result) {

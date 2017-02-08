@@ -16,9 +16,9 @@
 	        	<h4>Select a Data Source</h4>
 				<select id="data-source-select" name="ds-name" onchange={{action 'getData' value="target.value" }}  class="form-control">
 					<option></option>
-				{{#each model.datasources as |source|}}
+				{{#each tablesSources as |source|}}
 					<option value={{source.id}}
-					        selected={{isEq source.id selectedSource}}>{{source.label}}</option>
+					        selected={{isEq source.id selectedSource}}>{{source.name}}</option>
 				{{/each}}
 				</select>
 			</div>
