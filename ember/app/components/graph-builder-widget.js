@@ -22,7 +22,7 @@ export default Ember.Component.extend({
 	/* returns data source id if defined, and grabs data  */
 	selectedSource: Ember.computed('tbItemConfig', function() {
 		if(typeof(this.get('tbItemConfig').graph) !== "undefined") {
-			var sourceId = this.get('tbItemConfig').graph.source;
+			var sourceId = this.get('tbItemConfig').get('source').get('id');
 			var dataModel = this.get('tbItemConfig').graph.dataModel;
 			var self = this;
 			var tablesData = this.get('dataAgg').selectPreview(sourceId, 20);
@@ -43,7 +43,8 @@ export default Ember.Component.extend({
 	selectedGraph: Ember.computed('tbItemConfig', function() {
 		var component = null;
 		if(typeof(this.get('tbItemConfig').graph) !== "undefined") {
-			component = this.get('tbItemConfig').graph.component;
+			component = this.get('tbItemConfig').get('graph').get('embercomponent');
+			console.log('component is...', component);
 			this.set('scopeComponent', component);
 			this.set('showDataModel',true);
 			this.set('scopeDataModel', this.get('tbItemConfig').graph.dataModel);
@@ -181,14 +182,14 @@ export default Ember.Component.extend({
 		   them to populate the dropdown boxes */
 		showGraphDataModel(graph) {
 			try{
-				this.get('tbItemConfigTemp').get('graph').set('component', graph.get('component'));
+				this.get('tbItemConfigTemp').get('graph').set('embercomponent', graph.get('embercomponent'));
 				this.get('tbItemConfigTemp').get('graph').set('dataModel', graph.get('dataModel'));
 
 				this.set('showDataModel',true);
 
 			// redundant, but facilate data binding
 			this.set('scopeDataModel', graph.get('dataModel'));
-			this.set('scopeComponent', graph.get('component'));
+			this.set('scopeComponent', graph.get('embercomponent'));
 			}
 			catch(err) { console.log(err)}
 

@@ -33,6 +33,7 @@ export default Ember.Component.extend({
 		var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
 		var tablesData = this.get('dataAgg').groupBySum(siloId, dataModel);
 
+
 		var self = this;
 		tablesData.then(function(result) {
 			var labelArr = result.map(function(d) { return d.key});

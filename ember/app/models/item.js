@@ -8,5 +8,6 @@ export default DS.Model.extend({
     widgetrow: DS.attr('number'),
     widgetsizex: DS.attr('number'),
     widgetsizey: DS.attr('number'),
-    graph: DS.belongsTo('graph', {async: true})
+    graph: DS.belongsTo('graph', {async: true}),
+    graphinputs: DS.hasMany('graphinput', {inverse: 'item', async: false})
 });

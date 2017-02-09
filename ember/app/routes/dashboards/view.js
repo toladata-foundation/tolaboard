@@ -10,6 +10,7 @@ export default Ember.Route.extend({
     //  }
     // },
     model: function(params) {
+      // look in asset tracker for config to not do this
         this.store.query('item', {board: params.board_id});
         return this.store.findRecord('board', params.board_id);
     },

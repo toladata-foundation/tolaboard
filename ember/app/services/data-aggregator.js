@@ -40,9 +40,7 @@ export default Ember.Service.extend({
 				           })
 				           .entries(results.data);
 
-			// return nest;
-			/*console.log('data from getJSON', data)
-			console.log('nest',nest)*/
+
 	        resolve(nest)
 	      }, ()=>{
 	        reject('reject path')
