@@ -9,5 +9,5 @@ export default DS.Model.extend({
     widgetsizex: DS.attr('number'),
     widgetsizey: DS.attr('number'),
     graph: DS.belongsTo('graph', {async: true}),
-    graphinputs: DS.hasMany('graphinput', {inverse: 'item', async: false})
+    graphinputs: DS.hasMany('graphinput', {inverse: 'item', async: true})
 });

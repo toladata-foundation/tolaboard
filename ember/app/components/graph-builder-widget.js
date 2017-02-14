@@ -77,12 +77,16 @@ export default Ember.Component.extend({
     	return 'gbwModal' + this.get('index')
     }),
 
-	graphOptions: Ember.computed('store', function() {
+	graphs: Ember.computed('store', function() {
 		return this.get('store').findAll('graph');
 	}),
 
 	tablesSources: Ember.computed('store', function() {
 		return this.get('store').findAll('boardsilo');
+	}),
+
+	scopeDataModel: Ember.computed('graphs', function() {
+		return this.get('graphmodels');
 	}),
 
 	/* built-up over the course of using gbw component, then assigned to tbItemConfig on save */
