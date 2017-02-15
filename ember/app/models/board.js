@@ -1,7 +1,7 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  owner: DS.belongsTo('user', {async: false}),
+  owner: DS.belongsTo('owner', {async: false}),
   items: DS.hasMany('item', {inverse: 'board', async: false}),
   title: DS.attr('string'),
   createDate: DS.attr('date'),
