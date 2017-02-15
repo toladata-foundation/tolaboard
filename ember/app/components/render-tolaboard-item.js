@@ -39,6 +39,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
+	// store: Ember.inject.service(),
 	showGraphBuilder: false,
 	toggleRender: true,
 	// describe this
@@ -49,8 +50,10 @@ export default Ember.Component.extend({
 
 	didRender() {
 
-		this.get('actions').syncWidgetData(this);
-		},
+		// this is breaking things when moving from view to edit and vice versa
+		// re-evaluate how you sync
+		// this.get('actions').syncWidgetData(this);
+		 },
 
 
 	didInsertElement() {
@@ -169,9 +172,11 @@ export default Ember.Component.extend({
 	   remove the element from there. Otherwise, we'll have data but no corresponding
 	   DOM element, and the serialization will be off. */
 	willDestroyElement() {
-
+		console.log('render willDestroyElement called!!!');
 		// get the element
+
 		var removeEl = this.get('element').childNodes;
+
 		/* USE THE API!  Don't remove with just jQuery
 			   It needs removed from data object too. If you have any
 			   questions if things are going right... check the following
@@ -179,11 +184,12 @@ export default Ember.Component.extend({
 			   $('.gridster ul').gridster().data('gridster').$widgets
 			   It's the data model for the grid widgets
 			   */
-		Ember.$('.gridster ul').gridster()
+
+		/*Ember.$('.gridster ul').gridster()
 		     .data('gridster')
 		     .remove_widget(removeEl, function() {
 		     	// add any logic needed after widget removed here if applicable
-		      });
+				});*/
 
 		// we also need to remove the item from our items array maintained
 		// in tolaboard-designer
@@ -195,6 +201,7 @@ export default Ember.Component.extend({
 	   This is the final step. If this isn't done, didRender keeps running on it.
 	    Might also create memory leaks, but not certain.*/
 	didDestroyElement() {
+		console.log('render didDestroyElement called!!!');
 		// this.sendAction('removeItem', this.get('index'));
 		/* Once element is destroyed, destroy underlying object
 		   if this isn't done, didRender keeps running on it.
