@@ -16,9 +16,9 @@
 	        	<h4>Select a Data Source</h4>
 				<select id="data-source-select" name="ds-name" onchange={{action 'getData' value="target.value" }}  class="form-control">
 					<option></option>
-				{{#each tablesSources as |source|}}
+				{{#each listDataSources as |source|}}
 					<option value={{source.id}}
-					        selected={{is-eq source.id selectedSource}}>{{source.name}}</option>
+					        selected={{is-eq source.id selectedDataSource}}>{{source.name}}</option>
 				{{/each}}
 				</select>
 			</div>
@@ -44,7 +44,7 @@
 				</div>
 			</div>
 			<div class="row graph-library animated fadeIn">
-				{{#each graphs as |graph|}}
+				{{#each listGraphs as |graph|}}
 				<div class="col-sm-3 col-md-3 col-lg-2">
 				  <a class="thumbnail viz-selection {{selected-graph graph.embercomponent selectedGraph}}">
 					<img data-graph={{graph.id}} src="{{graph.thumbnail}}" class="img-responsive" {{action 'showGraphDataModel' graph on='click'}}>
@@ -63,13 +63,13 @@
 				<h4  style="margin-top: 20px;">Specify a data field for each required input</h4>
 
 
-				{{#each scopeDataModel as |fieldInput|}}
+				{{#each selectedGraphModels as |fieldInput|}}
 					<div class="data-model-input">
 						<h5>{{fieldInput.label}}:</h5>
 							<select name={{fieldInput.name}} onchange={{action 'tryGraphRender' value="target.value" }} class="form-control">
 									<option value=""></option>
 								{{#each-in previewData.[0] as |colName index|}}
-									<option selected={{is-eq colName 'community'}} value={{colName}}>{{colName}}</option>
+									<option selected={{is-eq colName 'origin'}} value={{colName}}>{{colName}}</option>
 								{{/each-in}}
 							</select>
 					</div>

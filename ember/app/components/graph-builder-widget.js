@@ -14,13 +14,45 @@ export default Ember.Component.extend({
 
 	showDataSourcePreview: false,
 	showVizSelection: false,
-	// showDataModel: false,
+	showDataModel: true,
 	renderGraph: false,
 	filters: [],
 
+	// array of all data sources the user has access to
+	listDataSources: Ember.computed('store', function() {
+		return this.get('store').findAll('boardsilo');
+	}),
+	// array of all graphs available for building viz for
+	listGraphs: Ember.computed('store', function() {
+		return this.get('store').findAll('graph');
+	}),
+	// all the cols/fields in a selected data source
+	// listSourceFields: Ember.computed(),
+
+	// selected source/silo
+	// selectedDataSource: Ember.computed(),
+
+	selectedGraphModels: Ember.computed('store', function() {
+		// prime graphmodels so we're ready
+		var graph = this.get('tbItemConfig').get('graph');
+		this.get('store').query('graphmodel', {graph: graph.get('id')});
+		return graph.get('graphmodels');
+		// return selectedGraph;
+	}),
+
+	// // inputs/assignments for a selected graph
+	selectedGraphInputs: Ember.computed('store', function() {
+		// prime graphmodels so we're ready
+		var item = this.get('tbItemConfig');
+		this.get('store').query('graphinput', {item: item.get('id')});
+		return item.get('graphinputs');
+		// return selectedGraph;
+	}),
+
+
 
 	/* returns data source id if defined, and grabs data  */
-	selectedSource: Ember.computed('tbItemConfig', function() {
+	selectedDataSource: Ember.computed('tbItemConfig', function() {
 		if(typeof(this.get('tbItemConfig').graph) !== "undefined") {
 			var sourceId = this.get('tbItemConfig').get('source').get('id');
 			var dataModel = this.get('tbItemConfig').graph.dataModel;
@@ -40,6 +72,20 @@ export default Ember.Component.extend({
 	}),
 
 	// the graph is referred to as component in the graph model
+	selectedGraphTemp: Ember.computed('scope', function() {
+		var graph = null;
+		if(typeof(this.get('tbItemConfig').graph) !== "undefined") {
+			component = this.get('tbItemConfig').get('graph').get('embercomponent');
+			console.log('component is...', component);
+			this.set('scopeComponent', component);
+			this.set('showDataModel',true);
+			this.set('scopeDataModel', this.get('tbItemConfig').graph.dataModel);
+		}
+
+		return component;
+	}),
+
+	// the graph is referred to as component in the graph model
 	selectedGraph: Ember.computed('tbItemConfig', function() {
 		var component = null;
 		if(typeof(this.get('tbItemConfig').graph) !== "undefined") {
@@ -55,38 +101,25 @@ export default Ember.Component.extend({
 
 
 
-
-	// if data source id defined, attempt to retrieve
-	// previewData: Ember.computed('tbItemConfig', () => {
-	// 	var sourceId = '580a5a927a333bff0f715e6a';
-	// 	var dataModel = this.get('tbItemConfig').graph.dataModel;
-	// 	var tablesData = this.get('dataAgg').selectPreview(sourceId, 20);
-	//
-	// 	var self = this;
-	// 	tablesData.then(function(result) {
-	// 		console.log('RESULTS FROM SOURCE', result);
-	// 		self.set('previewData', result);
-	//
-	// 	});
-	// }),
-	/*showPreviewData: Ember.computed('tbItemConfig', function() {
-		// data
-	}),*/
 	/* data-target for modals... each item (index) has its own */
 	dataTarget: Ember.computed('index', function() {
     	return 'gbwModal' + this.get('index')
     }),
 
-	graphs: Ember.computed('store', function() {
-		return this.get('store').findAll('graph');
-	}),
+	// graphs: Ember.computed('store', function() {
+	// 	return this.get('store').findAll('graph');
+	// }),
 
-	tablesSources: Ember.computed('store', function() {
-		return this.get('store').findAll('boardsilo');
-	}),
+	// tablesSources: Ember.computed('store', function() {
+	// 	return this.get('store').findAll('boardsilo');
+	// }),
 
-	scopeDataModel: Ember.computed('graphs', function() {
-		return this.get('graphmodels');
+	// graphDataModels: Ember.computed('graphs', function() {
+	// 	return this.get('store').query('graphmodel',{id:1});
+	// }),
+
+	graphInputs: Ember.computed('store', function() {
+		return this.get('store').findAll
 	}),
 
 	/* built-up over the course of using gbw component, then assigned to tbItemConfig on save */
@@ -192,8 +225,8 @@ export default Ember.Component.extend({
 				this.set('showDataModel',true);
 
 			// redundant, but facilate data binding
-			this.set('scopeDataModel', graph.get('dataModel'));
-			this.set('scopeComponent', graph.get('embercomponent'));
+			// this.set('scopeDataModel', graph.get('dataModel'));
+			// this.set('scopeComponent', graph.get('embercomponent'));
 			}
 			catch(err) { console.log(err)}
 

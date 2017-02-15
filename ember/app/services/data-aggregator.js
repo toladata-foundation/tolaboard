@@ -72,6 +72,9 @@ export default Ember.Service.extend({
 
 	selectPreview(sourceId, rowCount) {
 		// use sourceId to retrieve data, but limit to rowCount
+		// do nothing if neither value passed
+		
+
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
