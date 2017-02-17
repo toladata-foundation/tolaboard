@@ -24,7 +24,32 @@ export default Ember.Route.extend({
         }
     },  */
 
+    beforeModel() {
+      console.log('index on dashboards route',this);
+    },
+
     model() {
         return this.store.findAll('board');
-    }
+    },
+
+    actions: {
+      createBoard() {
+  			console.log('create board called');
+        var board = this.store.createRecord('board', {
+          title: 'My new TolaBoard',
+          owner: 'twall'
+        });
+
+        var self = this;
+
+
+        function failure(reason) {
+          // handle the error
+          console.log('failure in creating board');
+        }
+
+        board.save().catch(failure);
+
+  		} // end createBoard
+    } // end actions
 });

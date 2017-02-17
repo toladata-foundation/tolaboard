@@ -3,6 +3,10 @@
 </div>
 
 <div class="container">
+    <!-- <button data-toggle="modal" data-target="#newTBModal" class="btn btn-success">New TolaBoard</button> -->
+</div>
+
+<div class="container">
     <div class="row">
         {{#each model as |board|}}
             <div class="col-md-4">
@@ -11,7 +15,40 @@
                 <p class="datasource-date">{{board.createDate}}</p>
               {{/link-to}}
 
+              {{#link-to 'dashboards.edit' board.id class="btn btn-primary"}}
+                Edit
+              {{/link-to}}
+
             </div>
         {{/each}}
     </div>
+</div>
+
+<!-- Modal -->
+<!-- <div class="container"> -->
+<div class="modal fade" id="newTBModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog add-tolaboard-modal" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	        <h4 class="modal-title" id="myModalLabel">New TolaBoard</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="container-fluid">
+
+	        <div class="row">
+    				<input type="text" name="tbName" value="" placeholder="Enter TolaBoard Title">
+            <button class="btn btn-success" {{action 'createBoard'}}>Create</button>
+    			</div>
+
+
+
+
+	      </div>
+	  </div> <!-- model body container -->
+
+	    </div>
+	  </div>
 </div>

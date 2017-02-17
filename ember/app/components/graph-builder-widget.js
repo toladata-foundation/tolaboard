@@ -1,22 +1,26 @@
 /* this component is the workhorse of creating a new board item
 Provides an intuitive UI for creating graphs
 
-Needs to open clean with newly added widgets, and open pre-populated when
-a graph already exists in the rendered tb item that called it.
-*/
+This component can be called with either an empty model item (new widget),
+or with an existing item from a persisted TolaBoard */
 import Ember from 'ember';
 import ENV from '../config/environment';
 
 export default Ember.Component.extend({
-
+	// inject store for retrieving data and data agg for previewing silos
 	store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
 
+	// temp values for storing state of graph builder before updating model
+
+	// properties for toggling pieces of the view as things get populated
 	showDataSourcePreview: false,
 	showVizSelection: false,
 	showDataModel: true,
 	renderGraph: false,
 	filters: [],
+
+
 
 	// array of all data sources the user has access to
 	listDataSources: Ember.computed('store', function() {

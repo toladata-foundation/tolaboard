@@ -63,7 +63,7 @@
 				<h4  style="margin-top: 20px;">Specify a data field for each required input</h4>
 
 
-				{{#each selectedGraphModels as |fieldInput|}}
+				{{#each tbItem.graphinputs as |fieldInput|}}
 					<div class="data-model-input">
 						<h5>{{fieldInput.label}}:</h5>
 							<select name={{fieldInput.name}} onchange={{action 'tryGraphRender' value="target.value" }} class="form-control">
