@@ -15,7 +15,7 @@
                 <div class="gridster">
                     <ul>
                         {{#each model.items as |tbItem index|}}
-                            {{render-tolaboard-item index=index itemMutable=true tbItemConfig=tbItem model=model}}
+                            {{render-tolaboard-item index=index itemMutable=true tbItemConfig=tbItem tbItem=tbItem model=model}}
                         {{/each}}
                     </ul>
                 </div>

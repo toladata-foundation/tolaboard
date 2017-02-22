@@ -18,25 +18,28 @@ export default Ember.Service.extend({
 			};
     }),
 
-	groupBySum(sourceId,dataModel){
+// user should have to pass in clear values
+// agnostic to dataModel... just takes source, grp and sum fields
+// groupBySum(siloId, groupField, sumField)
+	// groupBySum(sourceId,dataModel){
+	groupBySum(siloId,grpField,sumField){
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
 	        method: "GET",
-	        url: ENV.API.url + '/api/silo/' + sourceId + '/data',
+	        url: ENV.API.url + '/api/silo/' + siloId + '/data',
 					headers: this.get('TolaTablesHeader')
 	      }).then((results)=>{
-					console.log('raw results from ajax',results);
 	      	// data is our raw response from Tables
 	      	// var result = JSON.parse(results.data);
 					// console.log('results from parse',result);
 	      	results.data.forEach(function(d) { d.row_count = 1});
-	      	var groupName = dataModel[0].assigned,
-	      	    sumName = dataModel[1].assigned;
+	      	// var groupName = dataModel[0].assigned,
+	      	//     sumName = dataModel[1].assigned;
 	      	// use dataModel with d3.nest to return aggregated data
 	      	var nest = d3.nest()
-				           .key(function(d) { return d[groupName]})
+				           .key(function(d) { return d[grpField]})
 				           .rollup(function(rows) {
-				           		return d3.sum(rows, function(d) { return d[sumName];})
+				           		return d3.sum(rows, function(d) { return d[sumField];})
 				           })
 				           .entries(results.data);
 
@@ -73,7 +76,7 @@ export default Ember.Service.extend({
 	selectPreview(sourceId, rowCount) {
 		// use sourceId to retrieve data, but limit to rowCount
 		// do nothing if neither value passed
-		
+
 
 		return new Ember.RSVP.Promise((resolve, reject)=>{
 	      Ember.$.ajax({
@@ -82,11 +85,11 @@ export default Ember.Service.extend({
 					headers: this.get('TolaTablesHeader')
 	      }).then((results)=>{
 	      	// data is our raw response from Tables
-	      	// var result = JSON.parse(data).data.slice(0,20);
+	      	var resVal = results.data.slice(0,20);
 	      	/* if filters array has any elements, use key/val pairs to remove
 	      	record from results */
 
-	        resolve(results.data)
+	        resolve(resVal)
 	      }, ()=>{
 	        reject('data aggregator selectPreview promise failed')
 	      })

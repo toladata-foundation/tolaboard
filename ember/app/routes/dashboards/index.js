@@ -35,9 +35,10 @@ export default Ember.Route.extend({
     actions: {
       createBoard() {
   			console.log('create board called');
+        var owner = this.store.findRecord('owner', 1);
         var board = this.store.createRecord('board', {
-          title: 'My new TolaBoard',
-          owner: 'twall'
+          title: 'Foo TolaBoard XYZ',
+          owner: owner
         });
 
         var self = this;
