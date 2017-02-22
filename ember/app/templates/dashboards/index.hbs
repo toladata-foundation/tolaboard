@@ -7,21 +7,33 @@
 </div>
 
 <div class="container">
-    <div class="row">
-        {{#each model as |board|}}
-            <div class="col-md-4">
-              {{#link-to 'dashboards.view' board.id class="navbar-brand"}}
-                <div class="datasource-item">{{board.title}}</div>
-                <p class="datasource-date">{{board.createDate}}</p>
-              {{/link-to}}
+    <table class="table table-striped tolaboard-main-table">
+      <thead><tr><th>TolaBoard</th><th>View/Edit/Delete</th><th>Share</th></tr></thead>
+      {{#each model as |board|}}
+          <tr>
 
-              {{#link-to 'dashboards.edit' board.id class="btn btn-primary"}}
-                Edit
-              {{/link-to}}
+            {{#link-to 'dashboards.view' board.id class="navbar-brand"}}
+              <td>{{board.title}}</td>
+            {{/link-to}}
 
-            </div>
-        {{/each}}
-    </div>
+            <td>
+            {{#link-to 'dashboards.view' board.id class="btn btn-success"}}
+                View
+            {{/link-to}}
+            {{#link-to 'dashboards.edit' board.id class="btn btn-primary"}}
+              Edit
+            {{/link-to}}
+            {{#link-to 'dashboards.edit' board.id class="btn btn-danger"}}
+              Delete
+            {{/link-to}}
+            </td>
+            <td>Coming soon</td>
+
+          </tr>
+      {{/each}}
+    </table>
+
+
 </div>
 
 <!-- Modal -->

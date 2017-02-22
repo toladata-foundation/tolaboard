@@ -50,6 +50,11 @@ h1,h2,h3,h4,h5,h6 {
 	border-radius: 50%;
 	opacity: .90;
 }
+.dashboard-main-menu {
+	border: solid 1px #333;
+  padding: 5px;
+  margin: 10px;
+}
 .user-cntrl-panel img {
 	margin-top: 7px;
 	height: 36px;
