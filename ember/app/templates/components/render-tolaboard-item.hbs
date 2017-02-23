@@ -15,11 +15,7 @@
 
 </li>
 
-{{modal-graph-builder tbItem=tbItem index=index}}
-
-
-
-
-
-<!-- The nature of this component is a bit odd... didInsertElement event uses gridster api
-     to draw grid, but then nested child component draws graph.  -->
+<!-- Only need modal builder if it's mutable -->
+{{#if itemMutable}}
+	{{modal-graph-builder tbItem=tbItem index=index}}
+{{/if}}

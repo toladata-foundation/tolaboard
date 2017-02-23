@@ -23,9 +23,11 @@
             {{#link-to 'dashboards.edit' board.id class="btn btn-primary"}}
               Edit
             {{/link-to}}
-            {{#link-to 'dashboards.edit' board.id class="btn btn-danger"}}
-              Delete
-            {{/link-to}}
+            <span {{action "onDeleteBoard" board.id}}>
+              {{#link-to "dashboards.index" class="btn btn-danger"}}
+                Delete
+              {{/link-to}}
+            </span>
             </td>
             <td>Coming soon</td>
 
@@ -51,7 +53,7 @@
 	      	<div class="container-fluid">
 
 	        <div class="row">
-    				<input type="text" name="tbName" value="" placeholder="Enter TolaBoard Title">
+    				<input id="newTBName" type="text" size="50" placeholder="Enter TolaBoard Title">
             <button class="btn btn-success" {{action 'createBoard'}}>Create</button>
     			</div>
 

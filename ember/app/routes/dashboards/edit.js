@@ -9,8 +9,24 @@ export default Ember.Route.extend({
     //      this.transitionTo('login');
     //  }
     // },
-    model(params) {        
+    model(params) {
         this.store.query('item', {board: params.board_id});
         return this.store.findRecord('board', params.board_id);
+    },
+
+
+    actions: { // move out of here and into tolaboard designer component
+      onAddItem() {
+        console.log('add item', this);
+        // var newItem = this.store.createRecord('item', {
+        //   board: this.model,
+        //   title: 'blank',
+        //   widgetcol: 1,
+        //   widgetrow: 1,
+        //   widgetsizex: 1,
+        //   widgetsizey: 1,
+        // });
+
+      }
     }
 });
