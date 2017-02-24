@@ -1,24 +1,9 @@
-/* This component is the parent to render-tolaboard-item components for mutable graph/widgets
-
-	It's main purpose is to control additions of new board items, and be the parent for the array
-	of these items. Each item (tbItemConfig) is used to generate a child render-tolaboard-item component
-*/
 import Ember from 'ember';
 
-var TBoard = Ember.Object.extend({
-	title: 'Some Generic Title',
-	items: []
-});
-
 export default Ember.Component.extend({
-	showDesigner: false,
-	showGridLayout: false,
-	showGraphBuilder: false,
 
 	store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
-
-
 
 	/* fires when tolaboard-designer.hbs has loaded */
 	didRender() {
@@ -63,18 +48,6 @@ export default Ember.Component.extend({
 		console.log(this.getSerializedWidgets());*/
 		},
 
-	getSerializedWidgets() {
-		return $('.gridster ul').gridster().data('gridster').serialize();
-	},
-
-	getSerializedGraphs() {
-		// iterate $tolagraphs on gridster object and return object array
-	},
-
-	getJSONString(obj) {
-		// return json-ized string of obj
-	},
-
 	actions: {
 		createNewBoard() {
 			// check state to see if we're already in current or new board
@@ -89,7 +62,7 @@ export default Ember.Component.extend({
 			// if new or existing exists, prompt, save, wipe out and call createNewBoard
 		},
 
-		addItem() {
+		onAddItem() {
 			// wrap this in a try throw catch
 			// seems like an error occurs and prevents the full api from running
 			// we need this to be atomic
@@ -104,18 +77,35 @@ export default Ember.Component.extend({
 					"graph":  Ember.Object.create({})
 				});*/
 
-				var obj = Ember.Object.create({
-					"widget": {"col":1,"row":1,"size_x":2,"size_y":2},
-					"graph":  Ember.Object.create({})
+				// var obj = Ember.Object.create({
+				// 	"widget": {"col":1,"row":1,"size_x":2,"size_y":2},
+				// 	"graph":  Ember.Object.create({})
+				// });
+
+				var itemObj = Ember.Object.create({
+					board: this.model,
+			    title: 'Test Title',
+			    widgetcol: 1,
+			    widgetrow: 1,
+			    widgetsizex: 2,
+			    widgetsizey: 2,
 				});
 
 
 			// push new dashboard item into model.items
-			this.get('model').get('currBoard').get('items').pushObject(obj);
+			// this.get('model').get('items').pushObject(itemObj);
+			this.get('store').createRecord('item', {
+				board: this.get('model'),
+		    title: 'Test Title',
+		    widgetcol: 1,
+		    widgetrow: 1,
+		    widgetsizex: 2,
+		    widgetsizey: 2,
+			})
 
 			// since we pushed an element to the UI, we need to update underlying
 			// tbConfigItem object
-			var newIndxex = this.get('model').get('currBoard').get('items').length-1;
+			var newIndxex = this.get('model').get('items').length-1;
 			/*
 			var newWidget = Ember.$('.gridster ul')
 							 .gridster().data('gridster')
@@ -130,7 +120,7 @@ export default Ember.Component.extend({
 		},
 		removeItem(index) {
 			console.log('removeItem index',index);
-			var currItem = this.get('model').get('currBoard').get('items');
+			var currItem = this.get('model').get('items');
 			currItem.removeObject(currItem[index]);
 			// push item into tolaboardItems array
 			// this.tolaboardItems.pushObject(newID);

@@ -14,7 +14,7 @@
             <!-- render is responsible for displaying an item, and it's also responsible for letting
                                  tb-designer know which item is 'active' by setting the value, so it can be passed
                                  to the gbw component below -->
-            {{#each model.currBoard.items as |tbItem index|}}
+            {{#each model.items as |tbItem index|}}
               {{render-tolaboard-item index=index
                                       itemMutable=true
                                       tbItemConfig=tbItem
