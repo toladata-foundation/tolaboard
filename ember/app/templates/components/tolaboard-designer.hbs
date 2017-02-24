@@ -2,11 +2,17 @@
 <section class="create-view">
     <div class="container">
       <div class="row">
-          <button class="btn btn-default" {{action 'onAddItem' on='click'}}>Add Component</button>
-          
+          <button class="btn btn-success add-item-button" {{action 'onAddItem' on='click'}}>Add Item</button>
+
       </div>
 
-      <h2>{{model.title}}</h2>
+      <div class="row">
+        <h2>{{model.title}}
+        <button data-toggle="modal" data-target="#edit-title" type="button" class="btn btn-primary btn-xs" {{action 'onEditTitle'}}>Edit</button></h2>
+
+      </div>
+
+
       <div class="gridster">
         <ul><!-- gridster stuff -->
             <!-- new approach model can have tolaboard if id passed into route via dynamic model aslo can get defined by creating new tb
@@ -28,3 +34,33 @@
       </div>
     </div>
 </section>
+
+<!-- Modal -->
+<!-- <div class="container"> -->
+<div class="modal fade" id="edit-title" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog add-tolaboard-modal" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	        <h4 class="modal-title" id="myModalLabel">TolaBoard Title</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="container-fluid">
+
+	        <div class="row">
+    				<input id="newTBName" value={{model.title}} type="text" size="50" placeholder="Enter TolaBoard Title">
+            <button class="btn btn-cancel">Cancel</button>
+            <button class="btn btn-success" {{action 'createBoard'}}>Save</button>
+    			</div>
+
+
+
+
+	      </div>
+	  </div> <!-- model body container -->
+
+	    </div>
+	  </div>
+</div>

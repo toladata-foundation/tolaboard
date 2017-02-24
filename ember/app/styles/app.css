@@ -99,6 +99,9 @@ h1,h2,h3,h4,h5,h6 {
 .tb-designer-header {
 	margin-top: 30px;
 }
+.add-item-button {
+	margin-top: 15px
+}
 .design-window {
 	margin-top: 20px;
 	min-height: 80vh;

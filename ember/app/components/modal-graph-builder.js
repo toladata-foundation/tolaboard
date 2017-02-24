@@ -211,6 +211,11 @@ export default Ember.Component.extend({
     saveBoardItem() {
       // this.get('tbItem').set('source', this.get('selectedSource'));
       // this.get('tbItem').save();
+      console.log('persist modal graph builder selections', this);
+      this.get('tbItem').set('source', this.get('selectedSource'));
+      this.get('tbItem').set('graph', this.get('selectedGraph'));
+
+      this.get('tbItem').save();
 
     },
 

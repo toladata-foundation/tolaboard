@@ -89,7 +89,13 @@ export default Ember.Component.extend({
 		           of a TolaBoard component. Below handles widget property */
 		        resize: { enabled: true,
 		        		  stop(e,ui,$widget) {
-		        		  	console.log('$widget==>',$widget.data())
+										var currWidget = $widget.data();
+										thisItem.get('tbItem').set('widgetrow', currWidget.row);
+										thisItem.get('tbItem').set('widgetcol', currWidget.col);
+										thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
+										thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
+
+										thisItem.get('tbItem').save();
 
 		        		  	/* I'm struggling with some aspects of gridster here. We need to update the tbItemConfig
 		        		  	   for this component to reflect changes in the grid... for example, resize and drag.
@@ -99,8 +105,13 @@ export default Ember.Component.extend({
 		        		  }},
 		        draggable: {
 		        		  stop(e,ui) {
-		        		  	console.log('$widget==>',Ember.$(e.target).data())
+										var currWidget = Ember.$(e.target).data();
+		        		  	thisItem.get('tbItem').set('widgetrow', currWidget.row);
+										thisItem.get('tbItem').set('widgetcol', currWidget.col);
+										thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
+										thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
 
+										thisItem.get('tbItem').save();
 		        		  }}
 		});
 
