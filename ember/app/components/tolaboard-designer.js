@@ -94,14 +94,16 @@ export default Ember.Component.extend({
 
 			// push new dashboard item into model.items
 			// this.get('model').get('items').pushObject(itemObj);
-			this.get('store').createRecord('item', {
+			var newItem = this.get('store').createRecord('item', {
 				board: this.get('model'),
 		    title: 'Test Title',
 		    widgetcol: 1,
 		    widgetrow: 1,
 		    widgetsizex: 2,
 		    widgetsizey: 2,
-			})
+			});
+
+			newItem.save();
 
 			// since we pushed an element to the UI, we need to update underlying
 			// tbConfigItem object
@@ -149,11 +151,8 @@ export default Ember.Component.extend({
 			// console.log('tb-designer.index',index);
 		},*/
 
-		saveBoard() {
+		onSaveBoard() {
 			console.log('save or update TolaBoard');
-
-			var currBoard = this.get('model').get('currBoard').get('items');
-			console.log(currBoard);
 
 
 		},

@@ -3,6 +3,7 @@
     <div class="container">
       <div class="row">
           <button class="btn btn-default" {{action 'onAddItem' on='click'}}>Add Component</button>
+          
       </div>
 
       <h2>{{model.title}}</h2>
@@ -20,6 +21,7 @@
                                       tbItemConfig=tbItem
                                       tbItem=tbItem
                                       model=model
+                                      onSaveBoard=onSaveBoard
               }}
             {{/each}}
         </ul>
