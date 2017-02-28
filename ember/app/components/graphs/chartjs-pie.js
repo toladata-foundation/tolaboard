@@ -25,10 +25,10 @@ export default Ember.Component.extend({
 	didInsertElement: function() {
 		console.log('INSERT PIE GRAPH',this);
 
-		var siloId = this.get('tbItemConfig').get('source').get('id');
+		var siloId = this.get('tbItem').get('source').get('id');
 		var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
 		var tablesData = this.get('dataAgg').groupBySum(siloId, dataModel);
-		
+
 
 		var self = this;
 		tablesData.then(function(result) {
@@ -52,7 +52,7 @@ export default Ember.Component.extend({
 			});
 
 			// self.get('tbItemConfig').get('graph').set('config', pieConfig);
-			Ember.set(self.get('tbItemConfig').graph, 'config', pieConfig);
+			Ember.set(self.get('tbItem').get('graph'), 'config', pieConfig);
 
 			// console.log('barConfig', pieConfig);
 			var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');

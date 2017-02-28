@@ -36,7 +36,7 @@ export default Ember.Component.extend({
 				graphmodel: gi.get('graphmodel').get('name'),
 				graphmodelvalue: gi.get('graphmodelvalue')}
 			});
-			
+
 
 
 		// returns promise, on resolution returns d3.nest of aggregated data
@@ -66,7 +66,7 @@ export default Ember.Component.extend({
 			   Thus, object setters and getters not available, so using generic Ember.set */
 
 			// self.get('tbItemConfig').get('graph').set('config', barConfig);
-			Ember.set(self.get('tbItemConfig').graph, 'config', barConfig);
+			Ember.set(self.get('tbItem').get('graph'), 'config', barConfig);
 
 			// console.log('barConfig', barConfig);
 			var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');

@@ -139,6 +139,7 @@ export default Ember.Component.extend({
 		// get the .hbs template for this instance of the component, set it to thisView
 		// what is the child here?
 		var thisView = this.get('element').childNodes[0];
+		console.log('THISVIEW!!!!', thisView)
 		/* above line doesn't work because no li was added during the view
 		   we could assume an li needs to be added, then follow through as before
 		   i mean, if edit mode is used, we need that same view with the edit/delete buttons*/
