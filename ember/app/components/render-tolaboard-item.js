@@ -48,14 +48,6 @@ export default Ember.Component.extend({
     }),
 
 
-	didRender() {
-
-		// this is breaking things when moving from view to edit and vice versa
-		// re-evaluate how you sync
-		// this.get('actions').syncWidgetData(this);
-		 },
-
-
 	didInsertElement() {
 		console.log('didInsert render-tolaboard-item',this);
 
@@ -78,40 +70,54 @@ export default Ember.Component.extend({
 
 		var grid = Ember.$('.gridster ul');
 
-		// var assignIndex = Ember.$(grid.data('gridster').$widgets[thisIndex]).data('index',thisIndex);
-
 		/* Defines default gridster widget size*/
 		grid.gridster({
 		        widget_margins: [5, 5],
 		        widget_base_dimensions: [140, 140],
-		        /* on resize or drag events, need to sync gridster data object with
-		           our Ember app's tbItemConfig which is our data representation
-		           of a TolaBoard component. Below handles widget property */
+
 		        resize: { enabled: true,
 		        		  stop(e,ui,$widget) {
+										var targetItemIndex = $widget[0].dataset.index;
+										var targetItem = thisItem.get('model').get('items').canonicalState[targetItemIndex].getRecord();
+										// console.log('targetItem ref index', targetItem.get(''))
+										// temp1.get('model').get('items').map(function(d) { return d})[0]
+										// temp1.get('model').get('items').map(function(d) { return d})[0]
+										// console.log('thisItem', thisItem)
+										// console.log('resize on index ', thisItem.get('index'))
+										// console.log('$widget sizey', Math.round(($widget.data().coords.data.height-10)/140) )
+										// console.log('$widget sizex', Math.round(($widget.data().coords.data.width-10)/140) )
 										var currWidget = $widget.data();
-										thisItem.get('tbItem').set('widgetrow', currWidget.row);
-										thisItem.get('tbItem').set('widgetcol', currWidget.col);
-										thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
-										thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
+										// console.log('resize', currWidget);
+										targetItem.set('widgetrow', currWidget.row);
+										targetItem.set('widgetcol', currWidget.col);
+										targetItem.set('widgetsizex', Math.round(($widget.data().coords.data.width-10)/140));
+										targetItem.set('widgetsizey', Math.round(($widget.data().coords.data.height-10)/140));
 
-										thisItem.get('tbItem').save();
+										targetItem.save();
 
-		        		  	/* I'm struggling with some aspects of gridster here. We need to update the tbItemConfig
-		        		  	   for this component to reflect changes in the grid... for example, resize and drag.
-		        		  	   These methods here are hooks for catching those events and working with them.
-		        		  	   See draggable below as well. */
+
 
 		        		  }},
 		        draggable: {
 		        		  stop(e,ui) {
 										var currWidget = Ember.$(e.target).data();
-		        		  	thisItem.get('tbItem').set('widgetrow', currWidget.row);
-										thisItem.get('tbItem').set('widgetcol', currWidget.col);
-										thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
-										thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
+										// var currWidget = Ember.$(e.target);
+										var targetItemIndex = currWidget.coords.el['0'].dataset.index;
+										var targetItem = thisItem.get('model').get('items').canonicalState[targetItemIndex].getRecord();
+										// console.log('dragged', currWidget);
+		        		  	// thisItem.get('tbItem').set('widgetrow', currWidget.row);
+										// thisItem.get('tbItem').set('widgetcol', currWidget.col);
+										// thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
+										// thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
+										//
+										// thisItem.get('tbItem').save();
+										targetItem.set('widgetrow', currWidget.row);
+										targetItem.set('widgetcol', currWidget.col);
+										targetItem.set('widgetsizex', Math.round((currWidget.coords.data.width-10)/140));
+										targetItem.set('widgetsizey', Math.round((currWidget.coords.data.height-10)/140));
 
-										thisItem.get('tbItem').save();
+										targetItem.save();
+
 		        		  }}
 		});
 

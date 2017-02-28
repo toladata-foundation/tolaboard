@@ -12,6 +12,8 @@ export default Ember.Component.extend({
 	didInsertElement() {
 		console.log('tb-designer object',this);
 
+
+
 		// see if model contains valid tolaboard
 		// MODEL HASN'T RETURNED BEFORE VIEW RENDERED AND THIS METHOD RUN
 		// WE NEED MODEL TO BE AVAILABLE FIRST
@@ -82,32 +84,37 @@ export default Ember.Component.extend({
 				// 	"graph":  Ember.Object.create({})
 				// });
 
-				var itemObj = Ember.Object.create({
-					board: this.model,
-			    title: 'Test Title',
-			    widgetcol: 1,
-			    widgetrow: 1,
-			    widgetsizex: 2,
-			    widgetsizey: 2,
-				});
-
 
 			// push new dashboard item into model.items
 			// this.get('model').get('items').pushObject(itemObj);
+
+			/* the trick with adding a new widget is that we don't know where gridster
+			   will place it... usually position (1,1) is taken. You could attempt to
+				 figure it out, or just drop a default in at 1,1, size 2x2, and then look
+				 and see where gridster actually placed it. Then update the store before
+				 persisting. */
+			// didCreate() in item model fires when this runs to update gridster props
 			var newItem = this.get('store').createRecord('item', {
 				board: this.get('model'),
-		    title: 'Test Title',
+		    title: 'New item xyz',
 		    widgetcol: 1,
 		    widgetrow: 1,
 		    widgetsizex: 2,
 		    widgetsizey: 2,
 			});
 
+
+
+			// newItem.set('widgetcol', newWidget.col);
+			// newItem.set('widgetrow', newWidget.row);
+			// newItem.set('widgetsizex', newWidget.size_x);
+			// newItem.set('widgetsizey', newWidget.size_y);
+
 			newItem.save();
 
 			// since we pushed an element to the UI, we need to update underlying
 			// tbConfigItem object
-			var newIndxex = this.get('model').get('items').length-1;
+			// var newIndxex = this.get('model').get('items').length-1;
 			/*
 			var newWidget = Ember.$('.gridster ul')
 							 .gridster().data('gridster')
@@ -119,6 +126,9 @@ export default Ember.Component.extend({
 			// console.log('curItems', curItems);
 			// curItems.pushObject(obj);
 
+		},
+		onEditTitle() {
+			
 		},
 		removeItem(index) {
 			console.log('removeItem index',index);
@@ -151,8 +161,9 @@ export default Ember.Component.extend({
 			// console.log('tb-designer.index',index);
 		},*/
 
-		onSaveBoard() {
-			console.log('save or update TolaBoard');
+		onWidgetChange() {
+			console.log('widget(s) either added, resized, or dragged!');
+
 
 
 		},

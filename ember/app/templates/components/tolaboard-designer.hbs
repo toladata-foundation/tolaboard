@@ -8,7 +8,7 @@
 
       <div class="row">
         <h2>{{model.title}}
-        <button data-toggle="modal" data-target="#edit-title" type="button" class="btn btn-primary btn-xs" {{action 'onEditTitle'}}>Edit</button></h2>
+        <button data-toggle="modal" data-target="#edit-title" type="button" class="btn btn-primary btn-xs">Edit</button></h2>
 
       </div>
 
@@ -28,6 +28,7 @@
                                       tbItem=tbItem
                                       model=model
                                       onSaveBoard=onSaveBoard
+
               }}
             {{/each}}
         </ul>
@@ -52,7 +53,7 @@
 	        <div class="row">
     				<input id="newTBName" value={{model.title}} type="text" size="50" placeholder="Enter TolaBoard Title">
             <button class="btn btn-cancel">Cancel</button>
-            <button class="btn btn-success" {{action 'createBoard'}}>Save</button>
+            <button class="btn btn-success" {{action 'onSaveTitle'}}>Save</button>
     			</div>
 
 
