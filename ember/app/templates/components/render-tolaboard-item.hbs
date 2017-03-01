@@ -3,7 +3,7 @@
 		{{#if itemMutable}}
 			<!-- The graph-builder-widget component would need to be in either this template, or the parent component of this component in order to fire. The render-tolaboard-item component is intended to be used in all cases of rendering a tolaboard item, so only the designer component needs the graph-builder-widget template -->
 			<button {{action 'activateGraphBuilder'}} data-toggle="modal" data-target="{{dataTarget}}" class="btn btn-xs"><span class="fa fa-edit"></span></button>
-			<button {{action 'deleteWidget'}} class="btn btn-xs delete-button"><span class="fa fa-trash"></span></button>
+			<button {{action 'setDeleteTarget' tbItem}} data-toggle="modal" data-target="#delete-item" class="btn btn-xs delete-button"><span class="fa fa-trash"></span></button>
 		{{/if}}
 	</div>
 	<!-- scopeGraph gets determined in tbItemConfig and defined once this Ember view is inserted -->
@@ -19,3 +19,33 @@
 {{#if itemMutable}}
 	{{modal-graph-builder tbItem=tbItem index=index onSaveBoard=onSaveBoard}}
 {{/if}}
+
+<!-- Modal -->
+<!-- <div class="container"> -->
+<div class="modal fade" id="delete-item" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog delet-tolaboard-item" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	        <h4 class="modal-title" id="myModalLabel">Delete Item</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="container-fluid">
+
+	        <div class="row">
+    				<h5>Are you sure you want to delete this item?</h5>
+						<button class="btn btn-cancel">Cancel</button>
+            <button class="btn btn-danger" {{action 'onDeleteWidget' tbItem }}>Delete</button>
+    			</div>
+
+
+
+
+	      </div>
+	  </div> <!-- model body container -->
+
+	    </div>
+	  </div>
+</div>

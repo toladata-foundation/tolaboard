@@ -254,6 +254,13 @@ export default Ember.Component.extend({
 			// called via sendAction in graph-builder-widget component
 			console.log('appendContent', tolagraph);
 		},*/
+		onDeleteWidget(item) {
+			console.log('delete widget',item)
+			console.log('delete event', Ember.$(event.target))
+			console.log('this element',this.get('element'))
+			// item.get('tbItem').destroyRecord();
+			// item.save();
+		},
 		deleteWidget() {
 			console.log(this);
 			/* deleteWidget - as with runGraphBuilderWidget, only needed in edit mode when

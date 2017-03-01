@@ -8,13 +8,14 @@
 
 <div class="container">
     <table class="table table-striped tolaboard-main-table">
-      <thead><tr><th>TolaBoard</th><th>View/Edit/Delete</th><th>Share</th></tr></thead>
+      <thead><tr><th>TolaBoard</th><th>Created</th><th>View/Edit/Delete</th><th>Share</th></tr></thead>
       {{#each model as |board|}}
           <tr>
 
             {{#link-to 'dashboards.view' board.id class="navbar-brand"}}
               <td>{{board.title}}</td>
             {{/link-to}}
+            <td>{{date-format board.created}}</td>
 
             <td>
             {{#link-to 'dashboards.view' board.id class="btn btn-success"}}

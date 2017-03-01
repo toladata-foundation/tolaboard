@@ -27,7 +27,7 @@ export default Ember.Component.extend({
 
 		var siloId = this.get('tbItem').get('source').get('id');
 		var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
-		var tablesData = this.get('dataAgg').groupBySum(siloId, dataModel);
+		var tablesData = this.get('dataAgg').groupBySum(siloId, 'origin', 'total_family_count');
 
 
 		var self = this;

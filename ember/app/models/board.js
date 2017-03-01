@@ -4,7 +4,7 @@ export default DS.Model.extend({
   owner: DS.belongsTo('owner', {async: false}),
   items: DS.hasMany('item', {inverse: 'board', async: false}),
   title: DS.attr('string'),
-  // createDate: DS.attr('date'),
+  created: DS.attr('date'),
   // updateDate: DS.attr('date')
 
 });
