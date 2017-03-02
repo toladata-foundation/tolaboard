@@ -37,6 +37,7 @@ export default Ember.Component.extend({
 				graphmodelvalue: gi.get('graphmodelvalue')}
 			});
 
+		console.log('dataModel in bar chart', dataModel);
 
 
 		// returns promise, on resolution returns d3.nest of aggregated data

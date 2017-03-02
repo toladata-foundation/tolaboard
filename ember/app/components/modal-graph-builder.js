@@ -7,11 +7,28 @@ export default Ember.Component.extend({
   tempSource: Ember.Object.create({}),
   tempGraph: Ember.Object.create({}),
   tempGraphInputs: Ember.Object.create({}),
+  tbItemSelected: Ember.computed('selectedSource', 'selectedGraphInputs', function() {
+    //
+    var tmp = Ember.Object.create({});
+    tmp.set('source', this.get('selectedSource'));
+    tmp.set('graphinputs', this.get('selectedGraphInputs'));
+
+    return tmp;
+  }),
 
   showDataSourcePreview: false,
 	showVizSelection: false,
   // showGraphDataModel: false,
   renderGraph: true,
+  // renderGraph: Ember.computed('selectedSource', 'selectedGraph', 'selectedGraphInputs', function() {
+  //
+  //   var silo = this.get('selectedSource').get('id'),
+  //       embercomponent = this.get('selectedGraph').get('embercomponent'),
+  //       graphInputs = this.get('selectedGraphInputs').getEach('graphmodelvalue');
+  //
+  //   return !!(silo && embercomponent && graphInputs);
+  //
+  // }),
 
   /* data-target for modals... each item (index) has its own */
 	dataTarget: Ember.computed('index', function() {
@@ -48,7 +65,7 @@ export default Ember.Component.extend({
 
   selectedGraph: Ember.computed('tbItem', function() {
     var graph = this.get('tbItem').get('graph') || Ember.Object.create({});
-    console.log('selectedGraph computed to be', graph)
+    // console.log('selectedGraph computed to be', graph)
     if (graph.get('graphmodels')) {
       this.set('graphDataModels', graph.get('graphmodels'));
       this.set('showGraphDataModel', true);
@@ -67,19 +84,20 @@ export default Ember.Component.extend({
                      .then(() => this.set('fooInput',true));
     var graphInputs = this.get('tbItem').get('graphinputs');
 
-    // console.log('graphInputs==>',graphInputs)
+    console.log('graphInputs==>',graphInputs)
+    return graphInputs;
 
-    return graphInputs.map(function(gi) {
-      return {graphmodel: gi.get('graphmodel').get('name'),
-              graphmodelvalue: gi.get('graphmodelvalue')
-            };
-          }); // end map
+    // return graphInputs.map(function(gi) {
+    //   return {graphmodel: gi.get('graphmodel').get('name'),
+    //           graphmodelvalue: gi.get('graphmodelvalue')
+    //         };
+    //       }); // end map
     // return [{graphmodel: 'group', graphmodelvalue: 'origin'}, {graphmodel: 'size', graphmodelvalue: 'total_family_count'}]
   }),
 
   selectedGraphComponent: Ember.computed('selectedGraph', function() {
     // init with a store defined component if one exists, update per graph
-    console.log('selectedGraphComponent called!!');
+    // console.log('selectedGraphComponent called!!');
     return this.get('selectedGraph').get('embercomponent');
   }),
 
@@ -179,19 +197,28 @@ export default Ember.Component.extend({
 
     tryGraphRender(selectedField) {
       var dataModelFieldName = event.target.name;
-      console.log('attempt render', selectedField, dataModelFieldName);
-      console.log('selectedSource', this.get('selectedSource'));
-      console.log('selectedGraph', this.get('selectedGraph'));
-      console.log('selectedGraphInputs', this.get('selectedGraphInputs'));
+      // console.log('attempt render', selectedField, dataModelFieldName);
+      // console.log('selectedSource', this.get('selectedSource'));
+      // console.log('selectedGraph', this.get('selectedGraph'));
+      // console.log('selectedGraphInputs', this.get('selectedGraphInputs'));
     },
     onGraphInputSelect(selectedField) {
+      // console.log('selectedField', selectedField)
+      // console.log('selectedGraphInputs', this.get('selectedGraphInputs'))
+      var currSelectedInputs = this.get('selectedGraphInputs');
       /* This function runs whenever a field is selected in the graph inputs
          It checks if minimal number of fields defined, and attempts to render graph */
       try {
+        var matchInput = currSelectedInputs.find(function(gi) {
+          return gi.get('graphmodel').get('name') === event.target.name
+        });
         // update selected inputs
-        Ember.set(this.get('selectedGraphInputs').find(
-          function(d) { return d.graphmodel===event.target.name
-          }), 'graphmodelvalue', selectedField);
+        // Ember.set(this.get('selectedGraphInputs').find(
+        //   function(d) { return d.graphmodel===event.target.name
+        //   }), 'graphmodelvalue', selectedField);
+        // console.log('matchInput', matchInput)
+        // console.log(this.get('selectedGraphInputs'));
+        matchInput.set('graphmodelvalue', selectedField);
 
 
 
@@ -214,8 +241,12 @@ export default Ember.Component.extend({
       console.log('persist modal graph builder selections', this);
       this.get('tbItem').set('source', this.get('selectedSource'));
       this.get('tbItem').set('graph', this.get('selectedGraph'));
+      // this.get('tbItem').set('graphinputs', this.get('selectedGraphInputs'));
 
       this.get('tbItem').save();
+      this.get('tbItem').get('graphinputs').save();
+
+      this.sendAction('toggleGraphRendering');
 
     },
 

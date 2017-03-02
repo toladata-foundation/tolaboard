@@ -46,7 +46,9 @@ export default Ember.Component.extend({
 	dataTarget: Ember.computed('index', function() {
     	return '#gbwModal' + this.get('index')
     }),
-
+	deleteTarget: Ember.computed('index', function() {
+		return '#tbi-delete-item' + this.get('index');
+	}),
 
 	didInsertElement() {
 		console.log('didInsert render-tolaboard-item',this);
@@ -254,33 +256,38 @@ export default Ember.Component.extend({
 			// called via sendAction in graph-builder-widget component
 			console.log('appendContent', tolagraph);
 		},*/
+		onDeleteItem() {
+			console.log(this.get('element'))
+			this.get('tbItem').destroyRecord();
+		},
+
+		toggleGraphRendering() {
+			this.set('toggleRender', false);
+			setTimeout(() => {
+				this.set('toggleRender', true);
+			}, 250);
+
+		},
+
+		/*setDeleteTarget(targetItem) {
+				this.set('deleteTarget',targetItem);
+				console.log('target for deletion', this.get('deleteTarget'));
+				console.log('ember element', this.get('element'));
+				// this.destroyElement();
+				targetItem.destroyRecord();
+
+
+		},*/
+		/*
 		onDeleteWidget(item) {
-			console.log('delete widget',item)
-			console.log('delete event', Ember.$(event.target))
-			console.log('this element',this.get('element'))
-			// item.get('tbItem').destroyRecord();
-			// item.save();
-		},
-		deleteWidget() {
-			console.log(this);
-			/* deleteWidget - as with runGraphBuilderWidget, only needed in edit mode when
-			   the trashcan button is available. This action destroys the component */
-			this.destroyElement();
+
+			console.log('delete widget',this.get('deleteTarget'))
+
+			item.get('tbItem').destroyRecord();
+			item.save();
+		},*/
 
 
-		},
 
-		syncWidgetData(item) {
-
-			var gridsterWidget = Ember.$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')];
-
-			item.get('tbItemConfig').set('widgetrow', gridsterWidget.widgetrow);
-			item.get('tbItemConfig').set('widgetcol', gridsterWidget.widgetcol);
-			item.get('tbItemConfig').set('widgetsizex', gridsterWidget.widgetsizex);
-			item.get('tbItemConfig').set('widgetsizey', gridsterWidget.widgetsizey);
-
-			console.log('tbItem WIDGET==>',item.get('tbItemConfig'));
-			console.log(Ember.$('.gridster ul').gridster().data('gridster').serialize()[item.get('index')])
-		}
 	}
 });
