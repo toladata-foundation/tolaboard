@@ -8,7 +8,7 @@ export default Ember.Controller.extend({
 
     sortedBoards: Ember.computed.sort('model', 'sortDefinition'),
 
-    sortDefinition: ['id'],
+    sortDefinition: ['title'],
 
     actions: {
 
