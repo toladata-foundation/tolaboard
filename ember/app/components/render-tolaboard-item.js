@@ -49,9 +49,49 @@ export default Ember.Component.extend({
 	deleteTarget: Ember.computed('index', function() {
 		return '#tbi-delete-item' + this.get('index');
 	}),
+	graphInputs: Ember.computed('tbItem', function() {
+		console.log('RENDER COMPUTED PROP FOR graphInputs');
+		return this.get('tbItem').get('graphinputs');
+	}),
+
+	graphInputsDep: Ember.computed('graphInputs', function() {
+		console.log('RENDER COMPUTED PROP FOR graphInputsDep')
+		console.log('render graphinputs',this.get('tbItem').get('graphinputs'));
+	}),
+	dataModel: Ember.computed('fooInput', function() {
+    /* stupid hack I had to do to deal with delay in results from store
+       This computed property needs calculated for any persisted graphinputs
+       to be picked up and selected in the UI. By setting/changing fooInput,
+       we're changing the dependency of this property, thus resulting in its
+       re-calc (after initially returning an empty array)*/
+    this.get('store').query('graphinput',{item: this.get('tbItem').get('id')})
+                     .then(() => this.set('fooInput',true));
+    var graphInputs = this.get('tbItem').get('graphinputs');
+
+		return graphInputs.map(function(gi) {
+				return {
+					graphmodelname: gi.get('graphmodel').get('name'),
+					graphmodelvalue: gi.get('graphmodelvalue')}
+				});
+
+
+
+    // return graphInputs.map(function(gi) {
+    //   return {graphmodel: gi.get('graphmodel').get('name'),
+    //           graphmodelvalue: gi.get('graphmodelvalue')
+    //         };
+    //       }); // end map
+    // return [{graphmodel: 'group', graphmodelvalue: 'origin'}, {graphmodel: 'size', graphmodelvalue: 'total_family_count'}]
+  }),
+
+	/* this mimics what happens when a user specifies inputs in the modal graph builder
+		 it takes the persisted graphinputs, and builds the data model used by the graph components */
 
 	didInsertElement() {
 		console.log('didInsert render-tolaboard-item',this);
+		this.get('graphInputs');
+		this.get('graphInputsDep');
+		// this.get('dataModel');
 
 		try {
 

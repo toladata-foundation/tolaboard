@@ -4,6 +4,8 @@ export default Ember.Component.extend({
   store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
 
+  // inputToModelMapper: Ember.Object.create({}),
+  resetModalSelection: false,
   tempSource: Ember.Object.create({}),
   tempGraph: Ember.Object.create({}),
   tempGraphInputs: Ember.Object.create({}),
@@ -49,6 +51,7 @@ export default Ember.Component.extend({
 	}),
 
   selectedSource: Ember.computed('tbItem', function() {
+    console.log('selectedSource invoked!!')
     var source = this.get('tbItem').get('source') || Ember.Object.create({});
     // populate previewData if there's a source.id
     if (source.get('id')) {
@@ -202,10 +205,79 @@ export default Ember.Component.extend({
       // console.log('selectedGraph', this.get('selectedGraph'));
       // console.log('selectedGraphInputs', this.get('selectedGraphInputs'));
     },
+    onGraphInputSelectFoo(selectedField) {
+
+      this.set('renderGraph', false);
+      // setup inputModelMapper if undefined
+      if(!this.hasOwnProperty('inputToModelMapper')) {
+        console.log('CREATING NEW INPUT MAPPER')
+        this.set('inputToModelMapper', Ember.Object.create({}));
+      }
+      // define graphType if undefined, then define graphmodel
+      if (!this.get('inputToModelMapper').hasOwnProperty('graphType')) {
+        this.get('inputToModelMapper').set('graphType', this.get('selectedGraph').get('label'));
+        // this.get('inputToModelMapper').set('mapper', [{}])
+        console.log('CREATING NEW GRAPH TYPE')
+        this.get('inputToModelMapper').set('graphInputs',
+          this.get('graphDataModels').getEach('name').map(function(name) {
+            return {graphModelName: name}
+          })
+        )
+      } else {
+        // update graphType if different from selectedGraph.label
+
+        if (this.get('inputToModelMapper').get('graphType') !== this.get('selectedGraph').get('label')) {
+          console.log('UPDATE GRAPH TYPE')
+          this.get('inputToModelMapper').set('graphType', this.get('selectedGraph').get('label'));
+          // reset graphInputs
+          this.get('inputToModelMapper').set('graphInputs',
+            this.get('graphDataModels').getEach('name').map(function(name) {
+              return {graphModelName: name}
+            })
+          );
+        }
+      } // end else
+
+      // almost there... define graphModelValue using graphModelName and event.target.name
+      console.log('target name', event.target.name)
+      // find graphInputs with our target, and set graphModelValue
+      var targetModel = this.get('inputToModelMapper').graphInputs.find(function(d) { return d.graphModelName === event.target.name })
+      targetModel.graphModelValue =  selectedField;
+
+      // after each input selection, need to figure out if graph is renderable
+      // if so, set renderGraph to true
+
+
+      console.log('inputToModelMapper ==>', this.get('inputToModelMapper'));
+
+      var self = this;
+      setTimeout(function() {
+        self.set('renderGraph',true);
+        // self.set('showDataFilters',true);
+      }, 250);
+
+      // situation A - no currently defined mapper in process
+
+
+      // console.log('selectedGraphInputs', this.get('selectedGraphInputs'));
+      // console.log('graph models', this.get('graphDataModels'));
+
+      // this.get('graphDataModels').getEach('name')
+    },
     onGraphInputSelect(selectedField) {
       // console.log('selectedField', selectedField)
-      // console.log('selectedGraphInputs', this.get('selectedGraphInputs'))
+      console.log('selectedGraphInputs', this.get('selectedGraphInputs'))
       var currSelectedInputs = this.get('selectedGraphInputs');
+      /* if there are no selected graph inputs, then we need to create */
+      if(currSelectedInputs.length) {
+        console.log('need to create graphinput record')
+        // setup new graphinput for each graphmodel
+        // this.set('selectedGraphInputs', this.get('store').createRecord('graphinput', {
+        //   item: this.get('tbItem'),
+        //   graphmodel: this.get('selectedGraph').get('graphmodels')
+        // })); // end set
+
+      }
       /* This function runs whenever a field is selected in the graph inputs
          It checks if minimal number of fields defined, and attempts to render graph */
       try {
@@ -229,6 +301,41 @@ export default Ember.Component.extend({
 
     cancelGraphBuilder() {
       console.log('cancel called');
+      // wipe out everything, and force it to pick again
+      // this.set('selectedSource', null);
+      // this.set('previewData', null);
+      // this.set('showDataSourcePreview', false);
+      // this.set('showVizSelection', false);
+      // this.set('showGraphDataModel', false);
+
+      var self = this;
+      this.set('selectedSource', this.get('tbItem').get('source'));
+      this.set('selectedGraph', this.get('tbItem').get('graph'));
+      this.get('actions').onGraphSelect.call(self, this.get('tbItem').get('graph'));
+
+      var tablesData = this.get('dataAgg').selectPreview(this.get('selectedSource').get('id'), 20);
+          tablesData.then(function(results) {
+            self.set('previewData', results);
+            console.log('results to previewData', results)
+            if(results.length>0) {
+              self.set('showDataSourcePreview',true);
+              self.set('showVizSelection', true);
+            }
+            else {
+              self.set('showDataSourcePreview',false);
+              self.set('showVizSelection', false);
+            }
+
+          });
+      // this.set('resetModalSelection', new Date().toISOString());
+
+      // this.set('previewData', null);
+      // this.set('showDataSourcePreview', false);
+      // this.set('showVizSelection', false);
+      // this.set('showGraphDataModel', false);
+      // this.set('resetModalSelection',true);
+
+
       // undo selections
       // selectedSource is either nothing or model value
       // this.set('selectedSource', this.get('tbItem').get('source'));
