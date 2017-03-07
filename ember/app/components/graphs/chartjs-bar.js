@@ -18,118 +18,62 @@ import Ember from 'ember';
    tbItemConfig when saving the work done in the graph builder widget.
 */
 export default Ember.Component.extend({
-	self: this,
-
 	dataAgg: Ember.inject.service('data-aggregator'),
-
-	/* data model either passed in ready to go (like in modal builder)
-	   OR
-		 data model built from persisted graphmodels on item model instance
-	*/
-	dataModelFromStore: Ember.computed('graphInputs', function() {
-
-		var inputs = this.get('tbItem').get('graphinputs');
-		this.set('graphInputs', inputs);
-		return inputs.map(function(gi) {
-				return {
-					graphmodelname: gi.get('graphmodel').get('name'),
-					graphmodelvalue: gi.get('graphmodelvalue')}
-				});
-
-	}),
 
 	didInsertElement: function() {
 		console.log('INSERT BAR GRAPH',this);
-		var self = this;
+		// console.log('BAR GRAPH DATA MODEL', this.get('dataModel'));
 		try {
 			// bar graph uses groupSum from data-agg service... just need silo id, group field, and sum field
 			var siloId = this.get('tbItem').get('source').get('id');
-			// silo is easy, but the group and sum fields come from data model which comes from one of two places
-			// 1... in the case of the modal builder, tbItem will have dataModel property
-			// 2... in the case of persisted inputs, need to build the dataModel
-			var dataModel = this.get('tbItem').get('dataModel')
-			var graphInputs = this.get('tbItem').get('graphinputs');
+			var dataModel = this.get('inputToModelMapper').get('graphInputs');
 
-			// console.log('siloId?', siloId);
-			// console.log('dataModel prop exists', dataModel)
-			setTimeout(function() {
+			// console.log('dataModel in bar graph component', dataModel);
 
-				var dataModel = graphInputs.map(function(gi) {
-						return {
-							graphmodelname: gi.get('graphmodel').get('name'),
-							graphmodelvalue: gi.get('graphmodelvalue')}
-						});
-					// console.log('dataModel?', dataModel);
-					// ok, now we have our model, get props
-					// dataModel.find(function(m) { return m.graphmodelname === 'group'})
-					var groupField = dataModel.find(function(m) { return m.graphmodelname === 'group'}).graphmodelvalue;
-					var sumField = dataModel.find(function(m) { return m.graphmodelname === 'size'}).graphmodelvalue;
+			var groupField = dataModel.find(function(m) { return m.graphModelName === 'group'}).graphModelValue;
+			var sumField = dataModel.find(function(m) { return m.graphModelName === 'size'}).graphModelValue;
 
-					var tablesData = self.get('dataAgg').groupBySum(siloId, groupField, sumField);
+			// console.log('BAR GRAPH GROUP', groupField);
+			// console.log('BAR GRAPH SIZE', sumField);
 
+			var tablesData = this.get('dataAgg').groupBySum(siloId, groupField, sumField);
+			var self = this;
+			tablesData.then(function(result) {
+				var labelArr = result.map(function(d) { return d.key});
+				var dataArr = result.map(function(d) { return d.value});
 
+				var barConfig = Ember.Object.create({
+							type: "bar",
+							data: Ember.Object.create({
+								labels: labelArr,
+								datasets: [Ember.Object.create({
+									data: dataArr,
+									backgroundColor: "#00afaa"
+								})]
+							}),
+							options: {}
+				});
 
-					tablesData.then(function(result) {
-						var labelArr = result.map(function(d) { return d.key});
-						var dataArr = result.map(function(d) { return d.value});
+				/* For some reason, tbItemConfig is not a full fledged Ember Object when
+					 coming from a persisted Tolaboard via the store, unlike when coming from designer.
+					 Thus, object setters and getters not available, so using generic Ember.set */
 
-						var barConfig = Ember.Object.create({
-									type: "bar",
-									data: Ember.Object.create({
-										labels: labelArr,
-										datasets: [Ember.Object.create({
-											data: dataArr,
-											backgroundColor: "#00afaa"
-										})]
-									}),
-									options: {}
-						});
+				// self.get('tbItemConfig').get('graph').set('config', barConfig);
+				// Ember.set(self.get('tbItem').get('graph'), 'config', barConfig);
 
-						/* For some reason, tbItemConfig is not a full fledged Ember Object when
-						   coming from a persisted Tolaboard via the store, unlike when coming from designer.
-						   Thus, object setters and getters not available, so using generic Ember.set */
+				// console.log('barConfig', barConfig);
+				var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');
+							// console.log('ctx', ctx)
 
-						// self.get('tbItemConfig').get('graph').set('config', barConfig);
-						// Ember.set(self.get('tbItem').get('graph'), 'config', barConfig);
-
-						// console.log('barConfig', barConfig);
-						var ctx = Ember.$('#'+ self.get('elementId') + ' canvas');
-									// console.log('ctx', ctx)
-
-						ctx.resize(function() {
-							'resize detected';
-						});
+				ctx.resize(function() {
+					'resize detected';
+				});
 
 
-						var barChart = new Chart(ctx, barConfig);
-						// console.log('testChart', barChart)
+				var barChart = new Chart(ctx, barConfig);
+				// console.log('testChart', barChart)
 
-					})
-
-
-			},1500)
-
-
-			// if graphinputs in store, they need retrieved, and this delay means
-			// other code runs before we have the data ready. We need to wait until
-			// graphInputs actually exist, then run our little map to get our dataModel
-
-
-			// if tbItem DOES NOT have a property called dataModel, then try to
-			// calc from store
-
-
-			// var graphInputs = this.get('tbItemConfig').graphinputs;
-			// console.log('siloId',siloId);
-			// console.log('graphInputs in bar==>',graphInputs);
-			// get group field
-
-			// console.log('dataModel in bar chart', this.get('tbItem').get('dataModel'));
-
-
-			// returns promise, on resolution returns d3.nest of aggregated data
-			// var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
-
+			})
 
 	} // end try
 	catch(err) { console.log('Error Rendering Bar Graph', err)}

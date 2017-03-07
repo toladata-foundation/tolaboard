@@ -4,7 +4,18 @@ export default Ember.Component.extend({
   store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
 
-  // inputToModelMapper: Ember.Object.create({}),
+  inputToModelMapper: Ember.computed('selectedGraphInputs', function() {
+    var tmpObj = Ember.Object.create({});
+    tmpObj.set('graphType', this.get('selectedGraph').get('label'));
+    var persistedDataModel = this.get('selectedGraphInputs').map(function(gi) {
+        return {
+          graphModelName: gi.get('graphmodel').get('name'),
+          graphModelValue: gi.get('graphmodelvalue')}
+        });
+    tmpObj.set('graphInputs', persistedDataModel)
+    // this.set('inputToModelMapper', persistedDataModel || Ember.Object.create({}));
+    return tmpObj || Ember.Object.create({});
+  }),
   resetModalSelection: false,
   tempSource: Ember.Object.create({}),
   tempGraph: Ember.Object.create({}),
@@ -18,10 +29,56 @@ export default Ember.Component.extend({
     return tmp;
   }),
 
+  // not used, yet, so maybe delete
+  dataModel: Ember.computed('tbItem', 'inputToModelMapper', function() {
+    /* calculated from either persisted graphinputs, dropdown selections, or mix
+    use selectedGraphModels to determine how many potential inputs there could be
+    scen 1 - everything new... not tbItem, no graphinputs, no inputToModelMapper
+           - can just use inputModelMapper
+    scen 2 - initial load of persisted graph
+           - just use tbItem and graphInputs along with the map
+    scen 3 - persisted graph loaded, but change made in dropdown
+           - use persisted selections, until overridden by dropdown selection
+
+    so this comp prop needs to look at everything and figure out which scenario from above is right
+
+    */
+    console.log('modal builder comp prop for dataModel');
+    console.log('any persisted inputs?', this.get('tbItem').get('graphinputs'));
+    console.log('any user selections?', this.get('inputToModelMapper'));
+    console.log('selectedGraphModels', this.get('selectedGraph').get('graphmodels'))
+
+    // look at inputToModelMapper and see if graphModelValue is undefined
+    // look for that value in persisted data
+    var missingGraphValues = this.get('inputToModelMapper').graphInputs.find(function(d) { return d.graphModelValue === undefined})
+    if (missingGraphValues) {
+      missingGraphValues.map(function(mgv) {
+        // lookup mgv.graphModelName in persisted data
+      })
+    }
+    var modalMapper = this.get('inputToModelMapper');
+		var retVal = null;
+
+		if(modalMapper && modalMapper.get('graphInputs').length>0) {
+			console.log('NEW INPUTS')
+			retVal = modalMapper.get('graphInputs');
+		}
+		else {
+			console.log('PERSISTED INPUTS')
+			retVal = this.get('tbItem').get('graphinputs').map(function(gi) {
+					return {
+						graphmodelname: gi.get('graphmodel').get('name'),
+						graphmodelvalue: gi.get('graphmodelvalue')}
+					})
+		}
+		console.log('computed dataModel==>',retVal)
+		return retVal;
+  }),
+
   showDataSourcePreview: false,
 	showVizSelection: false,
   // showGraphDataModel: false,
-  renderGraph: true,
+  renderGraph: false,
   // renderGraph: Ember.computed('selectedSource', 'selectedGraph', 'selectedGraphInputs', function() {
   //
   //   var silo = this.get('selectedSource').get('id'),
@@ -87,6 +144,8 @@ export default Ember.Component.extend({
                      .then(() => this.set('fooInput',true));
     var graphInputs = this.get('tbItem').get('graphinputs');
 
+    // if graphInputs not empty, set renderGraph to true
+    if(graphInputs.length >0) { this.set('renderGraph',true)}
     console.log('graphInputs==>',graphInputs)
     return graphInputs;
 
@@ -208,11 +267,17 @@ export default Ember.Component.extend({
     onGraphInputSelectFoo(selectedField) {
 
       this.set('renderGraph', false);
-      // setup inputModelMapper if undefined
-      if(!this.hasOwnProperty('inputToModelMapper')) {
-        console.log('CREATING NEW INPUT MAPPER')
-        this.set('inputToModelMapper', Ember.Object.create({}));
-      }
+      // setup inputModelMapper if undefined.... use persisted, if exists, or create emtpy object as last resort
+      // if(!this.hasOwnProperty('inputToModelMapper')) {
+      //   var persistedDataModel = this.get('selectedGraphInputs').map(function(gi) {
+      //       return {
+      //         graphmodelname: gi.get('graphmodel').get('name'),
+      //         graphmodelvalue: gi.get('graphmodelvalue')}
+      //       });
+      //   this.set('inputToModelMapper', persistedDataModel || Ember.Object.create({}));
+      //   console.log('CREATING NEW INPUT MAPPER')
+      //   console.log(this.get('inputToModelMapper'))
+      // }
       // define graphType if undefined, then define graphmodel
       if (!this.get('inputToModelMapper').hasOwnProperty('graphType')) {
         this.get('inputToModelMapper').set('graphType', this.get('selectedGraph').get('label'));
@@ -240,15 +305,14 @@ export default Ember.Component.extend({
 
       // almost there... define graphModelValue using graphModelName and event.target.name
       console.log('target name', event.target.name)
+      console.log('dataModel', this.get('inputToModelMapper').get('graphInputs'));
       // find graphInputs with our target, and set graphModelValue
-      var targetModel = this.get('inputToModelMapper').graphInputs.find(function(d) { return d.graphModelName === event.target.name })
-      targetModel.graphModelValue =  selectedField;
+      var targetModel = this.get('inputToModelMapper').get('graphInputs').find(function(d) { return d.graphModelName === event.target.name })
+      targetModel.graphModelValue = selectedField;
 
-      // after each input selection, need to figure out if graph is renderable
-      // if so, set renderGraph to true
-
-
+      // after each input selection, make sure our inputToModelMapper has graphInputs of non-zero length
       console.log('inputToModelMapper ==>', this.get('inputToModelMapper'));
+      console.log('length of mapper', this.get('inputToModelMapper').length)
 
       var self = this;
       setTimeout(function() {
@@ -263,40 +327,6 @@ export default Ember.Component.extend({
       // console.log('graph models', this.get('graphDataModels'));
 
       // this.get('graphDataModels').getEach('name')
-    },
-    onGraphInputSelect(selectedField) {
-      // console.log('selectedField', selectedField)
-      console.log('selectedGraphInputs', this.get('selectedGraphInputs'))
-      var currSelectedInputs = this.get('selectedGraphInputs');
-      /* if there are no selected graph inputs, then we need to create */
-      if(currSelectedInputs.length) {
-        console.log('need to create graphinput record')
-        // setup new graphinput for each graphmodel
-        // this.set('selectedGraphInputs', this.get('store').createRecord('graphinput', {
-        //   item: this.get('tbItem'),
-        //   graphmodel: this.get('selectedGraph').get('graphmodels')
-        // })); // end set
-
-      }
-      /* This function runs whenever a field is selected in the graph inputs
-         It checks if minimal number of fields defined, and attempts to render graph */
-      try {
-        var matchInput = currSelectedInputs.find(function(gi) {
-          return gi.get('graphmodel').get('name') === event.target.name
-        });
-        // update selected inputs
-        // Ember.set(this.get('selectedGraphInputs').find(
-        //   function(d) { return d.graphmodel===event.target.name
-        //   }), 'graphmodelvalue', selectedField);
-        // console.log('matchInput', matchInput)
-        // console.log(this.get('selectedGraphInputs'));
-        matchInput.set('graphmodelvalue', selectedField);
-
-
-
-      }
-      catch(err) { console.log(err)}
-
     },
 
     cancelGraphBuilder() {
