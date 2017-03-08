@@ -151,46 +151,51 @@ export default Ember.Component.extend({
 
 		        resize: { enabled: true,
 		        		  stop(e,ui,$widget) {
-										var targetItemIndex = $widget[0].dataset.index;
-										var targetItem = thisItem.get('model').get('items').canonicalState[targetItemIndex].getRecord();
-										// console.log('targetItem ref index', targetItem.get(''))
-										// temp1.get('model').get('items').map(function(d) { return d})[0]
-										// temp1.get('model').get('items').map(function(d) { return d})[0]
-										// console.log('thisItem', thisItem)
-										// console.log('resize on index ', thisItem.get('index'))
-										// console.log('$widget sizey', Math.round(($widget.data().coords.data.height-10)/140) )
-										// console.log('$widget sizex', Math.round(($widget.data().coords.data.width-10)/140) )
-										var currWidget = $widget.data();
-										// console.log('resize', currWidget);
-										targetItem.set('widgetrow', currWidget.row);
-										targetItem.set('widgetcol', currWidget.col);
-										targetItem.set('widgetsizex', Math.round(($widget.data().coords.data.width-10)/140));
-										targetItem.set('widgetsizey', Math.round(($widget.data().coords.data.height-10)/140));
+										try {
+											var targetItemIndex = $widget[0].dataset.index;
+											var targetItem = thisItem.get('model').get('items').canonicalState[targetItemIndex].getRecord();
+											// console.log('targetItem ref index', targetItem.get(''))
+											// temp1.get('model').get('items').map(function(d) { return d})[0]
+											// temp1.get('model').get('items').map(function(d) { return d})[0]
+											// console.log('thisItem', thisItem)
+											// console.log('resize on index ', thisItem.get('index'))
+											// console.log('$widget sizey', Math.round(($widget.data().coords.data.height-10)/140) )
+											// console.log('$widget sizex', Math.round(($widget.data().coords.data.width-10)/140) )
+											var currWidget = $widget.data();
+											// console.log('resize', currWidget);
+											targetItem.set('widgetrow', currWidget.row);
+											targetItem.set('widgetcol', currWidget.col);
+											targetItem.set('widgetsizex', Math.round(($widget.data().coords.data.width-10)/140));
+											targetItem.set('widgetsizey', Math.round(($widget.data().coords.data.height-10)/140));
 
-										targetItem.save();
+											targetItem.save();
+										} catch(err) { console.log('error on draggable event', err)}
 
 
 
 		        		  }},
 		        draggable: {
 		        		  stop(e,ui) {
-										var currWidget = Ember.$(e.target).data();
-										// var currWidget = Ember.$(e.target);
-										var targetItemIndex = currWidget.coords.el['0'].dataset.index;
-										var targetItem = thisItem.get('model').get('items').canonicalState[targetItemIndex].getRecord();
-										// console.log('dragged', currWidget);
-		        		  	// thisItem.get('tbItem').set('widgetrow', currWidget.row);
-										// thisItem.get('tbItem').set('widgetcol', currWidget.col);
-										// thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
-										// thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
-										//
-										// thisItem.get('tbItem').save();
-										targetItem.set('widgetrow', currWidget.row);
-										targetItem.set('widgetcol', currWidget.col);
-										targetItem.set('widgetsizex', Math.round((currWidget.coords.data.width-10)/140));
-										targetItem.set('widgetsizey', Math.round((currWidget.coords.data.height-10)/140));
+										try{
+											var currWidget = Ember.$(e.target).data();
+											// var currWidget = Ember.$(e.target);
+											var targetItemIndex = currWidget.coords.el['0'].dataset.index;
+											var targetItem = thisItem.get('model').get('items').canonicalState[targetItemIndex].getRecord();
+											// console.log('dragged', currWidget);
+			        		  	// thisItem.get('tbItem').set('widgetrow', currWidget.row);
+											// thisItem.get('tbItem').set('widgetcol', currWidget.col);
+											// thisItem.get('tbItem').set('widgetsizex', currWidget.sizex);
+											// thisItem.get('tbItem').set('widgetsizey', currWidget.sizey);
+											//
+											// thisItem.get('tbItem').save();
+											targetItem.set('widgetrow', currWidget.row);
+											targetItem.set('widgetcol', currWidget.col);
+											targetItem.set('widgetsizex', Math.round((currWidget.coords.data.width-10)/140));
+											targetItem.set('widgetsizey', Math.round((currWidget.coords.data.height-10)/140));
 
-										targetItem.save();
+											targetItem.save();
+										} catch(err) { console.log('error on draggable event', err)}
+
 
 		        		  }}
 		});
