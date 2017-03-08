@@ -18,11 +18,14 @@ import Ember from 'ember';
    tbItemConfig when saving the work done in the graph builder widget.
 */
 export default Ember.Component.extend({
+	// self: this,
 	dataAgg: Ember.inject.service('data-aggregator'),
 
 	didInsertElement: function() {
 		console.log('INSERT BAR GRAPH',this);
 		// console.log('BAR GRAPH DATA MODEL', this.get('dataModel'));
+
+		var self = this;
 		try {
 			// bar graph uses groupSum from data-agg service... just need silo id, group field, and sum field
 			var siloId = this.get('tbItem').get('source').get('id');

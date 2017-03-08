@@ -43,10 +43,10 @@ export default Ember.Component.extend({
     so this comp prop needs to look at everything and figure out which scenario from above is right
 
     */
-    console.log('modal builder comp prop for dataModel');
-    console.log('any persisted inputs?', this.get('tbItem').get('graphinputs'));
-    console.log('any user selections?', this.get('inputToModelMapper'));
-    console.log('selectedGraphModels', this.get('selectedGraph').get('graphmodels'))
+    // console.log('modal builder comp prop for dataModel');
+    // console.log('any persisted inputs?', this.get('tbItem').get('graphinputs'));
+    // console.log('any user selections?', this.get('inputToModelMapper'));
+    // console.log('selectedGraphModels', this.get('selectedGraph').get('graphmodels'))
 
     // look at inputToModelMapper and see if graphModelValue is undefined
     // look for that value in persisted data
@@ -64,14 +64,14 @@ export default Ember.Component.extend({
 			retVal = modalMapper.get('graphInputs');
 		}
 		else {
-			console.log('PERSISTED INPUTS')
+			// console.log('PERSISTED INPUTS')
 			retVal = this.get('tbItem').get('graphinputs').map(function(gi) {
 					return {
 						graphmodelname: gi.get('graphmodel').get('name'),
 						graphmodelvalue: gi.get('graphmodelvalue')}
 					})
 		}
-		console.log('computed dataModel==>',retVal)
+		// console.log('computed dataModel==>',retVal)
 		return retVal;
   }),
 
@@ -108,7 +108,7 @@ export default Ember.Component.extend({
 	}),
 
   selectedSource: Ember.computed('tbItem', function() {
-    console.log('selectedSource invoked!!')
+    // console.log('selectedSource invoked!!')
     var source = this.get('tbItem').get('source') || Ember.Object.create({});
     // populate previewData if there's a source.id
     if (source.get('id')) {
@@ -133,6 +133,10 @@ export default Ember.Component.extend({
     return graph;
   }),
 
+  selectedGraphModels: Ember.computed('selectedGraph', function() {
+    return this.get('selectedGraph').get('graphmodels')
+  }),
+
   // create a simple array of the selected inputs to aid in dropdown selection
   selectedGraphInputs: Ember.computed('fooInput', function() {
     /* stupid hack I had to do to deal with delay in results from store
@@ -146,7 +150,7 @@ export default Ember.Component.extend({
 
     // if graphInputs not empty, set renderGraph to true
     if(graphInputs.length >0) { this.set('renderGraph',true)}
-    console.log('graphInputs==>',graphInputs)
+    // console.log('graphInputs==>',graphInputs)
     return graphInputs;
 
     // return graphInputs.map(function(gi) {
@@ -264,7 +268,7 @@ export default Ember.Component.extend({
       // console.log('selectedGraph', this.get('selectedGraph'));
       // console.log('selectedGraphInputs', this.get('selectedGraphInputs'));
     },
-    onGraphInputSelectFoo(selectedField) {
+    onGraphInputSelect(selectedField) {
 
       this.set('renderGraph', false);
       // setup inputModelMapper if undefined.... use persisted, if exists, or create emtpy object as last resort
@@ -371,19 +375,90 @@ export default Ember.Component.extend({
       // this.set('selectedSource', this.get('tbItem').get('source'));
     },
 
-    /* update and persist live board item */
     saveBoardItem() {
+      try {
+      /* update and persist live board item
+         Could be and update or a new graph. Remember, the item model instance was persisted
+         when the user clicked "add item". Since item has graph and source, just need to update those
+         However!!! graphinputs are another matter, and you need to determine if it's a new
+
+         if it's new... use createRecord('item', {}) (new also includes changing the graph model)
+         but if existing, update the item's graphinputs */
+
+
+      console.log('persist modal graph builder selections', this);
+
+      // save source and graph on the item
+      this.get('tbItem').set('source', this.get('selectedSource'));
+      this.get('tbItem').set('graph', this.get('selectedGraph'));
+      this.get('tbItem').save();
+
+      // destroy current graphinputs if the exist
+      if(this.get('tbItem').get('graphinputs').length > 0) {
+        this.get('store').query('graphinput', {item: this.get('tbItem').get('id')}).then(function (inputs) {
+          console.log('destroy graphinputs', inputs);
+          inputs.forEach(function(input) {
+            console.log('delete input==>', input)
+            // input.destroyRecord();
+          })
+         // inputs.destroyRecord(); // => DELETE to /api/graphinputs/84 (example)
+       })
+     }
+
+     // Add new graph inputs if inputToModelMapper is not empty
+     if(this.get('inputToModelMapper').graphInputs.length > 0) {
+      this.get('selectedGraphModels').map( (gmodel) => {
+        var item = this.get('tbItem');
+        var gmv = this.get('inputToModelMapper')
+                        .get('graphInputs')
+                        .find(function(d) { return d.graphModelName === gmodel.get('name')});
+        console.log('gmv value', gmv.graphModelValue)
+
+        // create new graphinput records
+        var newGraphInput = this.get('store').createRecord('graphinput', {
+          item: item,
+          graphmodel: gmodel,
+          graphmodelvalue: gmv.graphModelValue
+        });
+
+        newGraphInput.save();
+
+       })
+      };
+
+
+      // console.log('persisted vs selected graph', this.get('tbItem').get('graph').get('label'), this.get('selectedGraph').get('label'));
+
       // this.get('tbItem').set('source', this.get('selectedSource'));
       // this.get('tbItem').save();
-      console.log('persist modal graph builder selections', this);
+
+      // reverse of mapping alg from before... take dataModel and get real graphinputs
+      // console.log('new inputs?', this.get('inputToModelMapper').get('graphInputs'));
       this.get('tbItem').set('source', this.get('selectedSource'));
       this.get('tbItem').set('graph', this.get('selectedGraph'));
       // this.get('tbItem').set('graphinputs', this.get('selectedGraphInputs'));
 
+
+
+
+      // create new graphinput records
+      // this.store.createRecord('graphinput', {
+      //   item: this.get('tbItem'),
+      //   graphmodel: ,
+      //   graphinputvalue: 'gender'
+      //
+      // })
+
+
+
+
       this.get('tbItem').save();
-      this.get('tbItem').get('graphinputs').save();
+      // this.get('tbItem').get('graphinputs').save();
 
       this.sendAction('toggleGraphRendering');
+
+    } // end try
+    catch(err) { console.log('save error', err)}
 
     },
 

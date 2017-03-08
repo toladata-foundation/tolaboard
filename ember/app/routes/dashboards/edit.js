@@ -14,7 +14,7 @@ export default Ember.Route.extend({
         return this.store.findRecord('board', params.board_id);
     },
 
-
+    
     actions: { // move out of here and into tolaboard designer component
       onAddItem() {
         console.log('add item', this);

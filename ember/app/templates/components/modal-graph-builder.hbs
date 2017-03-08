@@ -60,7 +60,7 @@
 						{{#each graphDataModels as |graphmodel|}}
 							<div class="data-model-input">
 								<h5>{{graphmodel.label}}:</h5>
-									<select name={{graphmodel.name}} onchange={{action 'onGraphInputSelectFoo' value="target.value" }} class="form-control">
+									<select name={{graphmodel.name}} onchange={{action 'onGraphInputSelect' value="target.value" }} class="form-control">
 											<option value=""></option>
 										{{#each-in previewData.[0] as |colName index|}}
 											<option selected={{matches-graph-input colName graphmodel.name selectedGraphInputs}} value={{colName}}>{{colName}}</option>

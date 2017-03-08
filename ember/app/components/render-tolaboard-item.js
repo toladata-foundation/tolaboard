@@ -39,7 +39,7 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
-	// store: Ember.inject.service(),
+	store: Ember.inject.service(),
 	showGraphBuilder: false,
 	toggleRender: true,
 	// describe this
@@ -49,32 +49,24 @@ export default Ember.Component.extend({
 	deleteTarget: Ember.computed('index', function() {
 		return '#tbi-delete-item' + this.get('index');
 	}),
-	graphInputs: Ember.computed('tbItem', function() {
-		console.log('RENDER COMPUTED PROP FOR graphInputs');
-		return this.get('tbItem').get('graphinputs');
-	}),
-
-	graphInputsDep: Ember.computed('graphInputs', function() {
-		console.log('RENDER COMPUTED PROP FOR graphInputsDep')
-		console.log('render graphinputs',this.get('tbItem').get('graphinputs'));
-	}),
-	dataModel: Ember.computed('fooInput', function() {
+	// graphInputs: Ember.computed('tbItem', function() {
+	// 	console.log('RENDER COMPUTED PROP FOR graphInputs');
+	// 	return this.get('tbItem').get('graphinputs');
+	// }),
+	selectedGraphInputs: Ember.computed('fooInput', function() {
     /* stupid hack I had to do to deal with delay in results from store
        This computed property needs calculated for any persisted graphinputs
        to be picked up and selected in the UI. By setting/changing fooInput,
        we're changing the dependency of this property, thus resulting in its
        re-calc (after initially returning an empty array)*/
-    this.get('store').query('graphinput',{item: this.get('tbItem').get('id')})
-                     .then(() => this.set('fooInput',true));
+    // this.get('store').query('graphinput',{item: this.get('tbItem').get('id')})
+    //                  .then(() => this.set('fooInput',true));
     var graphInputs = this.get('tbItem').get('graphinputs');
 
-		return graphInputs.map(function(gi) {
-				return {
-					graphmodelname: gi.get('graphmodel').get('name'),
-					graphmodelvalue: gi.get('graphmodelvalue')}
-				});
-
-
+    // if graphInputs not empty, set renderGraph to true
+    if(graphInputs.length >0) { this.set('toggleRender',true)}
+    // console.log('graphInputs==>',graphInputs)
+    return graphInputs;
 
     // return graphInputs.map(function(gi) {
     //   return {graphmodel: gi.get('graphmodel').get('name'),
@@ -83,15 +75,54 @@ export default Ember.Component.extend({
     //       }); // end map
     // return [{graphmodel: 'group', graphmodelvalue: 'origin'}, {graphmodel: 'size', graphmodelvalue: 'total_family_count'}]
   }),
+	// makes things easier to do this here
+	// unlike modal builder, this only deals with persisted items
+	inputToModelMapper: Ember.computed('selectedGraphInputs', function() {
+		this.get('tbItem').get('graphinputs');
+		// this.get('store').findAll('graphmodel')
+		// this.get('store').query('graphinput', {item: 84})
+    var tmpObj = Ember.Object.create({});
+    tmpObj.set('graphType', this.get('tbItem').get('graph').get('label'));
+    var persistedDataModel = this.get('tbItem').get('graphinputs').map(function(gi) {
+        return {
+          graphModelName: gi.get('graphmodel').get('name'),
+          graphModelValue: gi.get('graphmodelvalue')}
+        });
+    tmpObj.set('graphInputs', persistedDataModel)
+    // this.set('inputToModelMapper', persistedDataModel || Ember.Object.create({}));
+    return tmpObj || Ember.Object.create({});
+  }),
 
-	/* this mimics what happens when a user specifies inputs in the modal graph builder
-		 it takes the persisted graphinputs, and builds the data model used by the graph components */
+	// I have no idea why this needs to be separate from above, but it was the only way to make it work based on current knowledge
+	newInputToModelMapper: Ember.computed('tbItem', function() {
+		/* This property is a workaround to the problem in Ember of retrieving records from a hasMany relationship.
+		   We need to have a promise which when returns, populates this prop with data model needed by chart components
+		*/
+		this.get('store').findAll('graphmodel')
+		this.get('store').query('graphinput', {item: this.get('tbItem').get('id')})
+		return this.get('tbItem').get('graphinputs').getEach('graphmodelvalue');
+		// return this.get('tbItem')
+		// return this.get('store').findAll('graphmodel')
+	}),
+
 
 	didInsertElement() {
 		console.log('didInsert render-tolaboard-item',this);
-		this.get('graphInputs');
-		this.get('graphInputsDep');
+		// console.log('source', this.get('tbItem').get('source').get('id'))
+		// console.log('graph', this.get('tbItem').get('graph').get('label'))
+		// console.log('items', this.get('tbItem').get('graphinputs'))
+		// this.get('selectedGraphInputs');
+		// this.set('toggleRender', true);
+
+		// this.get('graphInputsDep');
 		// this.get('dataModel');
+		console.log('NEW INPUT TO MODEL MAPPER', this.get('newInputToModelMapper'));
+
+		// var self = this;
+		// setTimeout(function() {
+		// 	self.get('selectedGraphInputs')
+		// 	console.log('after timeout ', self.get('inputToModelMapper'))
+		// },1500);
 
 		try {
 
@@ -106,7 +137,7 @@ export default Ember.Component.extend({
 
 		// normally don't need in ES6, but we do for gridster and Ember integration
 		var thisIndex = this.get('index');
-		console.log('thisIndex===>',thisIndex)
+		// console.log('thisIndex===>',thisIndex)
 
 		var thisItem = this;
 
@@ -181,7 +212,7 @@ export default Ember.Component.extend({
 		// get the .hbs template for this instance of the component, set it to thisView
 		// what is the child here?
 		var thisView = this.get('element').childNodes[0];
-		console.log('THISVIEW!!!!', thisView)
+		// console.log('THISVIEW!!!!', thisView)
 		/* above line doesn't work because no li was added during the view
 		   we could assume an li needs to be added, then follow through as before
 		   i mean, if edit mode is used, we need that same view with the edit/delete buttons*/

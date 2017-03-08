@@ -9,7 +9,7 @@
 	<!-- scopeGraph gets determined in tbItemConfig and defined once this Ember view is inserted -->
 	{{#if toggleRender}}
 	<div class="viz-target">
-		{{component tbItem.graph.embercomponent tbItem=tbItem tbItemConfig=tbItemConfig dataSources=dataSources}}
+		{{component tbItem.graph.embercomponent tbItem=tbItem tbItemConfig=tbItemConfig inputToModelMapper=inputToModelMapper dataSources=dataSources}}
 	</div>
 	{{/if}}
 

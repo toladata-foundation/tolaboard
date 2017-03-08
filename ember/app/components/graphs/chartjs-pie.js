@@ -18,19 +18,20 @@ import Ember from 'ember';
    tbItemConfig when saving the work done in the graph builder widget.
 */
 export default Ember.Component.extend({
-	self: this,
-
 	dataAgg: Ember.inject.service('data-aggregator'),
 
 	didInsertElement: function() {
 		console.log('INSERT PIE GRAPH',this);
 
 		try {
+			// pie graph uses groupSum from data-agg service... just need silo id, group field, and sum field
 			var siloId = this.get('tbItem').get('source').get('id');
-			var dataModel = [{name: 'group', assigned: 'origin'},{name: 'size', assigned: 'total_family_count'}];
-			var tablesData = this.get('dataAgg').groupBySum(siloId, 'origin', 'total_family_count');
+			var dataModel = this.get('inputToModelMapper').get('graphInputs');
 
+			var groupField = dataModel.find(function(m) { return m.graphModelName === 'group'}).graphModelValue;
+			var sumField = dataModel.find(function(m) { return m.graphModelName === 'size'}).graphModelValue;
 
+			var tablesData = this.get('dataAgg').groupBySum(siloId, groupField, sumField);
 			var self = this;
 			tablesData.then(function(result) {
 				var labelArr = result.map(function(d) { return d.key});
