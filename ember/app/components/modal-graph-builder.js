@@ -409,16 +409,18 @@ export default Ember.Component.extend({
       this.get('tbItem').save();
 
       // destroy current graphinputs if the exist
-      if(this.get('tbItem').get('graphinputs').length > 0) {
-        this.get('store').query('graphinput', {item: this.get('tbItem').get('id')}).then(function (inputs) {
-          console.log('destroy graphinputs', inputs);
-          inputs.forEach(function(input) {
-            console.log('delete input==>', input)
-            // input.destroyRecord();
-          })
-         // inputs.destroyRecord(); // => DELETE to /api/graphinputs/84 (example)
-       })
-     }
+    //   if(this.get('tbItem').get('graphinputs').length > 0) {
+    //     this.get('store').query('graphinput', {item: this.get('tbItem').get('id')}).then(function (inputs) {
+    //       console.log('destroy graphinputs', inputs);
+    //       inputs.forEach(function(input) {
+    //         console.log('delete input==>', input)
+    //         input.destroyRecord();
+    //       })
+    //    })
+    //  }
+    this.get('tbItem').get('graphinputs').map(function(ginput) {
+      ginput.destroyRecord();
+    })
 
      // Add new graph inputs if inputToModelMapper is not empty
      if(this.get('inputToModelMapper').graphInputs.length > 0) {
