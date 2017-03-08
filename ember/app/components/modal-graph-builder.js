@@ -420,7 +420,9 @@ export default Ember.Component.extend({
     //  }
     this.get('tbItem').get('graphinputs').map(function(ginput) {
       ginput.destroyRecord();
-    })
+    });
+
+    console.log('what does input mapper look like?', this.get('inputToModelMapper'))
 
      // Add new graph inputs if inputToModelMapper is not empty
      if(this.get('inputToModelMapper').graphInputs.length > 0) {

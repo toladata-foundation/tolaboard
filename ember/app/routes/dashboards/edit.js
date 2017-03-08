@@ -11,10 +11,11 @@ export default Ember.Route.extend({
     // },
     model(params) {
         this.store.query('item', {board: params.board_id});
+        this.store.findAll('graphinput'); // cheating... pulling all of them
         return this.store.findRecord('board', params.board_id);
     },
 
-    
+
     actions: { // move out of here and into tolaboard designer component
       onAddItem() {
         console.log('add item', this);

@@ -13,7 +13,7 @@ export default DS.Model.extend({
 
     /* tb items need to have widget props updated to reflect gridster alignment */
     didCreate() {
-      console.log('item didCreate called', this);
+      // console.log('item didCreate called', this);
       var gridsterArr = Ember.$('.gridster ul').gridster().data('gridster').serialize();
       var thisItem = gridsterArr[gridsterArr.length-1]; // assumes newest element is last element
 
