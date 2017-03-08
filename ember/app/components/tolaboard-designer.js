@@ -96,7 +96,7 @@ export default Ember.Component.extend({
 			// didCreate() in item model fires when this runs to update gridster props
 			var newItem = this.get('store').createRecord('item', {
 				board: this.get('model'),
-		    title: 'New item xyz',
+		    title: this.get('model').get('title')+'-item-'+this.get('model').get('items').length,
 		    widgetcol: 1,
 		    widgetrow: 1,
 		    widgetsizex: 2,
@@ -128,7 +128,7 @@ export default Ember.Component.extend({
 
 		},
 		onEditTitle() {
-			
+
 		},
 		removeItem(index) {
 			console.log('removeItem index',index);

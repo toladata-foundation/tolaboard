@@ -4,14 +4,26 @@ export default Ember.Component.extend({
   store: Ember.inject.service(),
 	dataAgg: Ember.inject.service('data-aggregator'),
 
-  inputToModelMapper: Ember.computed('selectedGraphInputs', function() {
+  inputToModelMapper: Ember.computed('selectedGraphInputs', 'selectedGraphModels', function() {
+    console.log('inputToModelMapper invoked');
     var tmpObj = Ember.Object.create({});
     tmpObj.set('graphType', this.get('selectedGraph').get('label'));
+    // either use what's coming from persisted graphinputs for this item
+    // OR, define placeholder object using selectedGraphModels
     var persistedDataModel = this.get('selectedGraphInputs').map(function(gi) {
         return {
           graphModelName: gi.get('graphmodel').get('name'),
           graphModelValue: gi.get('graphmodelvalue')}
         });
+    if(persistedDataModel.length === 0) {
+      persistedDataModel = this.get('selectedGraphModels').map(function(gi) {
+        return {
+          graphModelName: gi.get('name'),
+          graphModelValue: ''
+        };
+      })
+    }
+
     tmpObj.set('graphInputs', persistedDataModel)
     // this.set('inputToModelMapper', persistedDataModel || Ember.Object.create({}));
     return tmpObj || Ember.Object.create({});
@@ -269,6 +281,9 @@ export default Ember.Component.extend({
       // console.log('selectedGraphInputs', this.get('selectedGraphInputs'));
     },
     onGraphInputSelect(selectedField) {
+
+      /* This runs whenever a user makes a field selection in the dropdown.
+         It all feels very hacky and kludgy to me, so maybe there's a better way */
 
       this.set('renderGraph', false);
       // setup inputModelMapper if undefined.... use persisted, if exists, or create emtpy object as last resort
