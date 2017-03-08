@@ -28,7 +28,7 @@ export default Ember.Component.extend({
 		var self = this;
 		try {
 			// bar graph uses groupSum from data-agg service... just need silo id, group field, and sum field
-			var siloId = this.get('tbItem').get('source').get('id');
+			var siloId = this.get('tbItem').get('source').get('id') || this.get('selectedSource').get('id');
 			var dataModel = this.get('inputToModelMapper').get('graphInputs');
 
 			// console.log('dataModel in bar graph component', dataModel);

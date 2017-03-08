@@ -77,8 +77,9 @@ export default Ember.Component.extend({
   }),
 	// makes things easier to do this here
 	// unlike modal builder, this only deals with persisted items
-	inputToModelMapper: Ember.computed('selectedGraphInputs', function() {
+	inputToModelMapper: Ember.computed('selectedGraphInputs', 'fooInput', function() {
 		this.get('tbItem').get('graphinputs');
+		this.get('selectedGraphInputs');
 		// this.get('store').findAll('graphmodel')
 		// this.get('store').query('graphinput', {item: 84})
     var tmpObj = Ember.Object.create({});

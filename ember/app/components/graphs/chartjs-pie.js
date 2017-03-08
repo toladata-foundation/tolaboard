@@ -25,7 +25,7 @@ export default Ember.Component.extend({
 
 		try {
 			// pie graph uses groupSum from data-agg service... just need silo id, group field, and sum field
-			var siloId = this.get('tbItem').get('source').get('id');
+			var siloId = this.get('tbItem').get('source').get('id') || this.get('selectedSource').get('id');
 			var dataModel = this.get('inputToModelMapper').get('graphInputs');
 
 			var groupField = dataModel.find(function(m) { return m.graphModelName === 'group'}).graphModelValue;
