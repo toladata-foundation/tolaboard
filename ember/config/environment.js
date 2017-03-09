@@ -30,7 +30,7 @@ module.exports = function(environment) {
       // url: 'https://tola-tables-dev.mercycorps.org',
       url: 'http://localhost:8000',
       previewSize: 20, // num of records to show in preview
-      token: 'Token 3ea9cc476a022ce32cd00d08f44edeacad982489'
+      //token: 'Token 88d3573a445f19c17ea4fa68c0431c396bc55cdd'
     }
   };
 
@@ -55,7 +55,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    ENV.API.url = 'https://tola-tables.mercycorps.org';
   }
 
   return ENV;
