@@ -8,9 +8,11 @@ export default DS.JSONAPIAdapter.extend(/*DataAdapterMixin,*/ {
   namespace: 'api',
   headers: {
     "Content-Type": "application/vnd.api+json",
-    "Authorization": ENV.API.token
+    'X-Requested-With': 'XMLHttpRequest',
+    //"Authorization": ENV.API.token
   },
 
+  authorizer: 'authorizer:drf-token-authorizer',
     // pathForType(model) {
     //   return 'silo';
     // },

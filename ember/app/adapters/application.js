@@ -9,7 +9,10 @@ export default DS.JSONAPIAdapter.extend( {
     // pathForType: function(type) {
     //   return Ember.String.underscore(type) + 's/';
     // }
-    // authorizer: 'authorizer:drf-token-authorizer',
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+    },
+    authorizer: 'authorizer:drf-token-authorizer',
 
     /* By default the JSONAPIAdapter will send each find request coming from a
      * store.find or from accessing a relationship separately to the server.
