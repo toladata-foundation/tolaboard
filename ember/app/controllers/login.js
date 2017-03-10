@@ -1,9 +1,9 @@
 import Ember from 'ember';
 
-export default Ember.Controller.extend({	
+export default Ember.Controller.extend({
 
 	session: Ember.inject.service(),
-	
+
 
 	/* This is kinda kludgy, and is basically setup to allow google to talk to our app
 
@@ -12,8 +12,8 @@ export default Ember.Controller.extend({
 	call back in the actions, and reference with the action helper syntax. However, our app is not invoking
 	this function... Google is.  So it just need to live in the DOM somehow. The method below injects a raw
 	javascript function into the DOM via calling a function that defines the callback, and places it in the
-	global scope (window) */	
-	
+	global scope (window) */
+
 	createSignInFunc: function(ctrl) {
 
 		var onSignIn = function(googleUser) {
@@ -26,12 +26,12 @@ export default Ember.Controller.extend({
 	        // ctrl.set('id_token',id_token);
 	        // Cookies.set('googleToken',id_token);
 
-        	
 
-	        
 
-	        console.log('call session login with token');
-	        ctrl.get('session').gLogin(id_token);
+
+
+	        //console.log('call session login with token');
+	        //ctrl.get('session').gLogin(id_token);
 
 	        // POST auth token
 
@@ -44,7 +44,7 @@ export default Ember.Controller.extend({
       	// assign our sign in method to global
       	window.onSignIn = onSignIn;
 
-      	
+
 
 	},
 
@@ -54,7 +54,7 @@ export default Ember.Controller.extend({
 		this._super(...arguments);
 
 		// pass this controller into our hacky signin, so we can put google token inside
-		this.get('createSignInFunc')(this);		
+		this.get('createSignInFunc')(this);
 
 		// another hack... make the google signout accessable from any where
       	window.googleSignOut = function() {
@@ -67,7 +67,7 @@ export default Ember.Controller.extend({
       	window.gapi = gapi;
 	} // end init
 
-	
 
-	
+
+
   })
