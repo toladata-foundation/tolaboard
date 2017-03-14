@@ -55,7 +55,7 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-    ENV.API.url = 'https://tola-tables.mercycorps.org';
+    ENV.API.url = 'https://tola-tables-dev.mercycorps.org';
   }
 
   return ENV;
