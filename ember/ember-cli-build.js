@@ -44,13 +44,13 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   // CSS
-  //app.import('bower_components/bootstrap/dist/css/bootstrap.min.css');
+  app.import('bower_components/bootstrap/dist/css/bootstrap.min.css');
   app.import('bower_components/gridster/dist/jquery.gridster.min.css');
   app.import('bower_components/animate.css/animate.min.css');
 
   // JavaScript
   app.import('bower_components/js-cookie/src/js.cookie.js');
-  //app.import('bower_components/bootstrap/dist/js/bootstrap.min.js');
+  app.import('bower_components/bootstrap/dist/js/bootstrap.min.js');
   app.import('bower_components/gridster/dist/jquery.gridster.min.js');
   app.import('bower_components/froala-wysiwyg-editor/js/froala_editor.min.js');
   app.import('bower_components/Chart.js/dist/Chart.min.js');
